@@ -5,6 +5,7 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    tsconfigPaths: true,
     alias: {
       "@app": path.resolve(__dirname, "src/app"),
       "@entities": path.resolve(__dirname, "src/entities"),
