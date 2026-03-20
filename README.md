@@ -1,3 +1,3 @@
 # Ultimate Pomodoro Tracker
 
-## it has it all!
+## it will have it all!
