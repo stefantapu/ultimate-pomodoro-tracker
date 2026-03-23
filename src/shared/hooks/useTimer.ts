@@ -1,91 +1,102 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type UseTimerProps = {
   duration: number; //seconds
+  storageKey?: string;
 };
 
-function createTick(
-  startTimeRef: React.MutableRefObject<number | null>,
-  duration: number,
-  setTimeLeft: (v: number) => void,
-  setIsRunning: (v: boolean) => void,
-  rafRef: React.MutableRefObject<number | null>,
-) {
-  return function tick() {
-    if (!startTimeRef.current) return;
+export function useTimer({
+  duration,
+  storageKey = "pomodoro-state",
+}: UseTimerProps) {
+  const [timeLeft, settimeLeft] = useState(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (!saved) return duration;
+
+    const { remaining, targetTimeStamp, isRunning } = JSON.parse(saved);
+
+    if (isRunning && targetTimeStamp) {
+      const actualRemaning = Math.round((targetTimeStamp - Date.now()) / 1000);
+      return actualRemaning > 0 ? actualRemaning : 0;
+    }
+    return remaining;
+  });
+
+  const [isRunning, setIsRunning] = useState(() => {
+    const saved = localStorage.getItem(storageKey);
+    return saved ? JSON.parse(saved).isRunning : false;
+  });
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const targetTimestampRef = useRef<number | null>(null);
+
+  const stopInterval = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const tick = useCallback(() => {
+    if (!targetTimestampRef.current) return;
 
     const now = Date.now();
-
-    const elapsed = Math.floor((now - startTimeRef.current) / 1000);
-    const remaining = duration - elapsed;
+    const remaining = Math.round((targetTimestampRef.current - now) / 1000);
 
     if (remaining <= 0) {
-      setTimeLeft(0);
+      stopInterval();
       setIsRunning(false);
-
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      settimeLeft(duration);
+      targetTimestampRef.current = null;
       return;
     }
 
-    setTimeLeft(remaining);
-    rafRef.current = requestAnimationFrame(tick);
-  };
-}
+    settimeLeft(remaining);
+  }, [stopInterval, duration]);
 
-export function useTimer({ duration }: UseTimerProps) {
-  /////////////////////////////////////////////////////////////////
-  const [timeLeft, setTimeLeft] = useState(duration);
-  const [isRunning, setIsRunning] = useState(false);
-
-  const startTimeRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
-
-  const tickRef = useRef<() => void>(null);
-
-  useEffect(() => {
-    tickRef.current = createTick(
-      startTimeRef,
-      duration,
-      setTimeLeft,
-      setIsRunning,
-      rafRef,
-    );
-  }, [duration]);
-
-  const start = () => {
+  const start = useCallback(() => {
     if (isRunning) return;
 
-    startTimeRef.current = Date.now() - (duration - timeLeft) * 1000;
+    targetTimestampRef.current = Date.now() + timeLeft * 1000;
+
     setIsRunning(true);
-    rafRef.current = requestAnimationFrame(() => tickRef.current?.());
-  };
+    intervalRef.current = setInterval(tick, 1000);
+  }, [isRunning, timeLeft, tick]);
 
-  const pause = () => {
+  const pause = useCallback(() => {
     setIsRunning(false);
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-  };
+    targetTimestampRef.current = null;
+    stopInterval();
+  }, [stopInterval]);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setIsRunning(false);
-    setTimeLeft(duration);
-    startTimeRef.current = null;
-
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-  };
+    settimeLeft(duration);
+    targetTimestampRef.current = null;
+    stopInterval();
+    localStorage.removeItem(storageKey);
+  }, [duration, storageKey, stopInterval]);
 
   useEffect(() => {
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        remaining: timeLeft,
+        targetTimestampRef: targetTimestampRef.current,
+        isRunning,
+      }),
+    );
+  }, [timeLeft, isRunning, storageKey]);
+
+  //rehabilitation
+  useEffect(() => {
+    if (isRunning && timeLeft > 0) {
+      targetTimestampRef.current = Date.now() + timeLeft * 1000;
+      intervalRef.current = setInterval(tick, 1000);
+    }
+
+    return () => stopInterval();
   }, []);
 
-  return {
-    timeLeft,
-    isRunning,
-    start,
-    pause,
-    reset,
-  };
+  return { timeLeft, isRunning, start, pause, reset };
 }
