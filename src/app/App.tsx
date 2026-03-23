@@ -1,15 +1,23 @@
 import { useTimer } from "@shared/hooks/useTimer";
 
 function App() {
-  const { timeLeft, start, pause, reset, isRunning } = useTimer({
-    duration: 20,
-  });
+  const { displayMinutes, displaySeconds, start, pause, reset, isRunning } =
+    useTimer({
+      duration: 62,
+    });
   return (
     <>
-      <div style={{ backgroundColor: isRunning ? "green" : "" }}>
-        <h1>{timeLeft}</h1>
-        <button onClick={start}>start</button>
-        <button onClick={pause}>pause</button>
+      <div style={{ backgroundColor: isRunning ? "green" : "black" }}>
+        <h1>
+          {displayMinutes} : {displaySeconds}
+        </h1>
+
+        {isRunning ? (
+          <button onClick={pause}>pause</button>
+        ) : (
+          <button onClick={start}>start</button>
+        )}
+
         <button onClick={reset}>reset</button>
       </div>
     </>

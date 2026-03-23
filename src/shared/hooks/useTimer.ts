@@ -1,30 +1,38 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 type UseTimerProps = {
-  duration: number; //seconds
+  duration: number;
   storageKey?: string;
+  onFinish?: () => void;
 };
 
 export function useTimer({
   duration,
   storageKey = "pomodoro-state",
+  onFinish,
 }: UseTimerProps) {
-  const [timeLeft, settimeLeft] = useState(() => {
+  const [timeLeft, setTimeLeft] = useState(() => {
     const saved = localStorage.getItem(storageKey);
     if (!saved) return duration;
 
-    const { remaining, targetTimeStamp, isRunning } = JSON.parse(saved);
+    const { remaining, targetTimestamp, isRunning } = JSON.parse(saved);
 
-    if (isRunning && targetTimeStamp) {
-      const actualRemaning = Math.round((targetTimeStamp - Date.now()) / 1000);
-      return actualRemaning > 0 ? actualRemaning : 0;
+    if (isRunning && targetTimestamp) {
+      const actualRemaining = Math.round((targetTimestamp - Date.now()) / 1000);
+      return actualRemaining > 0 ? actualRemaining : duration; // Если время вышло пока вкладка была закрыта, возвращаем duration
     }
     return remaining;
   });
 
   const [isRunning, setIsRunning] = useState(() => {
     const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved).isRunning : false;
+    const parsed = saved ? JSON.parse(saved) : null;
+
+    // Если при загрузке видим, что время уже вышло, возвращаем false
+    if (parsed?.isRunning && parsed?.targetTimestamp) {
+      return (parsed.targetTimestamp - Date.now()) / 1000 > 0;
+    }
+    return parsed?.isRunning ?? false;
   });
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -37,6 +45,18 @@ export function useTimer({
     }
   }, []);
 
+  // Синхронизация
+  useEffect(() => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        remaining: timeLeft,
+        targetTimestamp: targetTimestampRef.current,
+        isRunning,
+      }),
+    );
+  }, [timeLeft, isRunning, storageKey]);
+
   const tick = useCallback(() => {
     if (!targetTimestampRef.current) return;
 
@@ -44,21 +64,23 @@ export function useTimer({
     const remaining = Math.round((targetTimestampRef.current - now) / 1000);
 
     if (remaining <= 0) {
+      // --- ЛОГИКА АВТОСБРОСА ---
       stopInterval();
       setIsRunning(false);
-      settimeLeft(duration);
+      setTimeLeft(duration);
       targetTimestampRef.current = null;
+
+      if (onFinish) onFinish(); // Опционально: звук или пуш
       return;
     }
 
-    settimeLeft(remaining);
-  }, [stopInterval, duration]);
+    setTimeLeft(remaining);
+  }, [duration, stopInterval, onFinish]);
 
   const start = useCallback(() => {
     if (isRunning) return;
 
     targetTimestampRef.current = Date.now() + timeLeft * 1000;
-
     setIsRunning(true);
     intervalRef.current = setInterval(tick, 1000);
   }, [isRunning, timeLeft, tick]);
@@ -71,32 +93,23 @@ export function useTimer({
 
   const reset = useCallback(() => {
     setIsRunning(false);
-    settimeLeft(duration);
+    setTimeLeft(duration);
     targetTimestampRef.current = null;
     stopInterval();
     localStorage.removeItem(storageKey);
   }, [duration, storageKey, stopInterval]);
 
   useEffect(() => {
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        remaining: timeLeft,
-        targetTimestampRef: targetTimestampRef.current,
-        isRunning,
-      }),
-    );
-  }, [timeLeft, isRunning, storageKey]);
-
-  //rehabilitation
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (isRunning) {
       targetTimestampRef.current = Date.now() + timeLeft * 1000;
       intervalRef.current = setInterval(tick, 1000);
     }
-
     return () => stopInterval();
   }, []);
 
-  return { timeLeft, isRunning, start, pause, reset };
+  const formatTime = (seconds: number) => seconds.toString().padStart(2, "0");
+  const displaySeconds = formatTime(timeLeft % 60);
+  const displayMinutes = formatTime(Math.floor(timeLeft / 60));
+
+  return { displayMinutes, displaySeconds, isRunning, start, pause, reset };
 }
