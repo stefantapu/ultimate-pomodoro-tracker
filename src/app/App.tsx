@@ -7,7 +7,13 @@ function App() {
     });
   return (
     <>
-      <div style={{ backgroundColor: isRunning ? "green" : "black" }}>
+      <div
+        style={{
+          backgroundColor: isRunning ? "green" : "black",
+          height: "100vh",
+          alignContent: "center",
+        }}
+      >
         <h1>
           {displayMinutes} : {displaySeconds}
         </h1>

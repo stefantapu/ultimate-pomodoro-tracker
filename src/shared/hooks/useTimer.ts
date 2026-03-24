@@ -3,13 +3,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 type UseTimerProps = {
   duration: number;
   storageKey?: string;
-  onFinish?: () => void;
 };
 
 export function useTimer({
   duration,
   storageKey = "pomodoro-state",
-  onFinish,
 }: UseTimerProps) {
   const [timeLeft, setTimeLeft] = useState(() => {
     const saved = localStorage.getItem(storageKey);
@@ -45,18 +43,6 @@ export function useTimer({
     }
   }, []);
 
-  // Синхронизация
-  useEffect(() => {
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        remaining: timeLeft,
-        targetTimestamp: targetTimestampRef.current,
-        isRunning,
-      }),
-    );
-  }, [timeLeft, isRunning, storageKey]);
-
   const tick = useCallback(() => {
     if (!targetTimestampRef.current) return;
 
@@ -69,13 +55,10 @@ export function useTimer({
       setIsRunning(false);
       setTimeLeft(duration);
       targetTimestampRef.current = null;
-
-      if (onFinish) onFinish(); // Опционально: звук или пуш
-      return;
     }
 
     setTimeLeft(remaining);
-  }, [duration, stopInterval, onFinish]);
+  }, [duration, stopInterval]);
 
   const start = useCallback(() => {
     if (isRunning) return;
@@ -105,11 +88,32 @@ export function useTimer({
       intervalRef.current = setInterval(tick, 1000);
     }
     return () => stopInterval();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Синхронизация
+  useEffect(() => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        remaining: timeLeft,
+        targetTimestamp: targetTimestampRef.current,
+        isRunning,
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning, storageKey]);
 
   const formatTime = (seconds: number) => seconds.toString().padStart(2, "0");
   const displaySeconds = formatTime(timeLeft % 60);
   const displayMinutes = formatTime(Math.floor(timeLeft / 60));
 
-  return { displayMinutes, displaySeconds, isRunning, start, pause, reset };
+  return {
+    displayMinutes,
+    displaySeconds,
+    isRunning,
+    start,
+    pause,
+    reset,
+  };
 }
