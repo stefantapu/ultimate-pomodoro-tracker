@@ -1,7 +1,8 @@
+import { useAlarm } from "@shared/hooks/useAlarm";
 import { useTimer } from "@shared/hooks/useTimer";
 
 function App() {
-  const { displayMinutes, displaySeconds, start, pause, reset, isRunning } =
+  const { displayMinutes, displaySeconds, status, start, pause, reset } =
     useTimer({
       duration: 62,
     });
@@ -9,7 +10,7 @@ function App() {
     <>
       <div
         style={{
-          backgroundColor: isRunning ? "green" : "black",
+          backgroundColor: status === "running" ? "green" : "black",
           height: "100vh",
           alignContent: "center",
         }}
@@ -17,8 +18,8 @@ function App() {
         <h1>
           {displayMinutes} : {displaySeconds}
         </h1>
-
-        {isRunning ? (
+        {status === "finished" && useAlarm()}
+        {status === "running" ? (
           <button onClick={pause}>pause</button>
         ) : (
           <button onClick={start}>start</button>

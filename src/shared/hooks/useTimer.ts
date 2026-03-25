@@ -5,32 +5,37 @@ type UseTimerProps = {
   storageKey?: string;
 };
 
+type TimerStatus = "idle" | "running" | "paused" | "finished";
+
 export function useTimer({
   duration,
-  storageKey = "pomodoro-state",
+  storageKey = "pomodoro-timer-state",
 }: UseTimerProps) {
+  const [status, setStatus] = useState<TimerStatus>(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (!saved) return "idle";
+
+    const parsed = JSON.parse(saved);
+
+    if (parsed?.status === "running" && parsed?.targetTimestamp) {
+      const stillRunning = (parsed.targetTimestamp - Date.now()) / 1000 > 0;
+
+      return stillRunning ? "running" : "finished";
+    }
+
+    return parsed?.status ?? "idle";
+  });
   const [timeLeft, setTimeLeft] = useState(() => {
     const saved = localStorage.getItem(storageKey);
     if (!saved) return duration;
 
-    const { remaining, targetTimestamp, isRunning } = JSON.parse(saved);
+    const { remaining, targetTimestamp, status } = JSON.parse(saved);
 
-    if (isRunning && targetTimestamp) {
-      const actualRemaining = Math.round((targetTimestamp - Date.now()) / 1000);
-      return actualRemaining > 0 ? actualRemaining : duration; // Если время вышло пока вкладка была закрыта, возвращаем duration
+    if (status === "running" && targetTimestamp) {
+      const actualRemaining = Math.round((targetTimestamp - Date.now()) / 1000); //calculating real time from the timestamp
+      return actualRemaining > 0 ? actualRemaining : duration;
     }
     return remaining;
-  });
-
-  const [isRunning, setIsRunning] = useState(() => {
-    const saved = localStorage.getItem(storageKey);
-    const parsed = saved ? JSON.parse(saved) : null;
-
-    // Если при загрузке видим, что время уже вышло, возвращаем false
-    if (parsed?.isRunning && parsed?.targetTimestamp) {
-      return (parsed.targetTimestamp - Date.now()) / 1000 > 0;
-    }
-    return parsed?.isRunning ?? false;
   });
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -50,40 +55,39 @@ export function useTimer({
     const remaining = Math.round((targetTimestampRef.current - now) / 1000);
 
     if (remaining <= 0) {
-      // --- ЛОГИКА АВТОСБРОСА ---
       stopInterval();
-      setIsRunning(false);
       setTimeLeft(duration);
       targetTimestampRef.current = null;
+      setStatus("finished");
+      return;
     }
 
     setTimeLeft(remaining);
   }, [duration, stopInterval]);
 
   const start = useCallback(() => {
-    if (isRunning) return;
+    if (status === "running") return;
 
     targetTimestampRef.current = Date.now() + timeLeft * 1000;
-    setIsRunning(true);
+    setStatus("running");
     intervalRef.current = setInterval(tick, 1000);
-  }, [isRunning, timeLeft, tick]);
+  }, [status, timeLeft, tick]);
 
   const pause = useCallback(() => {
-    setIsRunning(false);
+    setStatus("paused");
     targetTimestampRef.current = null;
     stopInterval();
   }, [stopInterval]);
 
   const reset = useCallback(() => {
-    setIsRunning(false);
+    setStatus("idle");
     setTimeLeft(duration);
     targetTimestampRef.current = null;
     stopInterval();
-    localStorage.removeItem(storageKey);
-  }, [duration, storageKey, stopInterval]);
+  }, [duration, stopInterval]);
 
   useEffect(() => {
-    if (isRunning) {
+    if (status === "running") {
       targetTimestampRef.current = Date.now() + timeLeft * 1000;
       intervalRef.current = setInterval(tick, 1000);
     }
@@ -91,18 +95,18 @@ export function useTimer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Синхронизация
+  // sync
   useEffect(() => {
     localStorage.setItem(
       storageKey,
       JSON.stringify({
         remaining: timeLeft,
         targetTimestamp: targetTimestampRef.current,
-        isRunning,
+        status,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRunning, storageKey]);
+  }, [status, storageKey]);
 
   const formatTime = (seconds: number) => seconds.toString().padStart(2, "0");
   const displaySeconds = formatTime(timeLeft % 60);
@@ -111,7 +115,7 @@ export function useTimer({
   return {
     displayMinutes,
     displaySeconds,
-    isRunning,
+    status,
     start,
     pause,
     reset,
