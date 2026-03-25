@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-type UseTimerProps = {
+export type UseTimerProps = {
+  mode: "focus" | "break";
   duration: number;
   storageKey?: string;
 };
@@ -8,6 +9,7 @@ type UseTimerProps = {
 type TimerStatus = "idle" | "running" | "paused" | "finished";
 
 export function useTimer({
+  mode,
   duration,
   storageKey = "pomodoro-timer-state",
 }: UseTimerProps) {
@@ -103,10 +105,11 @@ export function useTimer({
         remaining: timeLeft,
         targetTimestamp: targetTimestampRef.current,
         status,
+        mode,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, storageKey]);
+  }, [status, storageKey, mode]);
 
   const formatTime = (seconds: number) => seconds.toString().padStart(2, "0");
   const displaySeconds = formatTime(timeLeft % 60);
