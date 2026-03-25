@@ -13,10 +13,7 @@ export const useAlarm = () => {
     a.pause();
     a.currentTime = 0;
     const p = a.play();
-    if (p && typeof p.catch === "function")
-      p.catch(() => {
-        /* ignore autoplay block */
-      });
+    if (p && typeof p.catch === "function") p.catch(() => {});
   }, []);
 
   const stop = useCallback(() => {
