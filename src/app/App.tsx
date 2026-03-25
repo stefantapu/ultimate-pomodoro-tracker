@@ -1,11 +1,21 @@
 import { useAlarm } from "@shared/hooks/useAlarm";
 import { useTimer } from "@shared/hooks/useTimer";
+import { useEffect } from "react";
 
 function App() {
   const { displayMinutes, displaySeconds, status, start, pause, reset } =
     useTimer({
-      duration: 62,
+      duration: 2,
     });
+  const { play, stop } = useAlarm();
+
+  useEffect(() => {
+    if (status === "finished") {
+      play();
+    } else if (status !== "running") {
+      stop();
+    }
+  }, [status, play, stop]);
   return (
     <>
       <div
@@ -18,7 +28,6 @@ function App() {
         <h1>
           {displayMinutes} : {displaySeconds}
         </h1>
-        {status === "finished" && useAlarm()}
         {status === "running" ? (
           <button onClick={pause}>pause</button>
         ) : (
