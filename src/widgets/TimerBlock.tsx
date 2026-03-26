@@ -36,9 +36,11 @@ export function TimerBlock() {
 
   const handleSelectFocusTime = (event: ChangeEvent<HTMLSelectElement>) => {
     setFocusTime(Number(event.target.value));
+    reset();
   };
   const handleSelectBreakTime = (event: ChangeEvent<HTMLSelectElement>) => {
     setBreakTime(Number(event.target.value));
+    reset();
   };
 
   useEffect(() => {

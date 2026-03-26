@@ -31,7 +31,9 @@ export function useTimer({
   });
   const [timeLeft, setTimeLeft] = useState(() => {
     const saved = localStorage.getItem(stateStorageKey);
-    if (!saved) return focusDuration;
+    if (!saved && mode === "focus") return focusDuration;
+    if (!saved && mode === "break") return breakDuration;
+    if (!saved) return 0;
 
     const { remaining, targetTimestamp, status } = JSON.parse(saved);
 
@@ -60,21 +62,22 @@ export function useTimer({
 
     if (remaining <= 0) {
       stopInterval();
-      setTimeLeft(focusDuration);
+      if (mode === "focus") setTimeLeft(focusDuration);
+      if (mode === "break") setTimeLeft(breakDuration);
       targetTimestampRef.current = null;
       setStatus("finished");
       return;
     }
 
     setTimeLeft(remaining);
-  }, [focusDuration, stopInterval]);
+  }, [breakDuration, focusDuration, mode, stopInterval]);
 
   const start = useCallback(() => {
     if (status === "running") return;
 
     targetTimestampRef.current = Date.now() + timeLeft * 1000;
-    setStatus("running");
     intervalRef.current = setInterval(tick, 1000);
+    setStatus("running");
   }, [status, timeLeft, tick]);
 
   const pause = useCallback(() => {
@@ -85,10 +88,11 @@ export function useTimer({
 
   const reset = useCallback(() => {
     setStatus("idle");
-    setTimeLeft(focusDuration);
+    if (mode === "focus") setTimeLeft(focusDuration);
+    if (mode === "break") setTimeLeft(breakDuration);
     targetTimestampRef.current = null;
     stopInterval();
-  }, [stopInterval, focusDuration]);
+  }, [mode, focusDuration, breakDuration, stopInterval]);
 
   useEffect(() => {
     if (status === "running") {
@@ -99,6 +103,15 @@ export function useTimer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (mode === "break") {
+      setTimeLeft(breakDuration);
+    }
+
+    if (mode === "focus") {
+      setTimeLeft(focusDuration);
+    }
+  }, [breakDuration, focusDuration, mode]);
   // sync
   useEffect(() => {
     localStorage.setItem(
