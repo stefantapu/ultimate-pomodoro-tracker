@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-export type UseTimerProps = {
+type UseTimerProps = {
   mode: "focus" | "break";
-  duration: number;
-  storageKey?: string;
+  focusDuration: number;
+  breakDuration: number;
+  stateStorageKey: string;
 };
 
 type TimerStatus = "idle" | "running" | "paused" | "finished";
 
 export function useTimer({
   mode,
-  duration,
-  storageKey = "pomodoro-timer-state",
+  focusDuration,
+  breakDuration,
+  stateStorageKey,
 }: UseTimerProps) {
   const [status, setStatus] = useState<TimerStatus>(() => {
-    const saved = localStorage.getItem(storageKey);
+    const saved = localStorage.getItem(stateStorageKey);
     if (!saved) return "idle";
 
     const parsed = JSON.parse(saved);
@@ -28,14 +30,14 @@ export function useTimer({
     return parsed?.status ?? "idle";
   });
   const [timeLeft, setTimeLeft] = useState(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (!saved) return duration;
+    const saved = localStorage.getItem(stateStorageKey);
+    if (!saved) return focusDuration;
 
     const { remaining, targetTimestamp, status } = JSON.parse(saved);
 
     if (status === "running" && targetTimestamp) {
       const actualRemaining = Math.round((targetTimestamp - Date.now()) / 1000); //calculating real time from the timestamp
-      return actualRemaining > 0 ? actualRemaining : duration;
+      return actualRemaining > 0 ? actualRemaining : focusDuration;
     }
     return remaining;
   });
@@ -58,14 +60,14 @@ export function useTimer({
 
     if (remaining <= 0) {
       stopInterval();
-      setTimeLeft(duration);
+      setTimeLeft(focusDuration);
       targetTimestampRef.current = null;
       setStatus("finished");
       return;
     }
 
     setTimeLeft(remaining);
-  }, [duration, stopInterval]);
+  }, [focusDuration, stopInterval]);
 
   const start = useCallback(() => {
     if (status === "running") return;
@@ -83,10 +85,10 @@ export function useTimer({
 
   const reset = useCallback(() => {
     setStatus("idle");
-    setTimeLeft(duration);
+    setTimeLeft(focusDuration);
     targetTimestampRef.current = null;
     stopInterval();
-  }, [duration, stopInterval]);
+  }, [stopInterval, focusDuration]);
 
   useEffect(() => {
     if (status === "running") {
@@ -100,7 +102,7 @@ export function useTimer({
   // sync
   useEffect(() => {
     localStorage.setItem(
-      storageKey,
+      stateStorageKey,
       JSON.stringify({
         remaining: timeLeft,
         targetTimestamp: targetTimestampRef.current,
@@ -109,7 +111,7 @@ export function useTimer({
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, storageKey, mode]);
+  }, [status, stateStorageKey, mode]);
 
   const formatTime = (seconds: number) => seconds.toString().padStart(2, "0");
   const displaySeconds = formatTime(timeLeft % 60);

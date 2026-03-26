@@ -3,23 +3,56 @@ import { useTimer } from "@shared/hooks/useTimer";
 import { useEffect, useState, type ChangeEvent } from "react";
 
 export function TimerBlock() {
+  const stateStorageKey = "pomodoro-timer-state";
+  const settingsStorageKey = "pomodoro-timer-settings";
+  const { play } = useAlarm();
+
   const [mode, setMode] = useState<"focus" | "break">("focus");
-  const [breakTime, setBreakTime] = useState<number>();
+
+  const [breakTime, setBreakTime] = useState<number>(() => {
+    const defaultDuration = 600;
+    const duration = localStorage.getItem(settingsStorageKey);
+    if (!duration) return defaultDuration;
+    const parsed = JSON.parse(duration);
+
+    return parsed.breakDuration;
+  });
+  const [focusTime, setFocusTime] = useState<number>(() => {
+    const defaultDuration = 600;
+    const duration = localStorage.getItem(settingsStorageKey);
+    if (!duration) return defaultDuration;
+    const parsed = JSON.parse(duration);
+
+    return parsed.focusDuration;
+  });
 
   const { displayMinutes, displaySeconds, status, start, pause, reset } =
     useTimer({
       mode: mode,
-      duration: 2,
+      focusDuration: focusTime,
+      breakDuration: breakTime,
+      stateStorageKey,
     });
 
-  const { play } = useAlarm();
-
+  const handleSelectFocusTime = (event: ChangeEvent<HTMLSelectElement>) => {
+    setFocusTime(Number(event.target.value));
+  };
   const handleSelectBreakTime = (event: ChangeEvent<HTMLSelectElement>) => {
     setBreakTime(Number(event.target.value));
   };
 
   useEffect(() => {
-    //handle finish
+    localStorage.setItem(
+      settingsStorageKey,
+      JSON.stringify({
+        focusDuration: focusTime,
+        breakDuration: breakTime,
+      }),
+    );
+  }, [focusTime, breakTime]);
+
+  //handle finish
+  useEffect(() => {
     if (status === "finished") {
       play();
       reset();
@@ -33,6 +66,7 @@ export function TimerBlock() {
           backgroundColor: status === "running" ? "green" : "black",
         }}
       >
+        {/* buttons */}
         <div>
           <button
             style={{ backgroundColor: mode === "focus" ? "green" : "" }}
@@ -47,7 +81,6 @@ export function TimerBlock() {
             Break
           </button>
         </div>
-
         <div>
           <h1>
             {displayMinutes} : {displaySeconds}
@@ -59,11 +92,16 @@ export function TimerBlock() {
           )}
           <button onClick={reset}>reset</button>
         </div>
-
+        {/* selectors */}
         <div>
           <label htmlFor="TimerRangesFocus">Focus</label>
 
-          <select name="TimerRangesFocus" id="TimerRangesFocus">
+          <select
+            name="TimerRangesFocus"
+            id="TimerRangesFocus"
+            value={focusTime}
+            onChange={handleSelectFocusTime}
+          >
             <option value="2">2 seconds</option>
             <option value="60">1 minute</option>
             <option value="600">10 mintes</option>
