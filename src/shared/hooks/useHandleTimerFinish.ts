@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 
-type TimerFinish = {
+type TimerFinishParams = {
   status: "idle" | "running" | "paused" | "finished";
   play: () => void;
   reset: () => void;
 };
 
-export const useHandleTimerFinish = ({ status, play, reset }: TimerFinish) => {
+export const useHandleTimerFinish = ({
+  status,
+  play,
+  reset,
+}: TimerFinishParams) => {
   useEffect(() => {
     if (status === "finished") {
       play();
