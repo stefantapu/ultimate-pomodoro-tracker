@@ -74,7 +74,6 @@ export function useTimer({
 
   const start = useCallback(() => {
     if (status === "running") return;
-
     targetTimestampRef.current = Date.now() + timeLeft * 1000;
     intervalRef.current = setInterval(tick, 1000);
     setStatus("running");

@@ -1,4 +1,5 @@
 import { useAlarm } from "@shared/hooks/useAlarm";
+import { useHandleTimerFinish } from "@shared/hooks/useHandleTimerFinish";
 import { useTimer } from "@shared/hooks/useTimer";
 import { useEffect, useState, type ChangeEvent } from "react";
 
@@ -53,13 +54,7 @@ export function TimerBlock() {
     );
   }, [focusTime, breakTime]);
 
-  //handle finish
-  useEffect(() => {
-    if (status === "finished") {
-      play();
-      reset();
-    }
-  }, [status, play, reset]);
+  useHandleTimerFinish({ status, play, reset });
 
   return (
     <>
@@ -72,13 +67,19 @@ export function TimerBlock() {
         <div>
           <button
             style={{ backgroundColor: mode === "focus" ? "green" : "" }}
-            onClick={() => setMode("focus")}
+            onClick={() => {
+              setMode("focus");
+              reset();
+            }}
           >
             Focus
           </button>
           <button
             style={{ backgroundColor: mode === "break" ? "green" : "" }}
-            onClick={() => setMode("break")}
+            onClick={() => {
+              setMode("break");
+              reset();
+            }}
           >
             Break
           </button>
