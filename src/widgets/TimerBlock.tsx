@@ -26,6 +26,20 @@ export function TimerBlock() {
 
     return parsed.focusDuration;
   });
+  const [autoBreak, setAutoBreak] = useState<boolean>(() => {
+    const defaultState = false;
+    const state = localStorage.getItem(settingsStorageKey);
+    if (!state) return defaultState;
+    const parsed = JSON.parse(state);
+    return parsed.autoBreak;
+  });
+  const [autoFocus, setAutoFocus] = useState<boolean>(() => {
+    const defaultState = false;
+    const state = localStorage.getItem(settingsStorageKey);
+    if (!state) return defaultState;
+    const parsed = JSON.parse(state);
+    return parsed.autoFocus;
+  });
 
   const { displayMinutes, displaySeconds, status, start, pause, reset } =
     useTimer({
@@ -45,14 +59,27 @@ export function TimerBlock() {
   };
 
   useEffect(() => {
+    if (status === "finished" && autoBreak === true && mode === "focus") {
+      setMode("break");
+      setTimeout(start, 1000);
+    }
+    if (status === "finished" && autoFocus === true && mode === "break") {
+      setMode("focus");
+      setTimeout(start, 1000);
+    }
+  }, [autoBreak, autoFocus, mode, start, status]);
+
+  useEffect(() => {
     localStorage.setItem(
       settingsStorageKey,
       JSON.stringify({
         focusDuration: focusTime,
         breakDuration: breakTime,
+        autoBreak,
+        autoFocus,
       }),
     );
-  }, [focusTime, breakTime]);
+  }, [focusTime, breakTime, autoBreak, autoFocus]);
 
   useHandleTimerFinish({ status, play, reset });
 
@@ -97,34 +124,59 @@ export function TimerBlock() {
         </div>
         {/* selectors */}
         <div>
-          <label htmlFor="TimerRangesFocus">Focus</label>
+          <div>
+            <label htmlFor="TimerRangesFocus">Focus</label>
 
-          <select
-            name="TimerRangesFocus"
-            id="TimerRangesFocus"
-            value={focusTime}
-            onChange={handleSelectFocusTime}
-          >
-            <option value="2">2 seconds</option>
-            <option value="60">1 minute</option>
-            <option value="600">10 mintes</option>
-            <option value="1500">25 minutes</option>
-          </select>
+            <select
+              name="TimerRangesFocus"
+              id="TimerRangesFocus"
+              value={focusTime}
+              onChange={handleSelectFocusTime}
+            >
+              <option value="2">2 seconds</option>
+              <option value="60">1 minute</option>
+              <option value="600">10 mintes</option>
+              <option value="1500">25 minutes</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="TimerRangesBreak">Break</label>
+
+            <select
+              name="TimerRangesBreak"
+              id="TimerRangesBreak"
+              value={breakTime}
+              onChange={handleSelectBreakTime}
+            >
+              <option value="2">2 seconds</option>
+              <option value="60">1 minute</option>
+              <option value="300">5 mintes</option>
+              <option value="600">10 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="auto-switch-checkbox-b">
+            Start break automaically
+          </label>
+          <input
+            type="checkbox"
+            id="auto-switch-checkbox-b"
+            checked={autoBreak}
+            onChange={() => setAutoBreak((prev) => !prev)}
+          />
         </div>
         <div>
-          <label htmlFor="TimerRangesBreak">Break</label>
-
-          <select
-            name="TimerRangesBreak"
-            id="TimerRangesBreak"
-            value={breakTime}
-            onChange={handleSelectBreakTime}
-          >
-            <option value="2">2 seconds</option>
-            <option value="60">1 minute</option>
-            <option value="300">5 mintes</option>
-            <option value="600">10 minutes</option>
-          </select>
+          <label htmlFor="auto-switch-checkbox-f">
+            Start focus automaically
+          </label>
+          <input
+            type="checkbox"
+            id="auto-switch-checkbox-f"
+            checked={autoFocus}
+            onChange={() => setAutoFocus((prev) => !prev)}
+          />
         </div>
       </div>
     </>
