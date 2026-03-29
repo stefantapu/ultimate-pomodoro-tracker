@@ -1,0 +1,151 @@
+import type {
+  Mode,
+  TimerSettings,
+  TimerState,
+  TimerStatus,
+} from "@shared/lib/timerTypes";
+
+type StoredTimerState = {
+  mode?: Mode;
+  status?: TimerStatus;
+  timeLeft?: number;
+  remaining?: number;
+  targetTimestamp?: number | null;
+};
+
+const DEFAULT_TIMER_SETTINGS: TimerSettings = {
+  focusDuration: 600,
+  breakDuration: 600,
+  autoBreak: false,
+  autoFocus: false,
+};
+
+function getModeDuration(mode: Mode, settings: TimerSettings) {
+  return mode === "focus" ? settings.focusDuration : settings.breakDuration;
+}
+
+function isMode(value: unknown): value is Mode {
+  return value === "focus" || value === "break";
+}
+
+function isTimerStatus(value: unknown): value is TimerStatus {
+  return value === "idle" || value === "running" || value === "paused";
+}
+
+export function readTimerSettings(
+  settingsStorageKey: string,
+): TimerSettings {
+  const raw = localStorage.getItem(settingsStorageKey);
+
+  if (!raw) {
+    return DEFAULT_TIMER_SETTINGS;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<TimerSettings>;
+
+    return {
+      focusDuration:
+        typeof parsed.focusDuration === "number"
+          ? parsed.focusDuration
+          : DEFAULT_TIMER_SETTINGS.focusDuration,
+      breakDuration:
+        typeof parsed.breakDuration === "number"
+          ? parsed.breakDuration
+          : DEFAULT_TIMER_SETTINGS.breakDuration,
+      autoBreak:
+        typeof parsed.autoBreak === "boolean"
+          ? parsed.autoBreak
+          : DEFAULT_TIMER_SETTINGS.autoBreak,
+      autoFocus:
+        typeof parsed.autoFocus === "boolean"
+          ? parsed.autoFocus
+          : DEFAULT_TIMER_SETTINGS.autoFocus,
+    };
+  } catch {
+    return DEFAULT_TIMER_SETTINGS;
+  }
+}
+
+export function writeTimerSettings(
+  settingsStorageKey: string,
+  settings: TimerSettings,
+) {
+  localStorage.setItem(settingsStorageKey, JSON.stringify(settings));
+}
+
+export function readTimerState(
+  stateStorageKey: string,
+  fallbackSettings: TimerSettings,
+): TimerState {
+  const raw = localStorage.getItem(stateStorageKey);
+  const defaultMode: Mode = "focus";
+
+  if (!raw) {
+    return {
+      mode: defaultMode,
+      status: "idle",
+      timeLeft: getModeDuration(defaultMode, fallbackSettings),
+      targetTimestamp: null,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as StoredTimerState;
+    const mode = isMode(parsed.mode) ? parsed.mode : defaultMode;
+    const duration = getModeDuration(mode, fallbackSettings);
+    const storedTimeLeft =
+      typeof parsed.timeLeft === "number"
+        ? parsed.timeLeft
+        : typeof parsed.remaining === "number"
+          ? parsed.remaining
+          : duration;
+    const status = isTimerStatus(parsed.status) ? parsed.status : "idle";
+    const targetTimestamp =
+      typeof parsed.targetTimestamp === "number" ? parsed.targetTimestamp : null;
+
+    if (status === "running" && targetTimestamp) {
+      const remaining = Math.max(
+        0,
+        Math.round((targetTimestamp - Date.now()) / 1000),
+      );
+
+      if (remaining <= 0) {
+        return {
+          mode,
+          status: "idle",
+          timeLeft: duration,
+          targetTimestamp: null,
+        };
+      }
+
+      return {
+        mode,
+        status,
+        timeLeft: remaining,
+        targetTimestamp,
+      };
+    }
+
+    return {
+      mode,
+      status,
+      timeLeft: storedTimeLeft,
+      targetTimestamp: null,
+    };
+  } catch {
+    return {
+      mode: defaultMode,
+      status: "idle",
+      timeLeft: getModeDuration(defaultMode, fallbackSettings),
+      targetTimestamp: null,
+    };
+  }
+}
+
+export function writeTimerState(
+  stateStorageKey: string,
+  timerState: TimerState,
+) {
+  localStorage.setItem(stateStorageKey, JSON.stringify(timerState));
+}
