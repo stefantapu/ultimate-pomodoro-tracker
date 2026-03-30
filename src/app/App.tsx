@@ -22,7 +22,7 @@ function App() {
     <>
       <Toaster position="bottom-right" theme="dark" />
       <TopBar />
-      
+
       {isAuthModalOpen && <AuthBlock />}
 
       <div
@@ -40,10 +40,10 @@ function App() {
             Log in to save your sessions and level up your dragon!
             <br />
             <button
-               onClick={() => setAuthModalOpen(true)}
-               style={{ background: "none", border: "none", color: "#a777e3", textDecoration: "underline", cursor: "pointer", marginTop: "0.5rem", fontSize: "inherit" }}
+              onClick={() => setAuthModalOpen(true)}
+              style={{ background: "none", border: "none", color: "#a777e3", textDecoration: "underline", cursor: "pointer", marginTop: "0.5rem", fontSize: "inherit" }}
             >
-               Join the Realm
+              Join the Realm
             </button>
           </div>
         )}

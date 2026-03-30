@@ -30,13 +30,10 @@ export const TopBar = () => {
       }}
     >
       <div style={{ fontWeight: "bold", fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <span role="img" aria-label="dragon">🐉</span>
-        <span style={{ 
-          background: "linear-gradient(135deg, #a777e3, #6e8efb)", 
-          WebkitBackgroundClip: "text", 
-          WebkitTextFillColor: "transparent" 
+        <img src="images/favicon_1.png" alt="Logo" style={{ width: "2rem", height: "2rem" }} />
+        <span style={{
         }}>
-          Dragon Focus
+          Focus
         </span>
       </div>
 
