@@ -10,6 +10,7 @@ export function timerReducer(
         ...state,
         status: "running",
         targetTimestamp: action.targetTimestamp,
+        sessionStartedAt: state.sessionStartedAt || new Date().toISOString(),
       };
     case "PAUSE":
       return {
@@ -23,6 +24,8 @@ export function timerReducer(
         status: "idle",
         timeLeft: action.duration,
         targetTimestamp: null,
+        sessionStartedAt: null,
+        accumulatedSeconds: 0,
       };
     case "SWITCH_MODE":
       return {
@@ -30,11 +33,14 @@ export function timerReducer(
         status: "idle",
         timeLeft: action.duration,
         targetTimestamp: null,
+        sessionStartedAt: null,
+        accumulatedSeconds: 0,
       };
     case "TICK":
       return {
         ...state,
         timeLeft: action.timeLeft,
+        accumulatedSeconds: state.accumulatedSeconds + 1,
       };
     case "FINISH": {
       if (
@@ -47,6 +53,8 @@ export function timerReducer(
           status: "running",
           timeLeft: action.nextDuration,
           targetTimestamp: action.nextTargetTimestamp,
+          sessionStartedAt: new Date().toISOString(),
+          accumulatedSeconds: 0,
         };
       }
 
@@ -55,6 +63,8 @@ export function timerReducer(
         status: "idle",
         timeLeft: action.nextDuration ?? state.timeLeft,
         targetTimestamp: null,
+        sessionStartedAt: null,
+        accumulatedSeconds: 0,
       };
     }
     default:
