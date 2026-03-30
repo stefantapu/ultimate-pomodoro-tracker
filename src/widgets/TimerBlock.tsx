@@ -1,10 +1,12 @@
 import { useAlarm } from "@shared/hooks/useAlarm";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
+import { useSettingsSync } from "@shared/hooks/useSettingsSync";
 import {
   readTimerSettings,
   writeTimerSettings,
 } from "@shared/lib/timerStorage";
-import { useEffect, useState, type ChangeEvent } from "react";
+import type { TimerSettings } from "@shared/lib/timerTypes";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 export function TimerBlock() {
   const stateStorageKey = "pomodoro-timer-state";
@@ -31,6 +33,19 @@ export function TimerBlock() {
     autoFocus,
   };
 
+  const hasLoadedFromServer = useRef(false);
+
+  // Hook handles Auth logic & pulling down cloud data on boot
+  const { pushSettingsToCloud } = useSettingsSync(settings, (cloudSettings: TimerSettings) => {
+    setFocusTime(cloudSettings.focusDuration);
+    setBreakTime(cloudSettings.breakDuration);
+    setAutoBreak(cloudSettings.autoBreak);
+    setAutoFocus(cloudSettings.autoFocus);
+    
+    // Safety flag to prevent loop mirroring to DB right after booting.
+    hasLoadedFromServer.current = true;
+  });
+
   const {
     mode,
     displayMinutes,
@@ -47,20 +62,30 @@ export function TimerBlock() {
   });
 
   const handleSelectFocusTime = (event: ChangeEvent<HTMLSelectElement>) => {
+    hasLoadedFromServer.current = true; // Manual interaction unlocks push
     setFocusTime(Number(event.target.value));
   };
   const handleSelectBreakTime = (event: ChangeEvent<HTMLSelectElement>) => {
+    hasLoadedFromServer.current = true;
     setBreakTime(Number(event.target.value));
   };
 
   useEffect(() => {
-    writeTimerSettings(settingsStorageKey, {
+    const updatedSettings = {
       focusDuration: focusTime,
       breakDuration: breakTime,
       autoBreak,
       autoFocus,
-    });
-  }, [settingsStorageKey, focusTime, breakTime, autoBreak, autoFocus]);
+    };
+    
+    // Always map out to local settings for immediate offline backup
+    writeTimerSettings(settingsStorageKey, updatedSettings);
+
+    // Only update Supabase if this wasn't an automatic download update.
+    if (hasLoadedFromServer.current) {
+        pushSettingsToCloud(updatedSettings);
+    }
+  }, [settingsStorageKey, focusTime, breakTime, autoBreak, autoFocus, pushSettingsToCloud]);
 
   return (
     <>
