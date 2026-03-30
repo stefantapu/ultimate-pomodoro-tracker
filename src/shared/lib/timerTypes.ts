@@ -7,6 +7,8 @@ export type TimerState = {
   status: TimerStatus;
   timeLeft: number;
   targetTimestamp: number | null;
+  sessionStartedAt: string | null;
+  accumulatedSeconds: number;
 };
 
 export type TimerSettings = {

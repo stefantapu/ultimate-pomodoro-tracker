@@ -11,6 +11,8 @@ type StoredTimerState = {
   timeLeft?: number;
   remaining?: number;
   targetTimestamp?: number | null;
+  sessionStartedAt?: string | null;
+  accumulatedSeconds?: number;
 };
 
 const DEFAULT_TIMER_SETTINGS: TimerSettings = {
@@ -87,6 +89,8 @@ export function readTimerState(
       status: "idle",
       timeLeft: getModeDuration(defaultMode, fallbackSettings),
       targetTimestamp: null,
+      sessionStartedAt: null,
+      accumulatedSeconds: 0,
     };
   }
 
@@ -103,6 +107,10 @@ export function readTimerState(
     const status = isTimerStatus(parsed.status) ? parsed.status : "idle";
     const targetTimestamp =
       typeof parsed.targetTimestamp === "number" ? parsed.targetTimestamp : null;
+    const sessionStartedAt =
+      typeof parsed.sessionStartedAt === "string" ? parsed.sessionStartedAt : null;
+    const accumulatedSeconds =
+      typeof parsed.accumulatedSeconds === "number" ? parsed.accumulatedSeconds : 0;
 
     if (status === "running" && targetTimestamp) {
       const remaining = Math.max(
@@ -116,6 +124,8 @@ export function readTimerState(
           status: "idle",
           timeLeft: duration,
           targetTimestamp: null,
+          sessionStartedAt,
+          accumulatedSeconds,
         };
       }
 
@@ -124,6 +134,8 @@ export function readTimerState(
         status,
         timeLeft: remaining,
         targetTimestamp,
+        sessionStartedAt,
+        accumulatedSeconds,
       };
     }
 
@@ -132,6 +144,8 @@ export function readTimerState(
       status,
       timeLeft: storedTimeLeft,
       targetTimestamp: null,
+      sessionStartedAt,
+      accumulatedSeconds,
     };
   } catch {
     return {
@@ -139,6 +153,8 @@ export function readTimerState(
       status: "idle",
       timeLeft: getModeDuration(defaultMode, fallbackSettings),
       targetTimestamp: null,
+      sessionStartedAt: null,
+      accumulatedSeconds: 0,
     };
   }
 }

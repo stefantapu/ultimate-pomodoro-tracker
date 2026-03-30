@@ -9,6 +9,7 @@ import type {
   TimerState,
 } from "@shared/lib/timerTypes";
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useSyncSession } from "./useSyncSession";
 
 type UsePomodoroTimerParams = {
   settings: TimerSettings;
@@ -36,10 +37,34 @@ export function usePomodoroTimer({
     focusDuration: settings.focusDuration,
     breakDuration: settings.breakDuration,
   });
+  const { syncSession } = useSyncSession();
 
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  const checkAndSyncSession = useCallback(
+    (status: "completed" | "interrupted") => {
+      const currentState = stateRef.current;
+      const duration =
+        currentState.mode === "focus" ? focusDuration : breakDuration;
+
+      if (
+        currentState.sessionStartedAt &&
+        currentState.accumulatedSeconds >= 10
+      ) {
+        syncSession({
+          mode: currentState.mode,
+          status,
+          duration_seconds: duration,
+          accumulated_seconds: currentState.accumulatedSeconds,
+          started_at: currentState.sessionStartedAt,
+          finished_at: new Date().toISOString(),
+        });
+      }
+    },
+    [breakDuration, focusDuration, syncSession],
+  );
 
   const handleSessionFinish = useCallback(() => {
     const currentState = stateRef.current;
@@ -52,6 +77,7 @@ export function usePomodoroTimer({
           : null;
 
     onSessionComplete?.();
+    checkAndSyncSession("completed");
 
     if (nextMode) {
       const nextDuration =
@@ -73,7 +99,7 @@ export function usePomodoroTimer({
       nextDuration:
         completedMode === "focus" ? focusDuration : breakDuration,
     });
-  }, [autoBreak, autoFocus, breakDuration, focusDuration, onSessionComplete]);
+  }, [autoBreak, autoFocus, breakDuration, focusDuration, onSessionComplete, checkAndSyncSession]);
 
   const start = useCallback(() => {
     const currentState = stateRef.current;
@@ -94,23 +120,26 @@ export function usePomodoroTimer({
 
   const reset = useCallback(() => {
     const currentState = stateRef.current;
+    
+    checkAndSyncSession("interrupted");
 
     dispatch({
       type: "RESET",
       duration:
         currentState.mode === "focus" ? focusDuration : breakDuration,
     });
-  }, [breakDuration, focusDuration]);
+  }, [breakDuration, focusDuration, checkAndSyncSession]);
 
   const switchMode = useCallback(
     (mode: Mode) => {
+      checkAndSyncSession("interrupted");
       dispatch({
         type: "SWITCH_MODE",
         mode,
         duration: mode === "focus" ? focusDuration : breakDuration,
       });
     },
-    [breakDuration, focusDuration],
+    [breakDuration, focusDuration, checkAndSyncSession],
   );
 
   useEffect(() => {
@@ -170,12 +199,14 @@ export function usePomodoroTimer({
       return;
     }
 
+    checkAndSyncSession("interrupted");
+
     dispatch({
       type: "RESET",
       duration:
         currentState.mode === "focus" ? focusDuration : breakDuration,
     });
-  }, [breakDuration, focusDuration]);
+  }, [breakDuration, focusDuration, checkAndSyncSession]);
 
   const displayMinutes = useMemo(
     () => formatTime(Math.floor(state.timeLeft / 60)),
