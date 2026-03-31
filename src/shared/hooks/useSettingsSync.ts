@@ -9,11 +9,12 @@ export function useSettingsSync(
   onSettingsFetched: (settings: TimerSettings) => void
 ) {
   const { user } = useAuth();
+  const userId = user?.id;
   const debounceTimerRef = useRef<number | null>(null);
   const loadingRef = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
     let isMounted = true;
     loadingRef.current = true;
@@ -22,7 +23,7 @@ export function useSettingsSync(
       const { data, error } = await supabase
         .from("profiles")
         .select("focus_duration, break_duration, auto_break, auto_focus")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
 
       if (error) {
@@ -61,10 +62,10 @@ export function useSettingsSync(
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [userId]); // Depend on userId string, not user object
 
   const pushSettingsToCloud = useCallback((settings: TimerSettings, silent = false) => {
-    if (!user || loadingRef.current) return;
+    if (!userId || loadingRef.current) return;
 
     if (debounceTimerRef.current) {
       window.clearTimeout(debounceTimerRef.current);
@@ -79,7 +80,7 @@ export function useSettingsSync(
           auto_break: settings.autoBreak,
           auto_focus: settings.autoFocus,
         })
-        .eq("id", user.id);
+        .eq("id", userId);
 
       if (error) {
         console.error("Cloud sync conflict:", error);
@@ -94,7 +95,7 @@ export function useSettingsSync(
         });
       }
     }, 1000);
-  }, [user]);
+  }, [userId]); // Depend on userId string
 
   return { pushSettingsToCloud };
 }
