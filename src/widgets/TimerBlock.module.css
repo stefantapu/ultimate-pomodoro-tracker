@@ -1,0 +1,191 @@
+.card {
+  display: grid;
+  gap: 1.5rem;
+  min-height: 100%;
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.statusRunning {
+  box-shadow:
+    var(--shadow-glow),
+    0 0 38px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  color: var(--text-primary);
+}
+
+.modePill {
+  align-self: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-glow);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+}
+
+.modeToggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.button {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+}
+
+.buttonPrimary {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 40%, transparent), color-mix(in srgb, var(--accent-strong) 48%, transparent)),
+    var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-glow);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.timerFace {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-glow) 75%, transparent);
+}
+
+.timeValue {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6rem);
+  line-height: 1;
+  color: var(--text-primary);
+  text-shadow:
+    0 0 14px color-mix(in srgb, var(--accent-color) 35%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent-strong) 20%, transparent);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+
+.toggleGroup {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-glow) 45%, transparent);
+}
+
+.toggleText {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.checkbox {
+  inline-size: 1.1rem;
+  block-size: 1.1rem;
+  accent-color: var(--accent-color);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.15rem;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .modeToggle,
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions .button {
+    flex: 1 1 0;
+  }
+}

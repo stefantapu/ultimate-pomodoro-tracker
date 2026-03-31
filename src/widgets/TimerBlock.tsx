@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useAlarm } from "@shared/hooks/useAlarm";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
@@ -6,8 +7,8 @@ import {
   writeTimerSettings,
 } from "@shared/lib/timerStorage";
 import type { TimerSettings } from "@shared/lib/timerTypes";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useUIStore } from "@shared/stores/uiStore";
+import styles from "./TimerBlock.module.css";
 
 export function TimerBlock() {
   const stateStorageKey = "pomodoro-timer-state";
@@ -36,16 +37,16 @@ export function TimerBlock() {
 
   const hasLoadedFromServer = useRef(false);
 
-  // Hook handles Auth logic & pulling down cloud data on boot
-  const { pushSettingsToCloud } = useSettingsSync(settings, (cloudSettings: TimerSettings) => {
-    setFocusTime(cloudSettings.focusDuration);
-    setBreakTime(cloudSettings.breakDuration);
-    setAutoBreak(cloudSettings.autoBreak);
-    setAutoFocus(cloudSettings.autoFocus);
-    
-    // Safety flag to prevent loop mirroring to DB right after booting.
-    hasLoadedFromServer.current = true;
-  });
+  const { pushSettingsToCloud } = useSettingsSync(
+    settings,
+    (cloudSettings: TimerSettings) => {
+      setFocusTime(cloudSettings.focusDuration);
+      setBreakTime(cloudSettings.breakDuration);
+      setAutoBreak(cloudSettings.autoBreak);
+      setAutoFocus(cloudSettings.autoFocus);
+      hasLoadedFromServer.current = true;
+    },
+  );
 
   const {
     mode,
@@ -64,15 +65,17 @@ export function TimerBlock() {
   });
 
   const handleSelectFocusTime = (event: ChangeEvent<HTMLSelectElement>) => {
-    hasLoadedFromServer.current = true; // Manual interaction unlocks push
+    hasLoadedFromServer.current = true;
     setFocusTime(Number(event.target.value));
   };
+
   const handleSelectBreakTime = (event: ChangeEvent<HTMLSelectElement>) => {
     hasLoadedFromServer.current = true;
     setBreakTime(Number(event.target.value));
   };
 
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
+
   useEffect(() => {
     if (resetTimerTrigger > 0) {
       hardReset();
@@ -86,106 +89,129 @@ export function TimerBlock() {
       autoBreak,
       autoFocus,
     };
-    
-    // Always map out to local settings for immediate offline backup
+
     writeTimerSettings(settingsStorageKey, updatedSettings);
 
-    // Only update Supabase if this wasn't an automatic download update.
     if (hasLoadedFromServer.current) {
-        pushSettingsToCloud(updatedSettings);
+      pushSettingsToCloud(updatedSettings);
     }
-  }, [settingsStorageKey, focusTime, breakTime, autoBreak, autoFocus, pushSettingsToCloud]);
+  }, [
+    settingsStorageKey,
+    focusTime,
+    breakTime,
+    autoBreak,
+    autoFocus,
+    pushSettingsToCloud,
+  ]);
+
+  const isRunning = status === "running";
 
   return (
-    <>
-      <div
-        style={{
-          backgroundColor: status === "running" ? "green" : "black",
-        }}
-      >
-        {/* buttons */}
+    <section
+      className={`${styles.card} ${isRunning ? styles.statusRunning : ""}`}
+    >
+      <div className={styles.header}>
         <div>
+          <h1 className={styles.title}>Timer</h1>
+        </div>
+      </div>
+
+      <div className={styles.modeToggle}>
+        <button
+          type="button"
+          className={`${styles.button} ${mode === "focus" ? styles.buttonPrimary : ""}`}
+          onClick={() => switchMode("focus")}
+        >
+          Focus Mode
+        </button>
+        <button
+          type="button"
+          className={`${styles.button} ${mode === "break" ? styles.buttonPrimary : ""}`}
+          onClick={() => switchMode("break")}
+        >
+          Break Mode
+        </button>
+      </div>
+
+      <div className={styles.timerFace}>
+        <h2 className={styles.timeValue}>
+          {displayMinutes} : {displaySeconds}
+        </h2>
+        <div className={styles.actions}>
           <button
-            style={{ backgroundColor: mode === "focus" ? "green" : "" }}
-            onClick={() => switchMode("focus")}
+            type="button"
+            className={`${styles.button} ${styles.buttonPrimary}`}
+            onClick={isRunning ? pause : start}
           >
-            Focus
+            {isRunning ? "Pause" : "Start"}
           </button>
-          <button
-            style={{ backgroundColor: mode === "break" ? "green" : "" }}
-            onClick={() => switchMode("break")}
-          >
-            Break
+          <button type="button" className={styles.button} onClick={reset}>
+            Reset
           </button>
         </div>
-        <div>
-          <h1>
-            {displayMinutes} : {displaySeconds}
-          </h1>
-          {status === "running" ? (
-            <button onClick={pause}>pause</button>
-          ) : (
-            <button onClick={start}>start</button>
-          )}
-          <button onClick={reset}>reset</button>
-        </div>
-        {/* selectors */}
-        <div>
-          <div>
-            <label htmlFor="TimerRangesFocus">Focus</label>
+      </div>
 
-            <select
-              name="TimerRangesFocus"
-              id="TimerRangesFocus"
-              value={focusTime}
-              onChange={handleSelectFocusTime}
-            >
-              <option value="2">2 seconds</option>
-              <option value="60">1 minute</option>
-              <option value="600">10 mintes</option>
-              <option value="1500">25 minutes</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="TimerRangesBreak">Break</label>
-
-            <select
-              name="TimerRangesBreak"
-              id="TimerRangesBreak"
-              value={breakTime}
-              onChange={handleSelectBreakTime}
-            >
-              <option value="2">2 seconds</option>
-              <option value="60">1 minute</option>
-              <option value="300">5 mintes</option>
-              <option value="600">10 minutes</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="auto-switch-checkbox-b">
-            Start break automaically
+      <div className={styles.settingsGrid}>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="TimerRangesFocus">
+            Focus Length
           </label>
+          <select
+            className={styles.select}
+            name="TimerRangesFocus"
+            id="TimerRangesFocus"
+            value={focusTime}
+            onChange={handleSelectFocusTime}
+          >
+            <option value="2">2 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="600">10 minutes</option>
+            <option value="1500">25 minutes</option>
+          </select>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="TimerRangesBreak">
+            Break Length
+          </label>
+          <select
+            className={styles.select}
+            name="TimerRangesBreak"
+            id="TimerRangesBreak"
+            value={breakTime}
+            onChange={handleSelectBreakTime}
+          >
+            <option value="2">2 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300">5 minutes</option>
+            <option value="600">10 minutes</option>
+          </select>
+        </div>
+      </div>
+
+      <div className={styles.toggleGroup}>
+        <label className={styles.toggleRow} htmlFor="auto-switch-checkbox-b">
+          <span className={styles.toggleText}>Start break automatically</span>
           <input
+            className={styles.checkbox}
             type="checkbox"
             id="auto-switch-checkbox-b"
             checked={autoBreak}
             onChange={() => setAutoBreak((prev) => !prev)}
           />
-        </div>
-        <div>
-          <label htmlFor="auto-switch-checkbox-f">
-            Start focus automaically
-          </label>
+        </label>
+
+        <label className={styles.toggleRow} htmlFor="auto-switch-checkbox-f">
+          <span className={styles.toggleText}>Start focus automatically</span>
           <input
+            className={styles.checkbox}
             type="checkbox"
             id="auto-switch-checkbox-f"
             checked={autoFocus}
             onChange={() => setAutoFocus((prev) => !prev)}
           />
-        </div>
+        </label>
       </div>
-    </>
+    </section>
   );
 }

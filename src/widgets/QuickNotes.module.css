@@ -1,0 +1,134 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-height: 240px;
+  padding-right: 0.25rem;
+}
+
+.empty {
+  margin: auto 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.note {
+  padding: 1rem;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-glow) 50%, transparent);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.textareaCompleted {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.noteActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+}
+
+.textButton {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.textButton:hover {
+  color: var(--accent-color);
+}
+
+.danger {
+  color: var(--danger-color);
+}
+
+.completed {
+  color: var(--accent-color);
+}
+
+.form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.input {
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid var(--border-glow);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  padding: 0.85rem 1rem;
+  outline: none;
+}
+
+.submit {
+  border: 1px solid var(--border-glow);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  min-width: 3rem;
+  cursor: pointer;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 34%, transparent), color-mix(in srgb, var(--accent-strong) 40%, transparent)),
+    var(--bg-input);
+  color: var(--text-primary);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.15rem;
+  }
+}
