@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/AuthProvider";
 import type { TimerSettings } from "../lib/timerTypes";
@@ -63,7 +63,7 @@ export function useSettingsSync(
     };
   }, [user]);
 
-  const pushSettingsToCloud = (settings: TimerSettings, silent = false) => {
+  const pushSettingsToCloud = useCallback((settings: TimerSettings, silent = false) => {
     if (!user || loadingRef.current) return;
 
     if (debounceTimerRef.current) {
@@ -94,7 +94,7 @@ export function useSettingsSync(
         });
       }
     }, 1000);
-  };
+  }, [user]);
 
   return { pushSettingsToCloud };
 }

@@ -20,7 +20,7 @@ export const TopBar = () => {
         background: "rgba(20, 20, 20, 0.4)",
         backdropFilter: "blur(10px)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-        position: "sticky",
+        position: "fixed",
         top: 0,
         left: 0,
         right: 0,

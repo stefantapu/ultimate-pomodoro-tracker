@@ -27,7 +27,7 @@ function App() {
 
       <div
         style={{
-          height: "100vh",
+          height: "auto",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
