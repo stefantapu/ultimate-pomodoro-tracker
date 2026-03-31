@@ -3,6 +3,7 @@ import { AuthBlock } from "../widgets/AuthBlock";
 import { TopBar } from "../widgets/TopBar";
 import { QuickNotes } from "../widgets/QuickNotes";
 import { StatsDashboard } from "../widgets/StatsDashboard";
+import { LockedOverlay } from "../widgets/LockedOverlay";
 import { useAuth } from "./providers/AuthProvider";
 import { useUIStore } from "../shared/stores/uiStore";
 import { Toaster } from "sonner";
@@ -10,7 +11,6 @@ import { Toaster } from "sonner";
 function App() {
   const { user, loading } = useAuth();
   const isAuthModalOpen = useUIStore((state) => state.isAuthModalOpen);
-  const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
 
   if (loading) {
     return (
@@ -37,34 +37,20 @@ function App() {
           paddingTop: "4rem",
         }}
       >
-        {!user && (
-          <div style={{ marginBottom: "1.5rem", color: "#aaa", fontSize: "0.9rem", textAlign: "center" }}>
-            Log in to save your sessions and level up your dragon!
-            <br />
-            <button
-              onClick={() => setAuthModalOpen(true)}
-              style={{ background: "none", border: "none", color: "#a777e3", textDecoration: "underline", cursor: "pointer", marginTop: "0.5rem", fontSize: "inherit" }}
-            >
-              Join the Realm
-            </button>
-          </div>
-        )}
-        <div style={{ display: "flex", gap: "2rem", flexDirection: "row", alignItems: "stretch", flexWrap: "wrap", justifyContent: "center", width: "100%", maxWidth: "1000px" }}>
+        <div style={{ display: "flex", gap: "2rem", flexDirection: "row", alignItems: "stretch", flexWrap: "wrap", justifyContent: "center", width: "100%", padding: "0 2rem" }}>
           <div>
             <TimerBlock />
           </div>
-          {user && (
-            <div>
-              <QuickNotes />
-            </div>
-          )}
-        </div>
-        
-        {user && (
-          <div style={{ maxWidth: "1000px", width: "100%", padding: "0" }}>
-            <StatsDashboard />
+          <div style={{ position: "relative", display: "flex" }}>
+            <QuickNotes />
+            {!user && <LockedOverlay />}
           </div>
-        )}
+        </div>
+
+        <div style={{ width: "100%", padding: "0 2rem", position: "relative" }}>
+          <StatsDashboard />
+          {!user && <LockedOverlay />}
+        </div>
       </div>
     </>
   );
