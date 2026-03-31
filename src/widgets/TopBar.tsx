@@ -5,8 +5,10 @@ import { supabase } from "../../utils/supabase";
 export const TopBar = () => {
   const { user, loading } = useAuth();
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
+  const triggerTimerReset = useUIStore((state) => state.triggerTimerReset);
 
   const handleLogout = async () => {
+    triggerTimerReset(); // Reset timer and sync final seconds
     await supabase.auth.signOut();
   };
 
@@ -41,9 +43,24 @@ export const TopBar = () => {
         {!loading && (
           user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <span style={{ fontSize: "0.875rem", opacity: 0.8 }}>
-                {user.email}
-              </span>
+              <div 
+                style={{ 
+                  width: "36px", 
+                  height: "36px", 
+                  borderRadius: "50%", 
+                  background: "linear-gradient(135deg, #a777e3, #6e8efb)", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  color: "white", 
+                  fontWeight: "bold", 
+                  fontSize: "1.1rem",
+                  boxShadow: "0 2px 8px rgba(167, 119, 227, 0.4)"
+                }}
+                title={user.email}
+              >
+                {user.email?.[0]?.toUpperCase() || "?"}
+              </div>
               <button
                 onClick={handleLogout}
                 style={{
@@ -59,7 +76,7 @@ export const TopBar = () => {
                 onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")}
               >
-                Retreat
+                Logout
               </button>
             </div>
           ) : (
@@ -80,7 +97,7 @@ export const TopBar = () => {
               onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
               onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
             >
-              Join Realm
+              Login
             </button>
           )
         )}

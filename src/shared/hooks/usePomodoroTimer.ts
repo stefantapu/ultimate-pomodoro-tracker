@@ -156,6 +156,17 @@ export function usePomodoroTimer({
     });
   }, [breakDuration, focusDuration, checkAndSyncSession, getFinalAccumulatedSeconds]);
 
+  const hardReset = useCallback(() => {
+    const currentState = stateRef.current;
+    
+    // Explicitly avoids checkAndSyncSession to prevent unauthorized errors during logout flow
+    dispatch({
+      type: "RESET",
+      duration:
+        currentState.mode === "focus" ? focusDuration : breakDuration,
+    });
+  }, [breakDuration, focusDuration]);
+
   const switchMode = useCallback(
     (mode: Mode) => {
       const currentState = stateRef.current;
@@ -265,6 +276,7 @@ export function usePomodoroTimer({
     start,
     pause,
     reset,
+    hardReset,
     switchMode,
   };
 }

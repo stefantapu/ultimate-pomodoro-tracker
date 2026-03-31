@@ -7,6 +7,7 @@ import {
 } from "@shared/lib/timerStorage";
 import type { TimerSettings } from "@shared/lib/timerTypes";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useUIStore } from "@shared/stores/uiStore";
 
 export function TimerBlock() {
   const stateStorageKey = "pomodoro-timer-state";
@@ -54,6 +55,7 @@ export function TimerBlock() {
     start,
     pause,
     reset,
+    hardReset,
     switchMode,
   } = usePomodoroTimer({
     settings,
@@ -69,6 +71,13 @@ export function TimerBlock() {
     hasLoadedFromServer.current = true;
     setBreakTime(Number(event.target.value));
   };
+
+  const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
+  useEffect(() => {
+    if (resetTimerTrigger > 0) {
+      hardReset();
+    }
+  }, [resetTimerTrigger, hardReset]);
 
   useEffect(() => {
     const updatedSettings = {
