@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/AuthProvider";
+import { useUIStore } from "../stores/uiStore";
 import type { Mode } from "../lib/timerTypes";
 
 export type SessionPayload = {
@@ -16,6 +17,7 @@ const SYNC_QUEUE_KEY = "pomodoro_sync_queue";
 
 export function useSyncSession() {
   const { user } = useAuth();
+  const refreshAnalytics = useUIStore((state) => state.refreshAnalytics);
 
   const getQueue = (): SessionPayload[] => {
     try {
@@ -43,6 +45,7 @@ export function useSyncSession() {
       if (!error) {
         // Clear queue on success sync
         saveQueue([]);
+        refreshAnalytics(); // Triggers global UI store to refresh stats
       } else {
         console.error("Failed to sync sessions:", error);
       }

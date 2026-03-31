@@ -12,12 +12,16 @@ export function timerReducer(
         targetTimestamp: action.targetTimestamp,
         sessionStartedAt: state.sessionStartedAt || new Date().toISOString(),
       };
-    case "PAUSE":
+    case "PAUSE": {
+      const newTimeLeft = action.timeLeft !== undefined ? action.timeLeft : state.timeLeft;
       return {
         ...state,
         status: "paused",
         targetTimestamp: null,
+        timeLeft: newTimeLeft,
+        accumulatedSeconds: state.accumulatedSeconds + Math.max(0, state.timeLeft - newTimeLeft),
       };
+    }
     case "RESET":
       return {
         mode: action.mode ?? state.mode,
@@ -40,7 +44,7 @@ export function timerReducer(
       return {
         ...state,
         timeLeft: action.timeLeft,
-        accumulatedSeconds: state.accumulatedSeconds + 1,
+        accumulatedSeconds: state.accumulatedSeconds + Math.max(0, state.timeLeft - action.timeLeft),
       };
     case "FINISH": {
       if (

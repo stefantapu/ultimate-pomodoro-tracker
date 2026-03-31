@@ -20,13 +20,13 @@ export type TimerSettings = {
 
 export type TimerAction =
   | { type: "START"; targetTimestamp: number }
-  | { type: "PAUSE" }
+  | { type: "PAUSE"; timeLeft?: number }
   | { type: "RESET"; mode?: Mode; duration: number }
   | { type: "SWITCH_MODE"; mode: Mode; duration: number }
   | { type: "TICK"; timeLeft: number }
   | {
-      type: "FINISH";
-      nextMode?: Mode;
-      nextDuration?: number;
-      nextTargetTimestamp?: number;
-    };
+    type: "FINISH";
+    nextMode?: Mode;
+    nextDuration?: number;
+    nextTargetTimestamp?: number;
+  };

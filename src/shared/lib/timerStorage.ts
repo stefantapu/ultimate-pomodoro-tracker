@@ -118,24 +118,13 @@ export function readTimerState(
         Math.round((targetTimestamp - Date.now()) / 1000),
       );
 
-      if (remaining <= 0) {
-        return {
-          mode,
-          status: "idle",
-          timeLeft: duration,
-          targetTimestamp: null,
-          sessionStartedAt,
-          accumulatedSeconds,
-        };
-      }
-
       return {
         mode,
         status,
         timeLeft: remaining,
         targetTimestamp,
         sessionStartedAt,
-        accumulatedSeconds,
+        accumulatedSeconds: accumulatedSeconds + Math.max(0, storedTimeLeft - remaining),
       };
     }
 
