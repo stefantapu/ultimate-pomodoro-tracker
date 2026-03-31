@@ -1,6 +1,8 @@
-import { TimerBlock } from "@widgets/TimerBlock";
+import { TimerBlock } from "../widgets/TimerBlock";
 import { AuthBlock } from "../widgets/AuthBlock";
 import { TopBar } from "../widgets/TopBar";
+import { QuickNotes } from "../widgets/QuickNotes";
+import { StatsDashboard } from "../widgets/StatsDashboard";
 import { useAuth } from "./providers/AuthProvider";
 import { useUIStore } from "../shared/stores/uiStore";
 import { Toaster } from "sonner";
@@ -47,7 +49,22 @@ function App() {
             </button>
           </div>
         )}
-        <TimerBlock />
+        <div style={{ display: "flex", gap: "2rem", flexDirection: "row", alignItems: "stretch", flexWrap: "wrap", justifyContent: "center", width: "100%", maxWidth: "1000px" }}>
+          <div>
+            <TimerBlock />
+          </div>
+          {user && (
+            <div>
+              <QuickNotes />
+            </div>
+          )}
+        </div>
+        
+        {user && (
+          <div style={{ maxWidth: "1000px", width: "100%", padding: "0" }}>
+            <StatsDashboard />
+          </div>
+        )}
       </div>
     </>
   );
