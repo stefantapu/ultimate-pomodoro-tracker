@@ -26,7 +26,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Map the function to a trigger on focus_sessions insertions
 DROP TRIGGER IF EXISTS on_focus_session_completed ON public.focus_sessions;
@@ -51,6 +51,8 @@ CREATE TABLE IF NOT EXISTS public.notes (
 
 -- RLS Policies for Notes
 ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can manage their own notes" ON public.notes;
 
 CREATE POLICY "Users can manage their own notes" 
     ON public.notes 
@@ -125,14 +127,21 @@ BEGIN
         v_current_streak := 0;
     END IF;
 
-    -- 5. Heatmap Data (Last 365 days)
+    -- 5. Heatmap Data (Last 365 days, including empty days)
     SELECT COALESCE(json_agg(
         json_build_object(
-            'date', to_char(session_day, 'YYYY-MM-DD'),
-            'value', total_seconds
-        )
+            'date', to_char(cal.calendar_date, 'YYYY-MM-DD'),
+            'value', COALESCE(heatmap.total_seconds, 0)
+        ) ORDER BY cal.calendar_date ASC
     ), '[]'::json) INTO v_heatmap_data
     FROM (
+        SELECT generate_series(
+            date_trunc('day', now() - interval '365 days')::date,
+            date_trunc('day', now())::date,
+            '1 day'::interval
+        )::date AS calendar_date
+    ) cal
+    LEFT JOIN (
         SELECT date_trunc('day', started_at)::date as session_day,
                SUM(accumulated_seconds) as total_seconds
         FROM public.focus_sessions
@@ -141,8 +150,7 @@ BEGIN
           AND status = 'completed'
           AND started_at >= now() - interval '365 days'
         GROUP BY 1
-        ORDER BY 1 ASC
-    ) heatmap;
+    ) heatmap ON cal.calendar_date = heatmap.session_day;
 
     -- Return JSON payload
     result := json_build_object(

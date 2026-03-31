@@ -4,13 +4,13 @@ import { useAnalytics } from "../shared/hooks/useAnalytics";
 export function StatsDashboard() {
   const { data, loading } = useAnalytics();
 
-  if (loading) {
-    return (
-      <div style={{ width: "100%", padding: "2rem", textAlign: "center", color: "#aaa", background: "rgba(255,255,255,0.02)", borderRadius: "12px", marginTop: "2rem" }}>
-        Loading Realm Stats...
-      </div>
-    );
-  }
+  // if (!data && loading) {
+  //   return (
+  //     <div style={{ width: "100%", padding: "2rem", textAlign: "center", color: "#aaa", background: "rgba(255,255,255,0.02)", borderRadius: "12px", marginTop: "2rem" }}>
+  //       Loading Realm Stats...
+  //     </div>
+  //   );
+  // }
 
   if (!data) return null;
 
@@ -63,7 +63,14 @@ export function StatsDashboard() {
       </div>
 
       <div>
-        <h4 style={{ color: "#fff", margin: "0 0 1rem 0" }}>Activity Heatmap</h4>
+        <h4 style={{ color: "#fff", margin: "0 0 1rem 0", display: "flex", alignItems: "center", gap: "12px" }}>
+          Activity Heatmap
+          {loading && (
+            <span style={{ fontSize: "0.8rem", color: "#a777e3", fontWeight: "normal", opacity: 0.8 }}>
+              ↻ Syncing...
+            </span>
+          )}
+        </h4>
         <div style={{ overflowX: "auto", padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "8px" }}>
           <ActivityCalendar
             data={calendarData}

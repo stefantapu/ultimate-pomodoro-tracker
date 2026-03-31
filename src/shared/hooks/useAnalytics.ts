@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/AuthProvider";
+import { useUIStore } from "../stores/uiStore";
 
 export type HeatmapData = {
   date: string;
@@ -17,6 +18,7 @@ export type AnalyticsData = {
 
 export function useAnalytics() {
   const { user } = useAuth();
+  const analyticsCounter = useUIStore((state) => state.analyticsCounter);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -45,7 +47,7 @@ export function useAnalytics() {
     if (user) {
       fetchAnalytics();
     }
-  }, [user, fetchAnalytics]);
+  }, [user, fetchAnalytics, analyticsCounter]);
 
   return { data, loading, error, fetchAnalytics };
 }
