@@ -1,4 +1,4 @@
-﻿import type { ComponentPropsWithoutRef } from "react";
+import { memo, type ComponentPropsWithoutRef } from "react";
 
 type ButtonVariant = "tab" | "action" | "square" | "auth";
 
@@ -11,7 +11,7 @@ function joinClassNames(...classNames: Array<string | false | undefined>) {
   return classNames.filter(Boolean).join(" ");
 }
 
-export function ThemedButton({
+export const ThemedButton = memo(function ThemedButton({
   variant = "action",
   active = false,
   className,
@@ -30,5 +30,4 @@ export function ThemedButton({
       {...props}
     />
   );
-}
-
+});

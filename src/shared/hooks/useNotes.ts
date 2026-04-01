@@ -33,9 +33,8 @@ export function useNotes() {
     fetchNotes();
   }, [fetchNotes]);
 
-  const addNote = async (content: string) => {
+  const addNote = useCallback(async (content: string) => {
     if (!user || !content.trim()) return;
-    // Optimistic UI could go here, but doing standard wait.
     const { data, error } = await supabase
       .from("notes")
       .insert([{ user_id: user.id, content }])
@@ -44,21 +43,19 @@ export function useNotes() {
     if (!error && data) {
       setNotes((prev) => [data, ...prev]);
     }
-  };
+  }, [user]);
 
-  const updateNote = async (id: string, updates: Partial<Note>) => {
-    // Optimistically update
+  const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
     setNotes((prev) =>
       prev.map((n) => (n.id === id ? { ...n, ...updates } : n))
     );
     await supabase.from("notes").update(updates).eq("id", id);
-  };
+  }, []);
 
-  const deleteNote = async (id: string) => {
-    // Optimistically update
+  const deleteNote = useCallback(async (id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
     await supabase.from("notes").delete().eq("id", id);
-  };
+  }, []);
 
   return { notes, loading, addNote, updateNote, deleteNote, fetchNotes };
 }

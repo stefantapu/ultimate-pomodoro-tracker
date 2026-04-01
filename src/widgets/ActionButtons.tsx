@@ -1,4 +1,5 @@
-﻿import type { TimerStatus } from "@shared/lib/timerTypes";
+import type { TimerStatus } from "@shared/lib/timerTypes";
+import { memo } from "react";
 import { ThemedButton } from "./ThemedButton";
 
 type ActionButtonsProps = {
@@ -13,7 +14,7 @@ type ActionButtonsProps = {
   onToggleSound: () => void;
 };
 
-export function ActionButtons({
+export const ActionButtons = memo(function ActionButtons({
   status,
   autoFocus,
   autoBreak,
@@ -60,5 +61,4 @@ export function ActionButtons({
       </ThemedButton>
     </div>
   );
-}
-
+});

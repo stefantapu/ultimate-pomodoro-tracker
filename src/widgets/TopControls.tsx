@@ -1,4 +1,5 @@
-﻿import type { Mode } from "@shared/lib/timerTypes";
+import type { Mode } from "@shared/lib/timerTypes";
+import { memo } from "react";
 import { ThemedButton } from "./ThemedButton";
 
 type TopControlsProps = {
@@ -17,7 +18,7 @@ function formatDuration(seconds: number) {
   return `${minutes}:${remainder}`;
 }
 
-export function TopControls({
+export const TopControls = memo(function TopControls({
   mode,
   focusDuration,
   breakDuration,
@@ -55,5 +56,4 @@ export function TopControls({
       </ThemedButton>
     </div>
   );
-}
-
+});

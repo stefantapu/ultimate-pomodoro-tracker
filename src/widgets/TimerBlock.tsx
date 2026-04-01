@@ -3,8 +3,8 @@ import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
 import { readTimerSettings, writeTimerSettings } from "@shared/lib/timerStorage";
 import type { TimerSettings } from "@shared/lib/timerTypes";
-import { useEffect, useRef, useState } from "react";
 import { useUIStore } from "@shared/stores/uiStore";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButtons } from "./ActionButtons";
 import { TimerCard } from "./TimerCard";
 import { TopControls } from "./TopControls";
@@ -29,12 +29,15 @@ export function TimerBlock() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const hasLoadedFromServer = useRef(false);
 
-  const settings: TimerSettings = {
-    focusDuration: focusTime,
-    breakDuration: breakTime,
-    autoBreak,
-    autoFocus,
-  };
+  const settings = useMemo<TimerSettings>(
+    () => ({
+      focusDuration: focusTime,
+      breakDuration: breakTime,
+      autoBreak,
+      autoFocus,
+    }),
+    [autoBreak, autoFocus, breakTime, focusTime],
+  );
 
   const { pushSettingsToCloud } = useSettingsSync(
     settings,
@@ -64,6 +67,20 @@ export function TimerBlock() {
   });
 
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
+
+  const handleToggleAutoFocus = useCallback(() => {
+    hasLoadedFromServer.current = true;
+    setAutoFocus((previous) => !previous);
+  }, []);
+
+  const handleToggleAutoBreak = useCallback(() => {
+    hasLoadedFromServer.current = true;
+    setAutoBreak((previous) => !previous);
+  }, []);
+
+  const handleToggleSound = useCallback(() => {
+    setSoundEnabled((previous) => !previous);
+  }, []);
 
   useEffect(() => {
     if (resetTimerTrigger > 0) {
@@ -106,15 +123,9 @@ export function TimerBlock() {
         soundEnabled={soundEnabled}
         onPrimaryAction={status === "running" ? pause : start}
         onReset={reset}
-        onToggleAutoFocus={() => {
-          hasLoadedFromServer.current = true;
-          setAutoFocus((previous) => !previous);
-        }}
-        onToggleAutoBreak={() => {
-          hasLoadedFromServer.current = true;
-          setAutoBreak((previous) => !previous);
-        }}
-        onToggleSound={() => setSoundEnabled((previous) => !previous)}
+        onToggleAutoFocus={handleToggleAutoFocus}
+        onToggleAutoBreak={handleToggleAutoBreak}
+        onToggleSound={handleToggleSound}
       />
     </div>
   );

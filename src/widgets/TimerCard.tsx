@@ -1,4 +1,5 @@
-﻿import type { Mode, TimerStatus } from "@shared/lib/timerTypes";
+import type { Mode, TimerStatus } from "@shared/lib/timerTypes";
+import { memo } from "react";
 import { PanelShell } from "./PanelShell";
 
 type TimerCardProps = {
@@ -7,7 +8,11 @@ type TimerCardProps = {
   timeLabel: string;
 };
 
-export function TimerCard({ mode, status, timeLabel }: TimerCardProps) {
+export const TimerCard = memo(function TimerCard({
+  mode,
+  status,
+  timeLabel,
+}: TimerCardProps) {
   return (
     <PanelShell className="timer-card">
       <div className="timer-card__meta">
@@ -18,5 +23,4 @@ export function TimerCard({ mode, status, timeLabel }: TimerCardProps) {
       <div className="timer-card__time">{timeLabel}</div>
     </PanelShell>
   );
-}
-
+});

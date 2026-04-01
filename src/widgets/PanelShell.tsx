@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 type PanelShellProps = {
   title?: string;
@@ -11,7 +11,7 @@ function joinClassNames(...classNames: Array<string | undefined>) {
   return classNames.filter(Boolean).join(" ");
 }
 
-export function PanelShell({
+export const PanelShell = memo(function PanelShell({
   title,
   children,
   className,
@@ -25,5 +25,4 @@ export function PanelShell({
       </div>
     </section>
   );
-}
-
+});
