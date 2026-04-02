@@ -1,7 +1,10 @@
 ﻿import { useAlarm } from "@shared/hooks/useAlarm";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
-import { readTimerSettings, writeTimerSettings } from "@shared/lib/timerStorage";
+import {
+  readTimerSettings,
+  writeTimerSettings,
+} from "@shared/lib/timerStorage";
 import type { Mode, TimerSettings } from "@shared/lib/timerTypes";
 import { useUIStore } from "@shared/stores/uiStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -42,8 +45,10 @@ function parseValidMinutes(value: string) {
 
 export function TimerBlock() {
   const { play } = useAlarm();
-  const initialSettingsRef = useRef(readTimerSettings(SETTINGS_STORAGE_KEY));
-  const initialSettings = initialSettingsRef.current;
+  const initialSettings = useMemo(
+    () => readTimerSettings(SETTINGS_STORAGE_KEY),
+    [],
+  );
   const [breakDurationSeconds, setBreakDurationSeconds] = useState<number>(
     () => initialSettings.breakDuration,
   );
@@ -56,11 +61,11 @@ export function TimerBlock() {
   const [breakLastValidMinutes, setBreakLastValidMinutes] = useState<number>(
     () => secondsToMinutes(initialSettings.breakDuration),
   );
-  const [focusDraftMinutes, setFocusDraftMinutes] = useState<string>(
-    () => secondsToMinutes(initialSettings.focusDuration).toString(),
+  const [focusDraftMinutes, setFocusDraftMinutes] = useState<string>(() =>
+    secondsToMinutes(initialSettings.focusDuration).toString(),
   );
-  const [breakDraftMinutes, setBreakDraftMinutes] = useState<string>(
-    () => secondsToMinutes(initialSettings.breakDuration).toString(),
+  const [breakDraftMinutes, setBreakDraftMinutes] = useState<string>(() =>
+    secondsToMinutes(initialSettings.breakDuration).toString(),
   );
   const [activeEditedField, setActiveEditedField] = useState<Mode | null>(null);
   const [autoBreak, setAutoBreak] = useState<boolean>(
@@ -135,28 +140,39 @@ export function TimerBlock() {
     setSoundEnabled((previous) => !previous);
   }, []);
 
-  const restoreFieldDraftToLastValid = useCallback((field: Mode) => {
-    if (field === "focus") {
-      setFocusDraftMinutes(focusLastValidMinutes.toString());
-      return;
-    }
+  const restoreFieldDraftToLastValid = useCallback(
+    (field: Mode) => {
+      if (field === "focus") {
+        setFocusDraftMinutes(focusLastValidMinutes.toString());
+        return;
+      }
 
-    setBreakDraftMinutes(breakLastValidMinutes.toString());
-  }, [breakLastValidMinutes, focusLastValidMinutes]);
-
-  const handleStartEditField = useCallback((field: Mode) => {
-    if (activeEditedField && activeEditedField !== field) {
-      restoreFieldDraftToLastValid(activeEditedField);
-    }
-
-    if (field === "focus") {
-      setFocusDraftMinutes(focusLastValidMinutes.toString());
-    } else {
       setBreakDraftMinutes(breakLastValidMinutes.toString());
-    }
+    },
+    [breakLastValidMinutes, focusLastValidMinutes],
+  );
 
-    setActiveEditedField(field);
-  }, [activeEditedField, breakLastValidMinutes, focusLastValidMinutes, restoreFieldDraftToLastValid]);
+  const handleStartEditField = useCallback(
+    (field: Mode) => {
+      if (activeEditedField && activeEditedField !== field) {
+        restoreFieldDraftToLastValid(activeEditedField);
+      }
+
+      if (field === "focus") {
+        setFocusDraftMinutes(focusLastValidMinutes.toString());
+      } else {
+        setBreakDraftMinutes(breakLastValidMinutes.toString());
+      }
+
+      setActiveEditedField(field);
+    },
+    [
+      activeEditedField,
+      breakLastValidMinutes,
+      focusLastValidMinutes,
+      restoreFieldDraftToLastValid,
+    ],
+  );
 
   const handleDraftChange = useCallback((field: Mode, nextDraft: string) => {
     if (field === "focus") {
@@ -167,64 +183,71 @@ export function TimerBlock() {
     setBreakDraftMinutes(nextDraft);
   }, []);
 
-  const handleCancelEdit = useCallback((field: Mode) => {
-    restoreFieldDraftToLastValid(field);
+  const handleCancelEdit = useCallback(
+    (field: Mode) => {
+      restoreFieldDraftToLastValid(field);
 
-    if (activeEditedField === field) {
-      setActiveEditedField(null);
-    }
-  }, [activeEditedField, restoreFieldDraftToLastValid]);
+      if (activeEditedField === field) {
+        setActiveEditedField(null);
+      }
+    },
+    [activeEditedField, restoreFieldDraftToLastValid],
+  );
 
-  const handleApplyDuration = useCallback((field: Mode) => {
-    if (activeEditedField !== field) {
-      return;
-    }
+  const handleApplyDuration = useCallback(
+    (field: Mode) => {
+      if (activeEditedField !== field) {
+        return;
+      }
 
-    const draftMinutes = field === "focus" ? focusDraftMinutes : breakDraftMinutes;
-    const parsedMinutes = parseValidMinutes(draftMinutes);
+      const draftMinutes =
+        field === "focus" ? focusDraftMinutes : breakDraftMinutes;
+      const parsedMinutes = parseValidMinutes(draftMinutes);
 
-    if (parsedMinutes === null) {
-      handleCancelEdit(field);
-      return;
-    }
+      if (parsedMinutes === null) {
+        handleCancelEdit(field);
+        return;
+      }
 
-    const nextDurationSeconds = minutesToSeconds(parsedMinutes);
-    const currentDurationSeconds =
-      field === "focus" ? focusDurationSeconds : breakDurationSeconds;
+      const nextDurationSeconds = minutesToSeconds(parsedMinutes);
+      const currentDurationSeconds =
+        field === "focus" ? focusDurationSeconds : breakDurationSeconds;
 
-    if (nextDurationSeconds === currentDurationSeconds) {
+      if (nextDurationSeconds === currentDurationSeconds) {
+        if (field === "focus") {
+          setFocusDraftMinutes(parsedMinutes.toString());
+        } else {
+          setBreakDraftMinutes(parsedMinutes.toString());
+        }
+
+        setActiveEditedField(null);
+        return;
+      }
+
+      hasLoadedFromServer.current = true;
+
       if (field === "focus") {
+        setFocusDurationSeconds(nextDurationSeconds);
+        setFocusLastValidMinutes(parsedMinutes);
         setFocusDraftMinutes(parsedMinutes.toString());
       } else {
+        setBreakDurationSeconds(nextDurationSeconds);
+        setBreakLastValidMinutes(parsedMinutes);
         setBreakDraftMinutes(parsedMinutes.toString());
       }
 
       setActiveEditedField(null);
-      return;
-    }
-
-    hasLoadedFromServer.current = true;
-
-    if (field === "focus") {
-      setFocusDurationSeconds(nextDurationSeconds);
-      setFocusLastValidMinutes(parsedMinutes);
-      setFocusDraftMinutes(parsedMinutes.toString());
-    } else {
-      setBreakDurationSeconds(nextDurationSeconds);
-      setBreakLastValidMinutes(parsedMinutes);
-      setBreakDraftMinutes(parsedMinutes.toString());
-    }
-
-    setActiveEditedField(null);
-    setPendingDurationResetCount((previous) => previous + 1);
-  }, [
-    activeEditedField,
-    breakDraftMinutes,
-    breakDurationSeconds,
-    focusDraftMinutes,
-    focusDurationSeconds,
-    handleCancelEdit,
-  ]);
+      setPendingDurationResetCount((previous) => previous + 1);
+    },
+    [
+      activeEditedField,
+      breakDraftMinutes,
+      breakDurationSeconds,
+      focusDraftMinutes,
+      focusDurationSeconds,
+      handleCancelEdit,
+    ],
+  );
 
   useEffect(() => {
     if (resetTimerTrigger > 0) {
@@ -257,7 +280,13 @@ export function TimerBlock() {
     if (hasLoadedFromServer.current) {
       pushSettingsToCloud(updatedSettings);
     }
-  }, [autoBreak, autoFocus, breakDurationSeconds, focusDurationSeconds, pushSettingsToCloud]);
+  }, [
+    autoBreak,
+    autoFocus,
+    breakDurationSeconds,
+    focusDurationSeconds,
+    pushSettingsToCloud,
+  ]);
 
   return (
     <div className="timer-block">
@@ -294,4 +323,3 @@ export function TimerBlock() {
     </div>
   );
 }
-

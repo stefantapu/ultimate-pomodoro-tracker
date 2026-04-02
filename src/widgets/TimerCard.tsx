@@ -59,18 +59,12 @@ const TimerCardTime = memo(function TimerCardTime({
 });
 
 export const TimerCard = memo(function TimerCard({
-  mode,
   status,
   timeLeft,
   targetTimestamp,
 }: TimerCardProps) {
   return (
     <PanelShell className="timer-card">
-      <div className="timer-card__meta">
-        <span>{mode}</span>
-        <span>{status}</span>
-      </div>
-      <div className="timer-card__label">TIMER</div>
       <TimerCardTime
         status={status}
         timeLeft={timeLeft}
