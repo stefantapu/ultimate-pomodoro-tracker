@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "RedLavaTimer";
+  src: url("/assets/red_lava_theme/Fonts/timer%20numbres%20font/almendra.regular.ttf")
+    format("truetype");
+  font-display: swap;
+}
+
 .dashboard-shell {
   --dashboard-bg: #d9d9d9;
   --dashboard-panel: #232323;
@@ -26,6 +33,7 @@
   --dashboard-button-text-transform: uppercase;
   --dashboard-content-max-width: 1260px;
   --skin-page-background-image: none;
+  --skin-notes-panel-image: none;
   --skin-timer-panel-image: none;
   --skin-start-button-image: none;
   --skin-reset-button-image: none;
@@ -35,6 +43,7 @@
   --skin-timer-panel-aspect-ratio: 2.68;
   --skin-action-button-aspect-ratio: 3;
   --skin-square-button-aspect-ratio: 1;
+  --skin-notes-panel-aspect-ratio: 0.76;
   --skin-timer-panel-max-width: 100%;
   --skin-timer-panel-min-height: 260px;
   --skin-timer-panel-overlay-opacity: 0;
@@ -53,8 +62,16 @@
 .dashboard-shell--warm {
   background-image:
     linear-gradient(140deg, rgba(16, 5, 2, 0.58), rgba(51, 17, 7, 0.52)),
-    radial-gradient(circle at 16% 20%, rgba(255, 150, 56, 0.2), transparent 44%),
-    radial-gradient(circle at 84% 16%, rgba(255, 84, 23, 0.24), transparent 38%),
+    radial-gradient(
+      circle at 16% 20%,
+      rgba(255, 150, 56, 0.2),
+      transparent 44%
+    ),
+    radial-gradient(
+      circle at 84% 16%,
+      rgba(255, 84, 23, 0.24),
+      transparent 38%
+    ),
     var(--skin-page-background-image);
   background-size: auto, auto, auto, cover;
   background-position: center, center, center, center;
@@ -109,9 +126,12 @@
   min-width: 0;
 }
 
-.dashboard-notes-wrap,
+.dashboard-notes-wrap {
+  min-height: 0;
+}
+
 .dashboard-notes-wrap .notes-panel {
-  min-height: 100%;
+  height: auto;
 }
 
 .timer-block {
@@ -122,7 +142,9 @@
 
 .top-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.6fr) minmax(0, 1.1fr) minmax(0, 0.6fr);
+  grid-template-columns:
+    minmax(0, 1.1fr) minmax(0, 0.6fr) minmax(0, 1.1fr)
+    minmax(0, 0.6fr);
   gap: 0.75rem;
 }
 
@@ -138,7 +160,9 @@
   gap: 0.35rem;
   padding: 0 0.55rem;
   box-sizing: border-box;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
   cursor: text;
 }
 
@@ -232,7 +256,10 @@
 
 .action-buttons {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) repeat(3, minmax(4.5rem, 5.5rem));
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) repeat(
+      3,
+      minmax(4.5rem, 5.5rem)
+    );
   gap: 0.75rem;
   align-items: stretch;
 }
@@ -247,7 +274,9 @@
   background: var(--dashboard-button);
   color: var(--dashboard-button-text);
   cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
   font-family: var(--dashboard-button-font-family);
   font-weight: var(--dashboard-button-font-weight);
   letter-spacing: var(--dashboard-button-letter-spacing);
@@ -302,6 +331,16 @@
   min-height: 190px;
 }
 
+.dashboard-shell--warm .timer-card__time {
+  font-family: "RedLavaTimer", var(--dashboard-display-font-family);
+  font-size: clamp(6rem, 18vw, 8rem);
+  color: #ffca5e;
+  text-shadow:
+    0 0 6px rgba(255, 70, 29, 0.65),
+    0 0 14px rgba(255, 149, 44, 0.52),
+    0 0 24px rgba(255, 107, 20, 0.36);
+}
+
 .dashboard-shell--warm .timer-card.is-running {
   box-shadow:
     0 0 0 1px rgba(255, 173, 97, 0.42),
@@ -327,7 +366,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(30, 10, 4, 0.05), rgba(30, 10, 4, 0.35));
+  background: linear-gradient(
+    180deg,
+    rgba(30, 10, 4, 0.05),
+    rgba(30, 10, 4, 0.35)
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -426,80 +469,90 @@
   gap: 0.75rem;
 }
 
-.notes-panel__scroll {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-height: 240px;
-}
-
 .notes-panel__status {
   margin: auto 0;
   color: var(--dashboard-text-muted);
   text-align: center;
 }
 
-.notes-panel__item {
-  border: 1px solid #3f3f3f;
-  border-radius: var(--dashboard-radius);
-  background: #2b2b2b;
-  padding: 0.75rem;
+.notes-panel__body--notepad {
+  min-height: 0;
 }
 
-.notes-panel__textarea,
-.notes-panel__input {
+.notes-panel__notepad {
   width: 100%;
+  min-height: 340px;
+  height: 100%;
+  flex: 1 1 auto;
   border: 1px solid #444;
   border-radius: var(--dashboard-radius);
   background: var(--dashboard-input);
-  color: var(--dashboard-text);
+  color: var(--dashboard-text-dark);
   box-sizing: border-box;
+  padding: 5rem 3rem;
+  resize: none;
+  line-height: 1.4;
+  font-family: inherit;
 }
 
-.notes-panel__textarea {
-  min-height: 5.5rem;
-  padding: 0.75rem;
-  resize: vertical;
+.notes-panel__notepad:focus {
+  outline: 1px solid var(--dashboard-accent);
+  outline-offset: 0;
 }
 
-.notes-panel__item-actions,
-.notes-panel__form {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
+.dashboard-shell--warm .notes-panel {
+  width: 100%;
+  max-width: 545px;
+  margin-inline: auto;
+  background: transparent;
 }
 
-.notes-panel__item-actions {
-  margin-top: 0.75rem;
+.dashboard-shell--warm .notes-panel .panel-shell__body {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--skin-notes-panel-aspect-ratio);
+  min-height: 0;
 }
 
-.notes-panel__text-button,
-.notes-panel__add-button {
-  border: 1px solid #4a4a4a;
-  border-radius: var(--dashboard-radius);
-  background: #303030;
-  color: var(--dashboard-text);
-  cursor: pointer;
+.dashboard-shell--warm .notes-panel .panel-shell__body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-notes-panel-image);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.notes-panel__text-button {
-  padding: 0.35rem 0.6rem;
+.dashboard-shell--warm .notes-panel__notepad,
+.dashboard-shell--warm .notes-panel__status {
+  position: relative;
+  z-index: 1;
 }
 
-.notes-panel__text-button--danger {
-  background: #3a2d2d;
+.dashboard-shell--warm .notes-panel__notepad {
+  min-height: 0;
+  border: none;
+  background: transparent;
+  color: #fff0dc;
+  box-shadow: none;
+  outline: none;
 }
 
-.notes-panel__input {
-  flex: 1 1 auto;
-  padding: 0.75rem;
+.dashboard-shell--warm .notes-panel__notepad::placeholder {
+  color: rgba(255, 222, 185, 0.7);
 }
 
-.notes-panel__add-button {
-  padding: 0.75rem 1rem;
+.dashboard-shell--warm .notes-panel__notepad:focus {
+  outline-color: rgba(255, 180, 96, 0.9);
+}
+
+.dashboard-shell--warm .dashboard-column--right .dashboard-lock-wrap {
+  width: 100%;
+  max-width: 545px;
+  margin-inline: auto;
 }
 
 .heatmap-card__content {

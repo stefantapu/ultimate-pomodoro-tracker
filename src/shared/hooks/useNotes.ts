@@ -33,8 +33,8 @@ export function useNotes() {
     fetchNotes();
   }, [fetchNotes]);
 
-  const addNote = useCallback(async (content: string) => {
-    if (!user || !content.trim()) return;
+  const addNote = useCallback(async (content: string): Promise<Note | null> => {
+    if (!user || !content.trim()) return null;
     const { data, error } = await supabase
       .from("notes")
       .insert([{ user_id: user.id, content }])
@@ -42,7 +42,9 @@ export function useNotes() {
       .single();
     if (!error && data) {
       setNotes((prev) => [data, ...prev]);
+      return data;
     }
+    return null;
   }, [user]);
 
   const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {

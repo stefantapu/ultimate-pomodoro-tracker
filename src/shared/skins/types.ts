@@ -9,6 +9,7 @@ export type SkinImageAsset = {
 
 export type SkinAssets = {
   pageBackground: SkinImageAsset | null;
+  notesPanel: SkinImageAsset | null;
   timerPanel: SkinImageAsset | null;
   startButton: SkinImageAsset | null;
   resetButton: SkinImageAsset | null;

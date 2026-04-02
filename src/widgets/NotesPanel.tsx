@@ -1,178 +1,84 @@
-import { useNotes, type Note } from "@shared/hooks/useNotes";
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useNotes } from "@shared/hooks/useNotes";
+import { useEffect, useRef } from "react";
 import { PanelShell } from "./PanelShell";
 
-type NoteItemProps = {
-  note: Note;
-  updateNote: (id: string, updates: Partial<Note>) => Promise<void>;
-  deleteNote: (id: string) => Promise<void>;
-};
-
-const NoteItem = memo(function NoteItem({
-  note,
-  updateNote,
-  deleteNote,
-}: NoteItemProps) {
+export function NotesPanel() {
+  const { notes, loading, addNote, updateNote, deleteNote } = useNotes();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const timeoutRef = useRef<number | null>(null);
+  const activeNoteIdRef = useRef<string | null>(null);
+  const saveTimeoutRef = useRef<number | null>(null);
+  const isPersistingRef = useRef(false);
+
+  const primaryNote = notes[0] ?? null;
 
   useEffect(() => {
-    if (textareaRef.current && textareaRef.current.value !== note.content) {
-      textareaRef.current.value = note.content;
+    if (isPersistingRef.current) {
+      return;
     }
-  }, [note.content]);
+
+    activeNoteIdRef.current = primaryNote?.id ?? null;
+    if (textareaRef.current) {
+      textareaRef.current.value = primaryNote?.content ?? "";
+    }
+  }, [primaryNote?.content, primaryNote?.id]);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+      if (saveTimeoutRef.current) {
+        window.clearTimeout(saveTimeoutRef.current);
       }
     };
   }, []);
 
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = event.target;
-
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
+  const schedulePersist = (nextValue: string) => {
+    if (saveTimeoutRef.current) {
+      window.clearTimeout(saveTimeoutRef.current);
     }
 
-    timeoutRef.current = window.setTimeout(() => {
-      void updateNote(note.id, { content: value });
-    }, 500);
+    saveTimeoutRef.current = window.setTimeout(async () => {
+      const trimmedValue = nextValue.trim();
+      const activeId = activeNoteIdRef.current;
+      isPersistingRef.current = true;
+
+      try {
+        if (!trimmedValue) {
+          if (activeId) {
+            await deleteNote(activeId);
+            activeNoteIdRef.current = null;
+          }
+          return;
+        }
+
+        if (activeId) {
+          await updateNote(activeId, { content: nextValue });
+          return;
+        }
+
+        const createdNote = await addNote(nextValue);
+        activeNoteIdRef.current = createdNote?.id ?? null;
+      } finally {
+        isPersistingRef.current = false;
+      }
+    }, 450);
   };
 
   return (
-    <article className="notes-panel__item">
-      <textarea
-        ref={textareaRef}
-        className="notes-panel__textarea"
-        defaultValue={note.content}
-        onChange={handleChange}
-      />
-      <div className="notes-panel__item-actions">
-        <button
-          type="button"
-          className="notes-panel__text-button"
-          onClick={() =>
-            void updateNote(note.id, { is_completed: !note.is_completed })
-          }
-        >
-          {note.is_completed ? "Completed" : "Mark complete"}
-        </button>
-        <button
-          type="button"
-          className="notes-panel__text-button notes-panel__text-button--danger"
-          onClick={() => void deleteNote(note.id)}
-        >
-          Delete
-        </button>
-      </div>
-    </article>
-  );
-});
-
-type NotesListProps = {
-  notes: Note[];
-  loading: boolean;
-  updateNote: (id: string, updates: Partial<Note>) => Promise<void>;
-  deleteNote: (id: string) => Promise<void>;
-};
-
-const NotesList = memo(function NotesList({
-  notes,
-  loading,
-  updateNote,
-  deleteNote,
-}: NotesListProps) {
-  if (loading) {
-    return <p className="notes-panel__status">Loading notes...</p>;
-  }
-
-  if (notes.length === 0) {
-    return <p className="notes-panel__status">No notes yet.</p>;
-  }
-
-  return (
-    <>
-      {notes.map((note) => (
-        <NoteItem
-          key={note.id}
-          note={note}
-          updateNote={updateNote}
-          deleteNote={deleteNote}
-        />
-      ))}
-    </>
-  );
-});
-
-type AddNoteFormProps = {
-  addNote: (content: string) => Promise<void>;
-};
-
-const AddNoteForm = memo(function AddNoteForm({ addNote }: AddNoteFormProps) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const nextNoteText = inputRef.current?.value ?? "";
-
-      if (!nextNoteText.trim()) {
-        return;
-      }
-
-      void addNote(nextNoteText);
-
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
-    },
-    [addNote],
-  );
-
-  return (
-    <form className="notes-panel__form" onSubmit={handleSubmit}>
-      <input
-        ref={inputRef}
-        className="notes-panel__input"
-        type="text"
-        placeholder="Add note"
-      />
-      <button className="notes-panel__add-button" type="submit">
-        Add
-      </button>
-    </form>
-  );
-});
-
-export function NotesPanel() {
-  const { notes, addNote, updateNote, deleteNote, loading } = useNotes();
-
-  return (
     <PanelShell
-      title="notes"
       className="notes-panel"
-      bodyClassName="notes-panel__body"
+      bodyClassName="notes-panel__body notes-panel__body--notepad"
     >
-      <div className="notes-panel__scroll">
-        <NotesList
-          notes={notes}
-          loading={loading}
-          updateNote={updateNote}
-          deleteNote={deleteNote}
+      {loading && notes.length === 0 ? (
+        <p className="notes-panel__status">Loading notes...</p>
+      ) : (
+        <textarea
+          ref={textareaRef}
+          className="notes-panel__notepad"
+          defaultValue={primaryNote?.content ?? ""}
+          onChange={(event) => schedulePersist(event.target.value)}
+          placeholder="Write notes..."
+          spellCheck={false}
         />
-      </div>
-
-      <AddNoteForm addNote={addNote} />
+      )}
     </PanelShell>
   );
 }

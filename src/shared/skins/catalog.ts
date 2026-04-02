@@ -7,6 +7,7 @@ const minimalSkin: SkinProfile = {
   description: "Current clean monochrome dashboard.",
   assets: {
     pageBackground: null,
+    notesPanel: null,
     timerPanel: null,
     startButton: null,
     resetButton: null,
@@ -57,9 +58,13 @@ const warmSkin: SkinProfile = {
   label: "Red Lava",
   description: "Warm fantasy palette with themed timer controls.",
   assets: {
-    pageBackground: buildImageAsset(
-      "/assets/red_lava_theme/background.webp",
-      { width: 1920, height: 1080 },
+    pageBackground: buildImageAsset("/assets/red_lava_theme/background.webp", {
+      width: 1920,
+      height: 1080,
+    }),
+    notesPanel: buildImageAsset(
+      "/assets/red_lava_theme/notes_panel/notes_panel_w545_h717.webp",
+      { width: 545, height: 717 },
     ),
     timerPanel: buildImageAsset(
       "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
