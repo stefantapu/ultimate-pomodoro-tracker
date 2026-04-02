@@ -11,6 +11,7 @@ const minimalSkin: SkinProfile = {
     heatmapPanel: null,
     statsPanel: null,
     topControlsPanel: null,
+    modeTabButton: null,
     modeDurationField: null,
     timerPanel: null,
     startButton: null,
@@ -81,6 +82,10 @@ const warmSkin: SkinProfile = {
     topControlsPanel: buildImageAsset(
       "/assets/red_lava_theme/top_control_panel/top_panel_w1303_h200.webp",
       { width: 1303, height: 200 },
+    ),
+    modeTabButton: buildImageAsset(
+      "/assets/red_lava_theme/top_control_panel/brek_and_focus_button_background_w335_h95.webp",
+      { width: 335, height: 95 },
     ),
     modeDurationField: buildImageAsset(
       "/assets/red_lava_theme/top_control_panel/focus_and_break_minute_selector_background_w250_h127.webp",

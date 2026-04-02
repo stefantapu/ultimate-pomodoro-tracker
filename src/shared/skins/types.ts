@@ -13,6 +13,7 @@ export type SkinAssets = {
   heatmapPanel: SkinImageAsset | null;
   statsPanel: SkinImageAsset | null;
   topControlsPanel: SkinImageAsset | null;
+  modeTabButton: SkinImageAsset | null;
   modeDurationField: SkinImageAsset | null;
   timerPanel: SkinImageAsset | null;
   startButton: SkinImageAsset | null;

@@ -37,6 +37,7 @@
   --skin-heatmap-panel-image: none;
   --skin-stats-panel-image: none;
   --skin-top-controls-panel-image: none;
+  --skin-mode-tab-button-image: none;
   --skin-mode-duration-field-image: none;
   --skin-timer-panel-image: none;
   --skin-start-button-image: none;
@@ -51,6 +52,7 @@
   --skin-heatmap-panel-aspect-ratio: 2.39;
   --skin-stats-panel-aspect-ratio: 0.68;
   --skin-top-controls-panel-aspect-ratio: 6.5;
+  --skin-mode-tab-button-aspect-ratio: 3.53;
   --skin-mode-duration-field-aspect-ratio: 1.97;
   --skin-timer-panel-max-width: 100%;
   --skin-timer-panel-min-height: 260px;
@@ -201,7 +203,7 @@
 .panel-shell {
   min-width: 0;
   min-height: 0;
-  padding: 1rem;
+  padding: 0;
   border: 1px solid var(--dashboard-panel-border);
   border-radius: var(--dashboard-radius);
   background: var(--dashboard-panel);
@@ -389,8 +391,11 @@
   overflow: hidden;
   width: 100%;
   margin-inline: 0;
-  padding: 0.45rem;
-  min-height: clamp(5.2rem, 10vw, 7.4rem);
+  box-sizing: border-box;
+  padding: 0.35rem 0.45rem;
+  min-height: clamp(3.5rem, 6.2vw, 4.4rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 0.55rem;
   align-items: center;
   border-radius: calc(var(--dashboard-radius) + 0.25rem);
 }
@@ -413,31 +418,32 @@
 }
 
 .dashboard-shell--warm .top-controls .themed-button--tab {
+  --top-controls-item-height: clamp(2.25rem, 3.7vw, 2.8rem);
   min-height: 0;
-  height: auto;
-  aspect-ratio: var(--skin-action-button-aspect-ratio);
-  font-size: 0.88rem;
+  height: var(--top-controls-item-height);
+  width: 100%;
+  max-width: calc(var(--top-controls-item-height) * var(--skin-mode-tab-button-aspect-ratio));
+  justify-self: center;
+  align-self: center;
+  font-size: 0.8rem;
   border: none;
   background-color: transparent;
+  background-image: var(--skin-mode-tab-button-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
-.dashboard-shell--warm .top-controls .themed-button--tab:first-child {
-  background-image: var(--skin-start-button-image);
-}
-
-.dashboard-shell--warm .top-controls .themed-button--tab:nth-child(3) {
-  background-image: var(--skin-reset-button-image);
-}
-
 .dashboard-shell--warm .top-controls .timer-duration-field {
+  --top-controls-item-height: clamp(2.25rem, 3.7vw, 2.8rem);
   min-height: 0;
-  height: auto;
-  aspect-ratio: var(--skin-mode-duration-field-aspect-ratio);
-  padding: 0 0.45rem;
+  height: var(--top-controls-item-height);
+  width: 100%;
+  max-width: calc(var(--top-controls-item-height) * var(--skin-mode-duration-field-aspect-ratio));
+  justify-self: center;
+  align-self: center;
+  padding: 0 0.3rem;
   border: none;
   background-color: transparent;
   background-image: var(--skin-mode-duration-field-image);
@@ -448,7 +454,7 @@
 }
 
 .dashboard-shell--warm .top-controls .timer-duration-field__input {
-  font-size: 0.76rem;
+  font-size: 0.68rem;
 }
 
 .dashboard-shell--warm .action-buttons .themed-button--action,
@@ -1100,7 +1106,9 @@
   }
 
   .dashboard-shell--warm .top-controls {
-    min-height: clamp(4.6rem, 22vw, 6.2rem);
+    min-height: clamp(3.3rem, 14vw, 4rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: 0.4rem;
   }
 
   .settings-modal {

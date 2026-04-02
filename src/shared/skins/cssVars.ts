@@ -39,6 +39,7 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-heatmap-panel-image": toImageVariable(skin.assets.heatmapPanel),
     "--skin-stats-panel-image": toImageVariable(skin.assets.statsPanel),
     "--skin-top-controls-panel-image": toImageVariable(skin.assets.topControlsPanel),
+    "--skin-mode-tab-button-image": toImageVariable(skin.assets.modeTabButton),
     "--skin-mode-duration-field-image": toImageVariable(skin.assets.modeDurationField),
     "--skin-timer-panel-image": toImageVariable(skin.assets.timerPanel),
     "--skin-start-button-image": toImageVariable(skin.assets.startButton),
@@ -66,6 +67,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     ),
     "--skin-top-controls-panel-aspect-ratio": String(
       skin.assets.topControlsPanel?.aspectRatio ?? 6.5,
+    ),
+    "--skin-mode-tab-button-aspect-ratio": String(
+      skin.assets.modeTabButton?.aspectRatio ?? 3.53,
     ),
     "--skin-mode-duration-field-aspect-ratio": String(
       skin.assets.modeDurationField?.aspectRatio ?? 1.97,
