@@ -1,4 +1,5 @@
 import type { TimerStatus } from "@shared/lib/timerTypes";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { memo } from "react";
 import { ThemedButton } from "./ThemedButton";
 
@@ -25,6 +26,9 @@ export const ActionButtons = memo(function ActionButtons({
   onToggleAutoBreak,
   onToggleSound,
 }: ActionButtonsProps) {
+  const activeSkinId = useSkinStore((state) => state.activeSkinId);
+  const showAutoLabels = activeSkinId !== "warm";
+
   return (
     <div className="action-buttons">
       <div className="action-buttons__row action-buttons__row--primary">
@@ -50,20 +54,32 @@ export const ActionButtons = memo(function ActionButtons({
           className="action-buttons__button--auto-focus"
           active={autoFocus}
           onClick={onToggleAutoFocus}
+          aria-label="Toggle auto focus"
+          title="Auto Focus"
           aria-pressed={autoFocus}
         >
-          <span>Auto</span>
-          <span>Focus</span>
+          {showAutoLabels ? (
+            <>
+              <span>Auto</span>
+              <span>Focus</span>
+            </>
+          ) : null}
         </ThemedButton>
         <ThemedButton
           variant="square"
           className="action-buttons__button--auto-break"
           active={autoBreak}
           onClick={onToggleAutoBreak}
+          aria-label="Toggle auto break"
+          title="Auto Break"
           aria-pressed={autoBreak}
         >
-          <span>Auto</span>
-          <span>Break</span>
+          {showAutoLabels ? (
+            <>
+              <span>Auto</span>
+              <span>Break</span>
+            </>
+          ) : null}
         </ThemedButton>
         <ThemedButton
           variant="square"

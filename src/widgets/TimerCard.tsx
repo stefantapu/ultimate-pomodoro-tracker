@@ -64,7 +64,7 @@ export const TimerCard = memo(function TimerCard({
   targetTimestamp,
 }: TimerCardProps) {
   return (
-    <PanelShell className="timer-card">
+    <PanelShell className={`timer-card${status === "running" ? " is-running" : ""}`}>
       <TimerCardTime
         status={status}
         timeLeft={timeLeft}

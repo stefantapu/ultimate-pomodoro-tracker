@@ -293,11 +293,21 @@
 
 .dashboard-shell--warm .timer-card {
   max-width: min(100%, 720px);
+  background: transparent;
+  box-shadow: none;
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
   aspect-ratio: var(--skin-timer-panel-aspect-ratio);
   min-height: 190px;
+}
+
+.dashboard-shell--warm .timer-card.is-running {
+  box-shadow:
+    0 0 0 1px rgba(255, 173, 97, 0.42),
+    0 0 24px rgba(255, 120, 40, 0.45),
+    0 0 48px rgba(255, 95, 24, 0.35);
+  animation: timer-lava-glow 1.8s ease-in-out infinite alternate;
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body::before {
@@ -346,12 +356,19 @@
   min-height: 0;
 }
 
+.dashboard-shell--warm .action-buttons__button--auto-focus,
+.dashboard-shell--warm .action-buttons__button--auto-break {
+  font-size: 0;
+}
+
 .dashboard-shell--warm .action-buttons {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 0.75rem;
+  width: min(100%, 30rem);
+  margin-inline: auto;
 }
 
 .dashboard-shell--warm .action-buttons__row {
@@ -379,6 +396,22 @@
 
 .dashboard-shell--warm .action-buttons__button--sound {
   background-image: var(--skin-sound-button-image);
+}
+
+@keyframes timer-lava-glow {
+  from {
+    box-shadow:
+      0 0 0 1px rgba(255, 173, 97, 0.38),
+      0 0 18px rgba(255, 116, 36, 0.35),
+      0 0 36px rgba(255, 95, 24, 0.28);
+  }
+
+  to {
+    box-shadow:
+      0 0 0 1px rgba(255, 188, 118, 0.52),
+      0 0 28px rgba(255, 129, 42, 0.52),
+      0 0 56px rgba(255, 103, 22, 0.4);
+  }
 }
 
 .notes-panel {
@@ -735,12 +768,17 @@
   }
 
   .dashboard-shell--warm .action-buttons {
-    flex-direction: column;
-    gap: 0.6rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    row-gap: 0.6rem;
+    column-gap: 0.6rem;
+    width: min(100%, 22rem);
   }
 
   .dashboard-shell--warm .action-buttons__row {
-    gap: 0.6rem;
+    display: contents;
   }
 
   .dashboard-shell--warm .action-buttons .themed-button--action {
@@ -789,11 +827,13 @@
   }
 
   .dashboard-shell--warm .action-buttons {
-    gap: 0.5rem;
+    width: min(100%, 19.5rem);
+    row-gap: 0.5rem;
+    column-gap: 0.5rem;
   }
 
   .dashboard-shell--warm .action-buttons__row {
-    gap: 0.5rem;
+    display: contents;
   }
 
   .dashboard-shell--warm .action-buttons .themed-button--action {
