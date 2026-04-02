@@ -2,7 +2,7 @@
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
 import { readTimerSettings, writeTimerSettings } from "@shared/lib/timerStorage";
-import type { TimerSettings } from "@shared/lib/timerTypes";
+import type { Mode, TimerSettings } from "@shared/lib/timerTypes";
 import { useUIStore } from "@shared/stores/uiStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButtons } from "./ActionButtons";
@@ -11,39 +11,90 @@ import { TopControls } from "./TopControls";
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
 const SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
+const MIN_DURATION_MINUTES = 15;
+const MAX_DURATION_MINUTES = 90;
+
+function minutesToSeconds(minutes: number) {
+  return minutes * 60;
+}
+
+function secondsToMinutes(seconds: number) {
+  return Math.floor(seconds / 60);
+}
+
+function parseValidMinutes(value: string) {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  if (
+    Number.isNaN(parsed) ||
+    parsed < MIN_DURATION_MINUTES ||
+    parsed > MAX_DURATION_MINUTES
+  ) {
+    return null;
+  }
+
+  return parsed;
+}
 
 export function TimerBlock() {
   const { play } = useAlarm();
-  const [breakTime, setBreakTime] = useState<number>(
-    () => readTimerSettings(SETTINGS_STORAGE_KEY).breakDuration,
+  const initialSettingsRef = useRef(readTimerSettings(SETTINGS_STORAGE_KEY));
+  const initialSettings = initialSettingsRef.current;
+  const [breakDurationSeconds, setBreakDurationSeconds] = useState<number>(
+    () => initialSettings.breakDuration,
   );
-  const [focusTime, setFocusTime] = useState<number>(
-    () => readTimerSettings(SETTINGS_STORAGE_KEY).focusDuration,
+  const [focusDurationSeconds, setFocusDurationSeconds] = useState<number>(
+    () => initialSettings.focusDuration,
   );
+  const [focusLastValidMinutes, setFocusLastValidMinutes] = useState<number>(
+    () => secondsToMinutes(initialSettings.focusDuration),
+  );
+  const [breakLastValidMinutes, setBreakLastValidMinutes] = useState<number>(
+    () => secondsToMinutes(initialSettings.breakDuration),
+  );
+  const [focusDraftMinutes, setFocusDraftMinutes] = useState<string>(
+    () => secondsToMinutes(initialSettings.focusDuration).toString(),
+  );
+  const [breakDraftMinutes, setBreakDraftMinutes] = useState<string>(
+    () => secondsToMinutes(initialSettings.breakDuration).toString(),
+  );
+  const [activeEditedField, setActiveEditedField] = useState<Mode | null>(null);
   const [autoBreak, setAutoBreak] = useState<boolean>(
-    () => readTimerSettings(SETTINGS_STORAGE_KEY).autoBreak,
+    () => initialSettings.autoBreak,
   );
   const [autoFocus, setAutoFocus] = useState<boolean>(
-    () => readTimerSettings(SETTINGS_STORAGE_KEY).autoFocus,
+    () => initialSettings.autoFocus,
   );
   const [soundEnabled, setSoundEnabled] = useState(true);
   const hasLoadedFromServer = useRef(false);
 
   const settings = useMemo<TimerSettings>(
     () => ({
-      focusDuration: focusTime,
-      breakDuration: breakTime,
+      focusDuration: focusDurationSeconds,
+      breakDuration: breakDurationSeconds,
       autoBreak,
       autoFocus,
     }),
-    [autoBreak, autoFocus, breakTime, focusTime],
+    [autoBreak, autoFocus, breakDurationSeconds, focusDurationSeconds],
   );
 
   const { pushSettingsToCloud } = useSettingsSync(
     settings,
     (cloudSettings: TimerSettings) => {
-      setFocusTime(cloudSettings.focusDuration);
-      setBreakTime(cloudSettings.breakDuration);
+      const nextFocusMinutes = secondsToMinutes(cloudSettings.focusDuration);
+      const nextBreakMinutes = secondsToMinutes(cloudSettings.breakDuration);
+
+      setFocusDurationSeconds(cloudSettings.focusDuration);
+      setBreakDurationSeconds(cloudSettings.breakDuration);
+      setFocusLastValidMinutes(nextFocusMinutes);
+      setBreakLastValidMinutes(nextBreakMinutes);
+      setFocusDraftMinutes(nextFocusMinutes.toString());
+      setBreakDraftMinutes(nextBreakMinutes.toString());
+      setActiveEditedField(null);
       setAutoBreak(cloudSettings.autoBreak);
       setAutoFocus(cloudSettings.autoFocus);
       hasLoadedFromServer.current = true;
@@ -65,6 +116,8 @@ export function TimerBlock() {
     stateStorageKey: STATE_STORAGE_KEY,
     onSessionComplete: soundEnabled ? play : undefined,
   });
+  const [pendingDurationResetCount, setPendingDurationResetCount] = useState(0);
+  const lastHandledDurationResetRef = useRef(0);
 
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
 
@@ -82,6 +135,97 @@ export function TimerBlock() {
     setSoundEnabled((previous) => !previous);
   }, []);
 
+  const restoreFieldDraftToLastValid = useCallback((field: Mode) => {
+    if (field === "focus") {
+      setFocusDraftMinutes(focusLastValidMinutes.toString());
+      return;
+    }
+
+    setBreakDraftMinutes(breakLastValidMinutes.toString());
+  }, [breakLastValidMinutes, focusLastValidMinutes]);
+
+  const handleStartEditField = useCallback((field: Mode) => {
+    if (activeEditedField && activeEditedField !== field) {
+      restoreFieldDraftToLastValid(activeEditedField);
+    }
+
+    if (field === "focus") {
+      setFocusDraftMinutes(focusLastValidMinutes.toString());
+    } else {
+      setBreakDraftMinutes(breakLastValidMinutes.toString());
+    }
+
+    setActiveEditedField(field);
+  }, [activeEditedField, breakLastValidMinutes, focusLastValidMinutes, restoreFieldDraftToLastValid]);
+
+  const handleDraftChange = useCallback((field: Mode, nextDraft: string) => {
+    if (field === "focus") {
+      setFocusDraftMinutes(nextDraft);
+      return;
+    }
+
+    setBreakDraftMinutes(nextDraft);
+  }, []);
+
+  const handleCancelEdit = useCallback((field: Mode) => {
+    restoreFieldDraftToLastValid(field);
+
+    if (activeEditedField === field) {
+      setActiveEditedField(null);
+    }
+  }, [activeEditedField, restoreFieldDraftToLastValid]);
+
+  const handleApplyDuration = useCallback((field: Mode) => {
+    if (activeEditedField !== field) {
+      return;
+    }
+
+    const draftMinutes = field === "focus" ? focusDraftMinutes : breakDraftMinutes;
+    const parsedMinutes = parseValidMinutes(draftMinutes);
+
+    if (parsedMinutes === null) {
+      handleCancelEdit(field);
+      return;
+    }
+
+    const nextDurationSeconds = minutesToSeconds(parsedMinutes);
+    const currentDurationSeconds =
+      field === "focus" ? focusDurationSeconds : breakDurationSeconds;
+
+    if (nextDurationSeconds === currentDurationSeconds) {
+      if (field === "focus") {
+        setFocusDraftMinutes(parsedMinutes.toString());
+      } else {
+        setBreakDraftMinutes(parsedMinutes.toString());
+      }
+
+      setActiveEditedField(null);
+      return;
+    }
+
+    hasLoadedFromServer.current = true;
+
+    if (field === "focus") {
+      setFocusDurationSeconds(nextDurationSeconds);
+      setFocusLastValidMinutes(parsedMinutes);
+      setFocusDraftMinutes(parsedMinutes.toString());
+    } else {
+      setBreakDurationSeconds(nextDurationSeconds);
+      setBreakLastValidMinutes(parsedMinutes);
+      setBreakDraftMinutes(parsedMinutes.toString());
+    }
+
+    setActiveEditedField(null);
+    setPendingDurationResetCount((previous) => previous + 1);
+  }, [
+    activeEditedField,
+    breakDraftMinutes,
+    breakDurationSeconds,
+    focusDraftMinutes,
+    focusDurationSeconds,
+    handleCancelEdit,
+  ]);
+
   useEffect(() => {
     if (resetTimerTrigger > 0) {
       hardReset();
@@ -89,9 +233,21 @@ export function TimerBlock() {
   }, [hardReset, resetTimerTrigger]);
 
   useEffect(() => {
+    if (
+      pendingDurationResetCount === 0 ||
+      pendingDurationResetCount === lastHandledDurationResetRef.current
+    ) {
+      return;
+    }
+
+    lastHandledDurationResetRef.current = pendingDurationResetCount;
+    reset();
+  }, [pendingDurationResetCount, reset]);
+
+  useEffect(() => {
     const updatedSettings: TimerSettings = {
-      focusDuration: focusTime,
-      breakDuration: breakTime,
+      focusDuration: focusDurationSeconds,
+      breakDuration: breakDurationSeconds,
       autoBreak,
       autoFocus,
     };
@@ -101,15 +257,22 @@ export function TimerBlock() {
     if (hasLoadedFromServer.current) {
       pushSettingsToCloud(updatedSettings);
     }
-  }, [autoBreak, autoFocus, breakTime, focusTime, pushSettingsToCloud]);
+  }, [autoBreak, autoFocus, breakDurationSeconds, focusDurationSeconds, pushSettingsToCloud]);
 
   return (
     <div className="timer-block">
       <TopControls
         mode={mode}
-        focusDuration={focusTime}
-        breakDuration={breakTime}
+        focusLastValidMinutes={focusLastValidMinutes}
+        breakLastValidMinutes={breakLastValidMinutes}
+        focusDraftMinutes={focusDraftMinutes}
+        breakDraftMinutes={breakDraftMinutes}
+        activeEditedField={activeEditedField}
         onSelectMode={switchMode}
+        onStartEditField={handleStartEditField}
+        onDraftChange={handleDraftChange}
+        onApplyDuration={handleApplyDuration}
+        onCancelEdit={handleCancelEdit}
       />
       <TimerCard
         mode={mode}

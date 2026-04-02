@@ -1,28 +1,34 @@
 import type { Mode } from "@shared/lib/timerTypes";
 import { memo } from "react";
 import { ThemedButton } from "./ThemedButton";
+import { TimerDurationField } from "./TimerDurationField";
 
 type TopControlsProps = {
   mode: Mode;
-  focusDuration: number;
-  breakDuration: number;
+  focusLastValidMinutes: number;
+  breakLastValidMinutes: number;
+  focusDraftMinutes: string;
+  breakDraftMinutes: string;
+  activeEditedField: Mode | null;
   onSelectMode: (mode: Mode) => void;
+  onStartEditField: (field: Mode) => void;
+  onDraftChange: (field: Mode, nextDraft: string) => void;
+  onApplyDuration: (field: Mode) => void;
+  onCancelEdit: (field: Mode) => void;
 };
-
-function formatDuration(seconds: number) {
-  const minutes = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const remainder = (seconds % 60).toString().padStart(2, "0");
-
-  return `${minutes}:${remainder}`;
-}
 
 export const TopControls = memo(function TopControls({
   mode,
-  focusDuration,
-  breakDuration,
+  focusLastValidMinutes,
+  breakLastValidMinutes,
+  focusDraftMinutes,
+  breakDraftMinutes,
+  activeEditedField,
   onSelectMode,
+  onStartEditField,
+  onDraftChange,
+  onApplyDuration,
+  onCancelEdit,
 }: TopControlsProps) {
   return (
     <div className="top-controls">
@@ -33,13 +39,17 @@ export const TopControls = memo(function TopControls({
       >
         Focus
       </ThemedButton>
-      <ThemedButton
-        variant="tab"
-        active={mode === "focus"}
-        onClick={() => onSelectMode("focus")}
-      >
-        {formatDuration(focusDuration)}
-      </ThemedButton>
+      <TimerDurationField
+        field="focus"
+        displayMinutes={focusLastValidMinutes}
+        draftMinutes={focusDraftMinutes}
+        isEditing={activeEditedField === "focus"}
+        isActiveMode={mode === "focus"}
+        onStartEdit={onStartEditField}
+        onDraftChange={onDraftChange}
+        onApply={onApplyDuration}
+        onCancelEdit={onCancelEdit}
+      />
       <ThemedButton
         variant="tab"
         active={mode === "break"}
@@ -47,13 +57,17 @@ export const TopControls = memo(function TopControls({
       >
         Break
       </ThemedButton>
-      <ThemedButton
-        variant="tab"
-        active={mode === "break"}
-        onClick={() => onSelectMode("break")}
-      >
-        {formatDuration(breakDuration)}
-      </ThemedButton>
+      <TimerDurationField
+        field="break"
+        displayMinutes={breakLastValidMinutes}
+        draftMinutes={breakDraftMinutes}
+        isEditing={activeEditedField === "break"}
+        isActiveMode={mode === "break"}
+        onStartEdit={onStartEditField}
+        onDraftChange={onDraftChange}
+        onApply={onApplyDuration}
+        onCancelEdit={onCancelEdit}
+      />
     </div>
   );
 });

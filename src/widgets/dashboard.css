@@ -70,6 +70,46 @@
   gap: 0.75rem;
 }
 
+.timer-duration-field {
+  min-height: 3rem;
+  border: 1px solid var(--dashboard-panel-border);
+  border-radius: var(--dashboard-radius);
+  background: var(--dashboard-button);
+  color: var(--dashboard-button-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0 0.55rem;
+  box-sizing: border-box;
+  transition: background-color 120ms ease, border-color 120ms ease;
+  cursor: text;
+}
+
+.timer-duration-field.is-active {
+  background: var(--dashboard-button-active);
+}
+
+.timer-duration-field.is-editing {
+  border-color: var(--dashboard-text-muted);
+}
+
+.timer-duration-field__input {
+  width: 5ch;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  cursor: text;
+}
+
 .panel-shell {
   min-width: 0;
   min-height: 0;
