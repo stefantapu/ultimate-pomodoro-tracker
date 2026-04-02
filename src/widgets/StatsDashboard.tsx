@@ -107,7 +107,7 @@ export function StatsDashboard() {
                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
               ],
-              totalCount: '{{count}} focused seconds last year',
+              totalCount: '{{count}} focused seconds in last 6 months',
             }}
             showWeekdayLabels={true}
           />

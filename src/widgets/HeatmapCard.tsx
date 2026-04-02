@@ -7,8 +7,12 @@ type HeatmapCardProps = {
   loading: boolean;
 };
 
+const HEATMAP_WINDOW_DAYS = 183;
+
 function getCalendarData(heatmapData: HeatmapData[]) {
-  const calendarData = heatmapData.map((day) => {
+  const recentHeatmapData = heatmapData.slice(-HEATMAP_WINDOW_DAYS);
+
+  const calendarData = recentHeatmapData.map((day) => {
     let level = 0;
     if (day.value > 0) level = 1;
     if (day.value >= 1800) level = 2;
@@ -71,7 +75,7 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
                   "Nov",
                   "Dec",
                 ],
-                totalCount: "{{count}} focused seconds last year",
+                totalCount: "{{count}} focused seconds in last 6 months",
               }}
             />
           </div>
