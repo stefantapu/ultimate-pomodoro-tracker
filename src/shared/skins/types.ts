@@ -10,6 +10,10 @@ export type SkinImageAsset = {
 export type SkinAssets = {
   pageBackground: SkinImageAsset | null;
   notesPanel: SkinImageAsset | null;
+  heatmapPanel: SkinImageAsset | null;
+  statsPanel: SkinImageAsset | null;
+  topControlsPanel: SkinImageAsset | null;
+  modeDurationField: SkinImageAsset | null;
   timerPanel: SkinImageAsset | null;
   startButton: SkinImageAsset | null;
   resetButton: SkinImageAsset | null;

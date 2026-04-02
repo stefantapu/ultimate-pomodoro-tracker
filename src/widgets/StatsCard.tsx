@@ -31,7 +31,7 @@ export function StatsCard({ data, loading }: StatsCardProps) {
   ];
 
   return (
-    <PanelShell title="stats" className="stats-card">
+    <PanelShell className="stats-card">
       <div className="stats-card__grid">
         {items.map((item) => (
           <div key={item.label} className="stats-card__item">

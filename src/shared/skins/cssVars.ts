@@ -36,6 +36,10 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--dashboard-button-text-transform": skin.typography.buttonTransform,
     "--skin-page-background-image": toImageVariable(skin.assets.pageBackground),
     "--skin-notes-panel-image": toImageVariable(skin.assets.notesPanel),
+    "--skin-heatmap-panel-image": toImageVariable(skin.assets.heatmapPanel),
+    "--skin-stats-panel-image": toImageVariable(skin.assets.statsPanel),
+    "--skin-top-controls-panel-image": toImageVariable(skin.assets.topControlsPanel),
+    "--skin-mode-duration-field-image": toImageVariable(skin.assets.modeDurationField),
     "--skin-timer-panel-image": toImageVariable(skin.assets.timerPanel),
     "--skin-start-button-image": toImageVariable(skin.assets.startButton),
     "--skin-reset-button-image": toImageVariable(skin.assets.resetButton),
@@ -53,6 +57,18 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     ),
     "--skin-notes-panel-aspect-ratio": String(
       skin.assets.notesPanel?.aspectRatio ?? 0.76,
+    ),
+    "--skin-heatmap-panel-aspect-ratio": String(
+      skin.assets.heatmapPanel?.aspectRatio ?? 2.39,
+    ),
+    "--skin-stats-panel-aspect-ratio": String(
+      skin.assets.statsPanel?.aspectRatio ?? 0.68,
+    ),
+    "--skin-top-controls-panel-aspect-ratio": String(
+      skin.assets.topControlsPanel?.aspectRatio ?? 6.5,
+    ),
+    "--skin-mode-duration-field-aspect-ratio": String(
+      skin.assets.modeDurationField?.aspectRatio ?? 1.97,
     ),
     "--skin-timer-panel-max-width": skin.layout.timerPanelMaxWidth,
     "--skin-timer-panel-min-height": skin.layout.timerPanelMinHeight,

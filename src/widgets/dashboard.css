@@ -34,6 +34,10 @@
   --dashboard-content-max-width: 1260px;
   --skin-page-background-image: none;
   --skin-notes-panel-image: none;
+  --skin-heatmap-panel-image: none;
+  --skin-stats-panel-image: none;
+  --skin-top-controls-panel-image: none;
+  --skin-mode-duration-field-image: none;
   --skin-timer-panel-image: none;
   --skin-start-button-image: none;
   --skin-reset-button-image: none;
@@ -44,6 +48,10 @@
   --skin-action-button-aspect-ratio: 3;
   --skin-square-button-aspect-ratio: 1;
   --skin-notes-panel-aspect-ratio: 0.76;
+  --skin-heatmap-panel-aspect-ratio: 2.39;
+  --skin-stats-panel-aspect-ratio: 0.68;
+  --skin-top-controls-panel-aspect-ratio: 6.5;
+  --skin-mode-duration-field-aspect-ratio: 1.97;
   --skin-timer-panel-max-width: 100%;
   --skin-timer-panel-min-height: 260px;
   --skin-timer-panel-overlay-opacity: 0;
@@ -321,7 +329,8 @@
 }
 
 .dashboard-shell--warm .timer-card {
-  max-width: min(100%, 720px);
+  max-width: 100%;
+  margin-inline: 0;
   background: transparent;
   box-shadow: none;
 }
@@ -373,6 +382,73 @@
   );
   pointer-events: none;
   z-index: 0;
+}
+
+.dashboard-shell--warm .top-controls {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-inline: 0;
+  padding: 0.45rem;
+  min-height: clamp(5.2rem, 10vw, 7.4rem);
+  align-items: center;
+  border-radius: calc(var(--dashboard-radius) + 0.25rem);
+}
+
+.dashboard-shell--warm .top-controls::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-top-controls-panel-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-shell--warm .top-controls > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab {
+  min-height: 0;
+  height: auto;
+  aspect-ratio: var(--skin-action-button-aspect-ratio);
+  font-size: 0.88rem;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab:first-child {
+  background-image: var(--skin-start-button-image);
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab:nth-child(3) {
+  background-image: var(--skin-reset-button-image);
+}
+
+.dashboard-shell--warm .top-controls .timer-duration-field {
+  min-height: 0;
+  height: auto;
+  aspect-ratio: var(--skin-mode-duration-field-aspect-ratio);
+  padding: 0 0.45rem;
+  border: none;
+  background-color: transparent;
+  background-image: var(--skin-mode-duration-field-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  color: #ffe2bd;
+}
+
+.dashboard-shell--warm .top-controls .timer-duration-field__input {
+  font-size: 0.76rem;
 }
 
 .dashboard-shell--warm .action-buttons .themed-button--action,
@@ -553,6 +629,132 @@
   width: 100%;
   max-width: 545px;
   margin-inline: auto;
+}
+
+.dashboard-shell--warm .heatmap-card {
+  background: transparent;
+}
+
+.dashboard-shell--warm .heatmap-card .panel-shell__body {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--skin-heatmap-panel-aspect-ratio);
+}
+
+.dashboard-shell--warm .heatmap-card .panel-shell__body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-heatmap-panel-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-shell--warm .heatmap-card__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 0.7rem 0.85rem 0.6rem;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.dashboard-shell--warm .heatmap-card__calendar {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.dashboard-shell--warm .heatmap-card__calendar article {
+  margin: 0;
+}
+
+.dashboard-shell--warm .heatmap-card__calendar text,
+.dashboard-shell--warm .heatmap-card__calendar span,
+.dashboard-shell--warm .heatmap-card__status {
+  fill: #ffe1bf;
+  color: #ffe1bf;
+}
+
+.dashboard-shell--warm .stats-card {
+  width: min(100%, 334px);
+  height: 100%;
+  margin-inline: auto;
+  background: transparent;
+}
+
+.dashboard-shell--warm .stats-card .panel-shell__body {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 100%;
+}
+
+.dashboard-shell--warm .stats-card .panel-shell__body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-stats-panel-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-shell--warm .stats-card__grid {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: min(100%, 82%);
+  margin: 0 auto;
+  align-content: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
+.dashboard-shell--warm .stats-card__item {
+  padding: 0.65rem 0.45rem;
+  gap: 0.2rem;
+  border: none;
+}
+
+.dashboard-shell--warm .stats-card__grid::before,
+.dashboard-shell--warm .stats-card__grid::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 190, 124, 0.7);
+  pointer-events: none;
+}
+
+.dashboard-shell--warm .stats-card__grid::before {
+  width: 1px;
+  height: 50%;
+  box-shadow: 0 0 8px rgba(255, 146, 64, 0.45);
+}
+
+.dashboard-shell--warm .stats-card__grid::after {
+  width: 50%;
+  height: 1px;
+  box-shadow: 0 0 8px rgba(255, 146, 64, 0.45);
+}
+
+.dashboard-shell--warm .stats-card__label {
+  font-size: 0.55rem;
+}
+
+.dashboard-shell--warm .stats-card__value {
+  font-size: 0.95rem;
 }
 
 .heatmap-card__content {
@@ -895,6 +1097,10 @@
 
   .dashboard-shell--warm .action-buttons .themed-button--square {
     width: clamp(3.3rem, 20vw, 3.95rem);
+  }
+
+  .dashboard-shell--warm .top-controls {
+    min-height: clamp(4.6rem, 22vw, 6.2rem);
   }
 
   .settings-modal {

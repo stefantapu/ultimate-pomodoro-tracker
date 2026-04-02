@@ -8,6 +8,10 @@ const minimalSkin: SkinProfile = {
   assets: {
     pageBackground: null,
     notesPanel: null,
+    heatmapPanel: null,
+    statsPanel: null,
+    topControlsPanel: null,
+    modeDurationField: null,
     timerPanel: null,
     startButton: null,
     resetButton: null,
@@ -65,6 +69,22 @@ const warmSkin: SkinProfile = {
     notesPanel: buildImageAsset(
       "/assets/red_lava_theme/notes_panel/notes_panel_w545_h717.webp",
       { width: 545, height: 717 },
+    ),
+    heatmapPanel: buildImageAsset(
+      "/assets/red_lava_theme/heatmap_panel/heatmap_panel_w920_h384.webp",
+      { width: 920, height: 384 },
+    ),
+    statsPanel: buildImageAsset(
+      "/assets/red_lava_theme/stats_panel/stats_panel_w334_h489.webp",
+      { width: 334, height: 489 },
+    ),
+    topControlsPanel: buildImageAsset(
+      "/assets/red_lava_theme/top_control_panel/top_panel_w1303_h200.webp",
+      { width: 1303, height: 200 },
+    ),
+    modeDurationField: buildImageAsset(
+      "/assets/red_lava_theme/top_control_panel/focus_and_break_minute_selector_background_w250_h127.webp",
+      { width: 250, height: 127 },
     ),
     timerPanel: buildImageAsset(
       "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
