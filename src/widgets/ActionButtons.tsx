@@ -27,14 +27,23 @@ export const ActionButtons = memo(function ActionButtons({
 }: ActionButtonsProps) {
   return (
     <div className="action-buttons">
-      <ThemedButton variant="action" onClick={onPrimaryAction}>
+      <ThemedButton
+        variant="action"
+        className="action-buttons__button--start"
+        onClick={onPrimaryAction}
+      >
         {status === "running" ? "Pause" : "Start"}
       </ThemedButton>
-      <ThemedButton variant="action" onClick={onReset}>
+      <ThemedButton
+        variant="action"
+        className="action-buttons__button--reset"
+        onClick={onReset}
+      >
         Reset
       </ThemedButton>
       <ThemedButton
         variant="square"
+        className="action-buttons__button--auto-focus"
         active={autoFocus}
         onClick={onToggleAutoFocus}
         aria-pressed={autoFocus}
@@ -44,6 +53,7 @@ export const ActionButtons = memo(function ActionButtons({
       </ThemedButton>
       <ThemedButton
         variant="square"
+        className="action-buttons__button--auto-break"
         active={autoBreak}
         onClick={onToggleAutoBreak}
         aria-pressed={autoBreak}
@@ -53,6 +63,7 @@ export const ActionButtons = memo(function ActionButtons({
       </ThemedButton>
       <ThemedButton
         variant="square"
+        className="action-buttons__button--sound"
         active={soundEnabled}
         onClick={onToggleSound}
         aria-pressed={soundEnabled}

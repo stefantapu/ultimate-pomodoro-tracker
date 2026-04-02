@@ -1,4 +1,6 @@
-﻿import { useAnalytics } from "@shared/hooks/useAnalytics";
+import { useAnalytics } from "@shared/hooks/useAnalytics";
+import { mapSkinToCssVariables } from "@shared/skins/cssVars";
+import { useSkinStore } from "@shared/stores/skinStore";
 import type { User } from "@supabase/supabase-js";
 import type { ComponentType } from "react";
 import "./dashboard.css";
@@ -6,6 +8,8 @@ import { DragonCard } from "./DragonCard";
 import { HeatmapCard } from "./HeatmapCard";
 import { LogoutButton } from "./LogoutButton";
 import { NotesPanel } from "./NotesPanel";
+import { SettingsButton } from "./SettingsButton";
+import { SettingsModal } from "./SettingsModal";
 import { StatsCard } from "./StatsCard";
 import { TimerBlock } from "./TimerBlock";
 
@@ -19,10 +23,17 @@ export function DashboardLayout({
   LockedOverlayComponent,
 }: DashboardLayoutProps) {
   const analytics = useAnalytics();
+  const activeSkin = useSkinStore((state) => state.activeSkin);
 
   return (
-    <div className="dashboard-shell">
+    <div
+      className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
+      style={mapSkinToCssVariables(activeSkin)}
+    >
+      <SettingsModal />
+
       <div className="dashboard-toolbar">
+        <SettingsButton />
         <LogoutButton />
       </div>
 
@@ -61,4 +72,3 @@ export function DashboardLayout({
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 import { memo, type ComponentPropsWithoutRef } from "react";
 
-type ButtonVariant = "tab" | "action" | "square" | "auth";
+type ButtonVariant = "tab" | "action" | "square" | "auth" | "toolbar";
 
 type ThemedButtonProps = ComponentPropsWithoutRef<"button"> & {
   variant?: ButtonVariant;
