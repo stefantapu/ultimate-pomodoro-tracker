@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/AuthProvider";
 import { useUIStore } from "../stores/uiStore";
@@ -19,20 +19,20 @@ export function useSyncSession() {
   const { user } = useAuth();
   const refreshAnalytics = useUIStore((state) => state.refreshAnalytics);
 
-  const getQueue = (): SessionPayload[] => {
+  const getQueue = useCallback((): SessionPayload[] => {
     try {
       const q = localStorage.getItem(SYNC_QUEUE_KEY);
       return q ? JSON.parse(q) : [];
     } catch {
       return [];
     }
-  };
+  }, []);
 
-  const saveQueue = (q: SessionPayload[]) => {
+  const saveQueue = useCallback((q: SessionPayload[]) => {
     localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(q));
-  };
+  }, []);
 
-  const flushQueue = async () => {
+  const flushQueue = useCallback(async () => {
     if (!user) return;
     const queue = getQueue();
     if (queue.length === 0) return;
@@ -52,16 +52,16 @@ export function useSyncSession() {
     } catch (e) {
       console.error("Sync stream err:", e);
     }
-  };
+  }, [getQueue, refreshAnalytics, saveQueue, user]);
 
   // Attempt to flush queue on hook mount (and when user is populated)
   useEffect(() => {
     if (user) {
       flushQueue();
     }
-  }, [user]);
+  }, [flushQueue, user]);
 
-  const syncSession = async (session: SessionPayload) => {
+  const syncSession = useCallback(async (session: SessionPayload) => {
     if (!user) return;
 
     const queue = getQueue();
@@ -70,7 +70,7 @@ export function useSyncSession() {
 
     // Attempt immediately
     await flushQueue();
-  };
+  }, [flushQueue, getQueue, saveQueue, user]);
 
   return { syncSession };
 }

@@ -103,8 +103,8 @@ export function TimerBlock() {
 
   const {
     mode,
-    displayMinutes,
-    displaySeconds,
+    timeLeft,
+    targetTimestamp,
     status,
     start,
     pause,
@@ -277,7 +277,8 @@ export function TimerBlock() {
       <TimerCard
         mode={mode}
         status={status}
-        timeLabel={`${displayMinutes}:${displaySeconds}`}
+        timeLeft={timeLeft}
+        targetTimestamp={targetTimestamp}
       />
       <ActionButtons
         status={status}

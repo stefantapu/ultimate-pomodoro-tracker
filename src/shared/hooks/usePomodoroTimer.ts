@@ -8,7 +8,7 @@ import type {
   TimerSettings,
   TimerState,
 } from "@shared/lib/timerTypes";
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useSyncSession } from "./useSyncSession";
 
 type UsePomodoroTimerParams = {
@@ -16,10 +16,6 @@ type UsePomodoroTimerParams = {
   stateStorageKey: string;
   onSessionComplete?: () => void;
 };
-
-function formatTime(seconds: number) {
-  return seconds.toString().padStart(2, "0");
-}
 
 export function usePomodoroTimer({
   settings,
@@ -186,33 +182,20 @@ export function usePomodoroTimer({
       return;
     }
 
-    const initialRemaining = Math.max(
-      0,
-      Math.round((state.targetTimestamp - Date.now()) / 1000),
-    );
+    const remainingMilliseconds = state.targetTimestamp - Date.now();
 
-    if (initialRemaining <= 0) {
+    if (remainingMilliseconds <= 0) {
       handleSessionFinish();
       return;
     }
 
-    const intervalId = window.setInterval(() => {
-      const remaining = Math.max(
-        0,
-        Math.round((state.targetTimestamp! - Date.now()) / 1000),
-      );
-
-      if (remaining <= 0) {
-        window.clearInterval(intervalId);
-        handleSessionFinish();
-        return;
-      }
-
-      dispatch({ type: "TICK", timeLeft: remaining });
-    }, 1000);
+    const timeoutId = window.setTimeout(
+      handleSessionFinish,
+      remainingMilliseconds,
+    );
 
     return () => {
-      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
     };
   }, [handleSessionFinish, state.status, state.targetTimestamp]);
 
@@ -258,21 +241,11 @@ export function usePomodoroTimer({
     });
   }, [breakDuration, focusDuration, checkAndSyncSession, getFinalAccumulatedSeconds]);
 
-  const displayMinutes = useMemo(
-    () => formatTime(Math.floor(state.timeLeft / 60)),
-    [state.timeLeft],
-  );
-  const displaySeconds = useMemo(
-    () => formatTime(state.timeLeft % 60),
-    [state.timeLeft],
-  );
-
   return {
     mode: state.mode,
     status: state.status,
     timeLeft: state.timeLeft,
-    displayMinutes,
-    displaySeconds,
+    targetTimestamp: state.targetTimestamp,
     start,
     pause,
     reset,
