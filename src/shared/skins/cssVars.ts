@@ -34,6 +34,7 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--dashboard-button-font-weight": String(skin.typography.buttonWeight),
     "--dashboard-button-letter-spacing": skin.typography.buttonLetterSpacing,
     "--dashboard-button-text-transform": skin.typography.buttonTransform,
+    "--skin-page-background-image": toImageVariable(skin.assets.pageBackground),
     "--skin-timer-panel-image": toImageVariable(skin.assets.timerPanel),
     "--skin-start-button-image": toImageVariable(skin.assets.startButton),
     "--skin-reset-button-image": toImageVariable(skin.assets.resetButton),
@@ -58,4 +59,3 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-square-button-min-height": skin.layout.squareButtonMinHeight,
   };
 }
-

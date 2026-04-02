@@ -24,6 +24,8 @@
   --dashboard-button-font-weight: 500;
   --dashboard-button-letter-spacing: 0.06em;
   --dashboard-button-text-transform: uppercase;
+  --dashboard-content-max-width: 1260px;
+  --skin-page-background-image: none;
   --skin-timer-panel-image: none;
   --skin-start-button-image: none;
   --skin-reset-button-image: none;
@@ -50,10 +52,20 @@
 
 .dashboard-shell--warm {
   background-image:
-    radial-gradient(circle at 15% 20%, rgba(255, 150, 56, 0.16), transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(255, 84, 23, 0.22), transparent 38%),
-    linear-gradient(140deg, rgba(25, 8, 4, 0.58), rgba(70, 25, 10, 0.45));
+    linear-gradient(140deg, rgba(16, 5, 2, 0.58), rgba(51, 17, 7, 0.52)),
+    radial-gradient(circle at 16% 20%, rgba(255, 150, 56, 0.2), transparent 44%),
+    radial-gradient(circle at 84% 16%, rgba(255, 84, 23, 0.24), transparent 38%),
+    var(--skin-page-background-image);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   background-color: var(--dashboard-bg);
+}
+
+.dashboard-content {
+  width: min(100%, var(--dashboard-content-max-width));
+  margin: 0 auto;
 }
 
 .dashboard-toolbar {
@@ -225,6 +237,10 @@
   align-items: stretch;
 }
 
+.action-buttons__row {
+  display: contents;
+}
+
 .themed-button {
   border: 1px solid var(--dashboard-panel-border);
   border-radius: var(--dashboard-radius);
@@ -309,6 +325,7 @@
 .dashboard-shell--warm .action-buttons .themed-button--action,
 .dashboard-shell--warm .action-buttons .themed-button--square {
   border: none;
+  flex: 0 0 auto;
   background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
@@ -319,12 +336,29 @@
 
 .dashboard-shell--warm .action-buttons .themed-button--action {
   aspect-ratio: var(--skin-action-button-aspect-ratio);
-  min-height: 3.9rem;
+  width: clamp(9.3rem, 14vw, 11.1rem);
+  min-height: 0;
 }
 
 .dashboard-shell--warm .action-buttons .themed-button--square {
   aspect-ratio: var(--skin-square-button-aspect-ratio);
-  min-height: 3.9rem;
+  width: clamp(3.7rem, 6vw, 4.8rem);
+  min-height: 0;
+}
+
+.dashboard-shell--warm .action-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard-shell--warm .action-buttons__row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .dashboard-shell--warm .action-buttons__button--start {
@@ -700,10 +734,21 @@
     grid-column: 1 / -1;
   }
 
-  .dashboard-shell--warm .action-buttons .themed-button--action,
+  .dashboard-shell--warm .action-buttons {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .dashboard-shell--warm .action-buttons__row {
+    gap: 0.6rem;
+  }
+
+  .dashboard-shell--warm .action-buttons .themed-button--action {
+    width: clamp(8.8rem, 28vw, 10.1rem);
+  }
+
   .dashboard-shell--warm .action-buttons .themed-button--square {
-    aspect-ratio: auto;
-    min-height: 4rem;
+    width: clamp(3.6rem, 15vw, 4.3rem);
   }
 
   .dashboard-shell--warm .timer-card {
@@ -739,9 +784,24 @@
     min-height: 220px;
   }
 
-  .dashboard-shell--warm .timer-card .panel-shell__body {
-    aspect-ratio: auto;
-    min-height: 200px;
+  .dashboard-shell--warm {
+    background-attachment: scroll;
+  }
+
+  .dashboard-shell--warm .action-buttons {
+    gap: 0.5rem;
+  }
+
+  .dashboard-shell--warm .action-buttons__row {
+    gap: 0.5rem;
+  }
+
+  .dashboard-shell--warm .action-buttons .themed-button--action {
+    width: clamp(8.1rem, 38vw, 9.3rem);
+  }
+
+  .dashboard-shell--warm .action-buttons .themed-button--square {
+    width: clamp(3.3rem, 20vw, 3.95rem);
   }
 
   .settings-modal {

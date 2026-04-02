@@ -8,6 +8,7 @@ export type SkinImageAsset = {
 };
 
 export type SkinAssets = {
+  pageBackground: SkinImageAsset | null;
   timerPanel: SkinImageAsset | null;
   startButton: SkinImageAsset | null;
   resetButton: SkinImageAsset | null;
@@ -64,4 +65,3 @@ export type SkinProfile = {
   typography: SkinTypography;
   layout: SkinLayout;
 };
-

@@ -27,49 +27,54 @@ export const ActionButtons = memo(function ActionButtons({
 }: ActionButtonsProps) {
   return (
     <div className="action-buttons">
-      <ThemedButton
-        variant="action"
-        className="action-buttons__button--start"
-        onClick={onPrimaryAction}
-      >
-        {status === "running" ? "Pause" : "Start"}
-      </ThemedButton>
-      <ThemedButton
-        variant="action"
-        className="action-buttons__button--reset"
-        onClick={onReset}
-      >
-        Reset
-      </ThemedButton>
-      <ThemedButton
-        variant="square"
-        className="action-buttons__button--auto-focus"
-        active={autoFocus}
-        onClick={onToggleAutoFocus}
-        aria-pressed={autoFocus}
-      >
-        <span>Auto</span>
-        <span>Focus</span>
-      </ThemedButton>
-      <ThemedButton
-        variant="square"
-        className="action-buttons__button--auto-break"
-        active={autoBreak}
-        onClick={onToggleAutoBreak}
-        aria-pressed={autoBreak}
-      >
-        <span>Auto</span>
-        <span>Break</span>
-      </ThemedButton>
-      <ThemedButton
-        variant="square"
-        className="action-buttons__button--sound"
-        active={soundEnabled}
-        onClick={onToggleSound}
-        aria-pressed={soundEnabled}
-      >
-        <span>Sound</span>
-      </ThemedButton>
+      <div className="action-buttons__row action-buttons__row--primary">
+        <ThemedButton
+          variant="action"
+          className="action-buttons__button--start"
+          onClick={onPrimaryAction}
+        >
+          {status === "running" ? "Pause" : "Start"}
+        </ThemedButton>
+        <ThemedButton
+          variant="action"
+          className="action-buttons__button--reset"
+          onClick={onReset}
+        >
+          Reset
+        </ThemedButton>
+      </div>
+
+      <div className="action-buttons__row action-buttons__row--secondary">
+        <ThemedButton
+          variant="square"
+          className="action-buttons__button--auto-focus"
+          active={autoFocus}
+          onClick={onToggleAutoFocus}
+          aria-pressed={autoFocus}
+        >
+          <span>Auto</span>
+          <span>Focus</span>
+        </ThemedButton>
+        <ThemedButton
+          variant="square"
+          className="action-buttons__button--auto-break"
+          active={autoBreak}
+          onClick={onToggleAutoBreak}
+          aria-pressed={autoBreak}
+        >
+          <span>Auto</span>
+          <span>Break</span>
+        </ThemedButton>
+        <ThemedButton
+          variant="square"
+          className="action-buttons__button--sound"
+          active={soundEnabled}
+          onClick={onToggleSound}
+          aria-pressed={soundEnabled}
+        >
+          <span>Sound</span>
+        </ThemedButton>
+      </div>
     </div>
   );
 });

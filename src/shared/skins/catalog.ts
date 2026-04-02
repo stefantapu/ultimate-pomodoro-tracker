@@ -6,6 +6,7 @@ const minimalSkin: SkinProfile = {
   label: "Ultra Minimal",
   description: "Current clean monochrome dashboard.",
   assets: {
+    pageBackground: null,
     timerPanel: null,
     startButton: null,
     resetButton: null,
@@ -56,6 +57,10 @@ const warmSkin: SkinProfile = {
   label: "Red Lava",
   description: "Warm fantasy palette with themed timer controls.",
   assets: {
+    pageBackground: buildImageAsset(
+      "/assets/red_lava_theme/background.webp",
+      { width: 1920, height: 1080 },
+    ),
     timerPanel: buildImageAsset(
       "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
       { width: 1047, height: 390 },
@@ -142,4 +147,3 @@ export function getSkinById(skinId: string): SkinProfile {
 export function isSkinId(value: string): value is SkinId {
   return skinById.has(value as SkinId);
 }
-

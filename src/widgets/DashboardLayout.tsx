@@ -32,43 +32,45 @@ export function DashboardLayout({
     >
       <SettingsModal />
 
-      <div className="dashboard-toolbar">
-        <SettingsButton />
-        <LogoutButton />
+      <div className="dashboard-content">
+        <div className="dashboard-toolbar">
+          <SettingsButton />
+          <LogoutButton />
+        </div>
+
+        <main className="dashboard-main">
+          <section className="dashboard-column dashboard-column--left">
+            <TimerBlock />
+
+            <div className="dashboard-bottom-row">
+              <div className="dashboard-lock-wrap">
+                <HeatmapCard
+                  heatmapData={analytics.data?.heatmap_data ?? []}
+                  loading={analytics.loading}
+                />
+                {!user && <LockedOverlayComponent />}
+              </div>
+
+              <div className="dashboard-lock-wrap">
+                <StatsCard data={analytics.data} loading={analytics.loading} />
+                {!user && <LockedOverlayComponent />}
+              </div>
+            </div>
+          </section>
+
+          <section className="dashboard-column dashboard-column--right">
+            <div className="dashboard-lock-wrap dashboard-notes-wrap">
+              <NotesPanel />
+              {!user && <LockedOverlayComponent />}
+            </div>
+
+            <div className="dashboard-lock-wrap">
+              <DragonCard />
+              {!user && <LockedOverlayComponent />}
+            </div>
+          </section>
+        </main>
       </div>
-
-      <main className="dashboard-main">
-        <section className="dashboard-column dashboard-column--left">
-          <TimerBlock />
-
-          <div className="dashboard-bottom-row">
-            <div className="dashboard-lock-wrap">
-              <HeatmapCard
-                heatmapData={analytics.data?.heatmap_data ?? []}
-                loading={analytics.loading}
-              />
-              {!user && <LockedOverlayComponent />}
-            </div>
-
-            <div className="dashboard-lock-wrap">
-              <StatsCard data={analytics.data} loading={analytics.loading} />
-              {!user && <LockedOverlayComponent />}
-            </div>
-          </div>
-        </section>
-
-        <section className="dashboard-column dashboard-column--right">
-          <div className="dashboard-lock-wrap dashboard-notes-wrap">
-            <NotesPanel />
-            {!user && <LockedOverlayComponent />}
-          </div>
-
-          <div className="dashboard-lock-wrap">
-            <DragonCard />
-            {!user && <LockedOverlayComponent />}
-          </div>
-        </section>
-      </main>
     </div>
   );
 }
