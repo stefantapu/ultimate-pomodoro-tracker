@@ -9,7 +9,6 @@ import { HeatmapCard } from "./HeatmapCard";
 import { LogoutButton } from "./LogoutButton";
 import { NotesPanel } from "./NotesPanel";
 import { SettingsButton } from "./SettingsButton";
-import { SettingsModal } from "./SettingsModal";
 import { StatsCard } from "./StatsCard";
 import { TimerBlock } from "./TimerBlock";
 
@@ -30,8 +29,6 @@ export function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={mapSkinToCssVariables(activeSkin)}
     >
-      <SettingsModal />
-
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <SettingsButton />

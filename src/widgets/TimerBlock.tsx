@@ -9,11 +9,13 @@ import type { Mode, TimerSettings } from "@shared/lib/timerTypes";
 import { useUIStore } from "@shared/stores/uiStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActionButtons } from "./ActionButtons";
+import { SettingsModal } from "./SettingsModal";
 import { TimerCard } from "./TimerCard";
 import { TopControls } from "./TopControls";
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
 const SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
+const SOUND_ENABLED_STORAGE_KEY = "pomodoro-sound-enabled";
 const MIN_DURATION_MINUTES = 15;
 const MAX_DURATION_MINUTES = 90;
 
@@ -41,6 +43,24 @@ function parseValidMinutes(value: string) {
   }
 
   return parsed;
+}
+
+function readSoundEnabled() {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(SOUND_ENABLED_STORAGE_KEY);
+
+    if (raw === null) {
+      return true;
+    }
+
+    return raw === "true";
+  } catch {
+    return true;
+  }
 }
 
 export function TimerBlock() {
@@ -74,7 +94,9 @@ export function TimerBlock() {
   const [autoFocus, setAutoFocus] = useState<boolean>(
     () => initialSettings.autoFocus,
   );
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() =>
+    readSoundEnabled(),
+  );
   const hasLoadedFromServer = useRef(false);
 
   const settings = useMemo<TimerSettings>(
@@ -268,6 +290,21 @@ export function TimerBlock() {
   }, [pendingDurationResetCount, reset]);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(
+        SOUND_ENABLED_STORAGE_KEY,
+        String(soundEnabled),
+      );
+    } catch {
+      // No-op: localStorage can fail in strict browser modes.
+    }
+  }, [soundEnabled]);
+
+  useEffect(() => {
     const updatedSettings: TimerSettings = {
       focusDuration: focusDurationSeconds,
       breakDuration: breakDurationSeconds,
@@ -290,6 +327,14 @@ export function TimerBlock() {
 
   return (
     <div className="timer-block">
+      <SettingsModal
+        autoFocus={autoFocus}
+        autoBreak={autoBreak}
+        soundEnabled={soundEnabled}
+        onToggleAutoFocus={handleToggleAutoFocus}
+        onToggleAutoBreak={handleToggleAutoBreak}
+        onToggleSound={handleToggleSound}
+      />
       <TopControls
         mode={mode}
         focusLastValidMinutes={focusLastValidMinutes}
@@ -311,14 +356,8 @@ export function TimerBlock() {
       />
       <ActionButtons
         status={status}
-        autoFocus={autoFocus}
-        autoBreak={autoBreak}
-        soundEnabled={soundEnabled}
         onPrimaryAction={status === "running" ? pause : start}
         onReset={reset}
-        onToggleAutoFocus={handleToggleAutoFocus}
-        onToggleAutoBreak={handleToggleAutoBreak}
-        onToggleSound={handleToggleSound}
       />
     </div>
   );

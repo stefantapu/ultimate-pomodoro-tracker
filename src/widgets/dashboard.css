@@ -268,16 +268,9 @@
 
 .action-buttons {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) repeat(
-      3,
-      minmax(4.5rem, 5.5rem)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   align-items: stretch;
-}
-
-.action-buttons__row {
-  display: contents;
 }
 
 .themed-button {
@@ -485,17 +478,6 @@
   min-height: 0;
 }
 
-.dashboard-shell--warm .action-buttons .themed-button--square {
-  aspect-ratio: var(--skin-square-button-aspect-ratio);
-  width: clamp(3.7rem, 6vw, 4.8rem);
-  min-height: 0;
-}
-
-.dashboard-shell--warm .action-buttons__button--auto-focus,
-.dashboard-shell--warm .action-buttons__button--auto-break {
-  font-size: 0;
-}
-
 .dashboard-shell--warm .action-buttons {
   display: flex;
   flex-direction: row;
@@ -506,31 +488,12 @@
   margin-inline: auto;
 }
 
-.dashboard-shell--warm .action-buttons__row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .dashboard-shell--warm .action-buttons__button--start {
   background-image: var(--skin-start-button-image);
 }
 
 .dashboard-shell--warm .action-buttons__button--reset {
   background-image: var(--skin-reset-button-image);
-}
-
-.dashboard-shell--warm .action-buttons__button--auto-focus {
-  background-image: var(--skin-auto-focus-button-image);
-}
-
-.dashboard-shell--warm .action-buttons__button--auto-break {
-  background-image: var(--skin-auto-break-button-image);
-}
-
-.dashboard-shell--warm .action-buttons__button--sound {
-  background-image: var(--skin-sound-button-image);
 }
 
 @keyframes timer-lava-glow {
@@ -1094,10 +1057,43 @@
   line-height: 1;
 }
 
+.settings-modal__section {
+  padding: 1rem;
+}
+
+.settings-modal__section + .settings-modal__section {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.settings-modal__section-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dashboard-text-muted);
+}
+
+.settings-modal__toggles {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.settings-modal__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-modal__toggle input {
+  accent-color: var(--dashboard-accent);
+}
+
 .settings-modal__options {
   display: grid;
   gap: 0.65rem;
-  padding: 1rem;
 }
 
 .settings-modal__option {
@@ -1192,30 +1188,15 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .action-buttons .themed-button--square:last-child {
-    grid-column: 1 / -1;
-  }
-
   .dashboard-shell--warm .action-buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    row-gap: 0.6rem;
-    column-gap: 0.6rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
     width: min(100%, 22rem);
-  }
-
-  .dashboard-shell--warm .action-buttons__row {
-    display: contents;
   }
 
   .dashboard-shell--warm .action-buttons .themed-button--action {
     width: clamp(8.8rem, 28vw, 10.1rem);
-  }
-
-  .dashboard-shell--warm .action-buttons .themed-button--square {
-    width: clamp(3.6rem, 15vw, 4.3rem);
   }
 
   .dashboard-shell--warm .timer-card {
@@ -1257,20 +1238,11 @@
 
   .dashboard-shell--warm .action-buttons {
     width: min(100%, 19.5rem);
-    row-gap: 0.5rem;
-    column-gap: 0.5rem;
-  }
-
-  .dashboard-shell--warm .action-buttons__row {
-    display: contents;
+    gap: 0.5rem;
   }
 
   .dashboard-shell--warm .action-buttons .themed-button--action {
     width: clamp(8.1rem, 38vw, 9.3rem);
-  }
-
-  .dashboard-shell--warm .action-buttons .themed-button--square {
-    width: clamp(3.3rem, 20vw, 3.95rem);
   }
 
   .dashboard-shell--warm .top-controls {
