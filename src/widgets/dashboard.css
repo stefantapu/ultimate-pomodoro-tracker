@@ -671,7 +671,7 @@
   position: relative;
   z-index: 1;
   height: 100%;
-  padding: 1rem;
+  padding: 0.8rem auto;
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -766,9 +766,9 @@
 .heatmap-card__content {
   background: var(--dashboard-panel-inner);
   border-radius: calc(var(--dashboard-radius) - 0.1rem);
-  padding: 1rem;
+  padding: 0rem;
   color: var(--dashboard-text-dark);
-  min-height: 180px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -816,6 +816,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.65rem;
+  margin-left: 0 !important;
   color: var(--dashboard-text-dark);
 }
 
@@ -831,12 +832,13 @@
   color: inherit;
 }
 
-.dashboard-shell--warm
-  .heatmap-card__calendar
-  .react-activity-calendar__footer,
-.dashboard-shell--warm
-  .heatmap-card__calendar
-  .react-activity-calendar__count,
+.heatmap-card__calendar .react-activity-calendar__legend-colors {
+  margin-left: 0 !important;
+  flex-shrink: 0;
+}
+
+.dashboard-shell--warm .heatmap-card__calendar .react-activity-calendar__footer,
+.dashboard-shell--warm .heatmap-card__calendar .react-activity-calendar__count,
 .dashboard-shell--warm
   .heatmap-card__calendar
   .react-activity-calendar__legend-colors,

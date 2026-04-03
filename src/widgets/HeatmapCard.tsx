@@ -41,6 +41,9 @@ function getCalendarData(heatmapData: HeatmapData[]) {
 export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
   const activeSkinId = useSkinStore((state) => state.activeSkinId);
   const isWarmSkin = activeSkinId === "warm";
+  const totalFocusedHours = (
+    heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
+  ).toFixed(1);
 
   const calendarTheme = isWarmSkin
     ? {
@@ -86,7 +89,7 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
                   "Nov",
                   "Dec",
                 ],
-                totalCount: "{{count}} focused seconds in last 6 months",
+                totalCount: `${totalFocusedHours}h focused in last 6 months`,
               }}
             />
           </div>
