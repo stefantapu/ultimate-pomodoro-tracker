@@ -808,6 +808,45 @@
   height: auto !important;
 }
 
+.heatmap-card__calendar .react-activity-calendar__footer {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  color: var(--dashboard-text-dark);
+}
+
+.heatmap-card__calendar .react-activity-calendar__count {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-colors,
+.heatmap-card__calendar .react-activity-calendar__legend-colors span {
+  color: inherit;
+}
+
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__footer,
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__count,
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__legend-colors,
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__legend-colors
+  span {
+  color: #ffe1bf;
+}
+
 .heatmap-card__status {
   color: var(--dashboard-text-dark);
 }
