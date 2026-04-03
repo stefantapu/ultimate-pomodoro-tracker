@@ -44,6 +44,7 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
   const totalFocusedHours = (
     heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
   ).toFixed(1);
+  const formatHours = (seconds: number) => `${(seconds / 3600).toFixed(1)}h`;
 
   const calendarTheme = isWarmSkin
     ? {
@@ -70,6 +71,12 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
               blockMargin={4}
               fontSize={isWarmSkin ? 12 : 13}
               showWeekdayLabels
+              tooltips={{
+                activity: {
+                  text: (activity) =>
+                    `${formatHours(activity.count)} focused on ${activity.date}`,
+                },
+              }}
               labels={{
                 legend: {
                   less: "Less",
