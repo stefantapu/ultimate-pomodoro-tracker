@@ -50,7 +50,7 @@
   --skin-square-button-aspect-ratio: 1;
   --skin-notes-panel-aspect-ratio: 0.76;
   --skin-heatmap-panel-aspect-ratio: 2.39;
-  --skin-stats-panel-aspect-ratio: 0.68;
+  --skin-stats-panel-aspect-ratio: 0.8967;
   --skin-top-controls-panel-aspect-ratio: 6.5;
   --skin-mode-tab-button-aspect-ratio: 3.53;
   --skin-mode-duration-field-aspect-ratio: 1.97;
@@ -339,7 +339,7 @@
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
   aspect-ratio: var(--skin-timer-panel-aspect-ratio);
-  min-height: 190px;
+  min-height: clamp(120px, 38vw, 190px);
 }
 
 .dashboard-shell--warm .timer-card__time {
@@ -689,7 +689,7 @@
 }
 
 .dashboard-shell--warm .stats-card {
-  width: min(100%, 334px);
+  width: min(100%, 392px);
   height: 100%;
   margin-inline: auto;
   background: transparent;
@@ -709,7 +709,7 @@
   background-image: var(--skin-stats-panel-image);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
+  background-size: 100% 100%;
   pointer-events: none;
   z-index: 0;
 }
@@ -750,7 +750,7 @@
 }
 
 .dashboard-shell--warm .stats-card__grid::after {
-  width: 50%;
+  width: 70%;
   height: 1px;
   box-shadow: 0 0 8px rgba(255, 146, 64, 0.45);
 }
@@ -1213,6 +1213,18 @@
       minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr)
       minmax(0, 0.9fr);
     gap: 0.4rem;
+  }
+
+  .dashboard-shell--warm .stats-card .panel-shell__body {
+    min-height: clamp(16.5rem, 80vw, 20rem);
+  }
+
+  .dashboard-shell--warm .stats-card__label {
+    font-size: 0.62rem;
+  }
+
+  .dashboard-shell--warm .stats-card__value {
+    font-size: 1.08rem;
   }
 
   .settings-modal {

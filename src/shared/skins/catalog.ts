@@ -77,7 +77,7 @@ const warmSkin: SkinProfile = {
     ),
     statsPanel: buildImageAsset(
       "/assets/red_lava_theme/stats_panel/stats_panel_w334_h489.webp",
-      { width: 334, height: 489 },
+      { width: 191, height: 213 },
     ),
     topControlsPanel: buildImageAsset(
       "/assets/red_lava_theme/top_control_panel/top_panel_w1303_h200.webp",
