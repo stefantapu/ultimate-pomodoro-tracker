@@ -45,6 +45,10 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
     heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
   ).toFixed(1);
   const formatHours = (seconds: number) => `${(seconds / 3600).toFixed(1)}h`;
+  const formatDayMonth = (isoDate: string) => {
+    const [, month, day] = isoDate.split("-");
+    return `${Number(day)}/${Number(month)}`;
+  };
 
   const calendarTheme = isWarmSkin
     ? {
@@ -66,6 +70,7 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
             <ActivityCalendar
               data={getCalendarData(heatmapData)}
               theme={calendarTheme}
+              colorScheme={isWarmSkin ? "dark" : "light"}
               maxLevel={4}
               blockSize={isWarmSkin ? 12 : 14}
               blockMargin={4}
@@ -74,7 +79,7 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
               tooltips={{
                 activity: {
                   text: (activity) =>
-                    `${formatHours(activity.count)} focused on ${activity.date}`,
+                    `${formatHours(activity.count)} - ${formatDayMonth(activity.date)}`,
                 },
               }}
               labels={{
