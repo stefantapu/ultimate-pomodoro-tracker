@@ -394,7 +394,10 @@
   box-sizing: border-box;
   padding: 0.35rem 0.45rem;
   min-height: clamp(3.5rem, 6.2vw, 4.4rem);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(
+      0,
+      0.8fr
+    );
   gap: 0.55rem;
   align-items: center;
   border-radius: calc(var(--dashboard-radius) + 0.25rem);
@@ -422,7 +425,9 @@
   min-height: 0;
   height: var(--top-controls-item-height);
   width: 100%;
-  max-width: calc(var(--top-controls-item-height) * var(--skin-mode-tab-button-aspect-ratio));
+  max-width: calc(
+    var(--top-controls-item-height) * var(--skin-mode-tab-button-aspect-ratio)
+  );
   justify-self: center;
   align-self: center;
   font-size: 0.8rem;
@@ -440,7 +445,10 @@
   min-height: 0;
   height: var(--top-controls-item-height);
   width: 100%;
-  max-width: calc(var(--top-controls-item-height) * var(--skin-mode-duration-field-aspect-ratio));
+  max-width: calc(
+    var(--top-controls-item-height) *
+      var(--skin-mode-duration-field-aspect-ratio)
+  );
   justify-self: center;
   align-self: center;
   padding: 0 0.3rem;
@@ -663,22 +671,14 @@
   position: relative;
   z-index: 1;
   height: 100%;
-  padding: 0.7rem 0.85rem 0.6rem;
+  padding: 1rem;
   align-items: center;
   justify-content: center;
   background: transparent;
 }
 
 .dashboard-shell--warm .heatmap-card__calendar {
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.dashboard-shell--warm .heatmap-card__calendar article {
-  margin: 0;
+  width: min(100%, 90%);
 }
 
 .dashboard-shell--warm .heatmap-card__calendar text,
@@ -774,19 +774,38 @@
   justify-content: center;
 }
 
-.heatmap-card__calendar {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.heatmap-card__calendar article {
-  margin: 0 auto;
-}
-
 .heatmap-card__calendar text,
 .heatmap-card__calendar span {
   fill: var(--dashboard-text-dark);
   color: var(--dashboard-text-dark);
+}
+
+.heatmap-card__calendar {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.heatmap-card__calendar .react-activity-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+}
+
+.heatmap-card__calendar .react-activity-calendar__scroll-container {
+  width: 100%;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+.heatmap-card__calendar .react-activity-calendar__calendar {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
 }
 
 .heatmap-card__status {
@@ -1107,7 +1126,9 @@
 
   .dashboard-shell--warm .top-controls {
     min-height: clamp(3.3rem, 14vw, 4rem);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 0.9fr);
+    grid-template-columns:
+      minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr)
+      minmax(0, 0.9fr);
     gap: 0.4rem;
   }
 
