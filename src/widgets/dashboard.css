@@ -187,14 +187,16 @@
 }
 
 .timer-duration-field__input {
-  width: 5ch;
+  width: 5.6ch;
+  min-width: 0;
   border: none;
   background: transparent;
   color: inherit;
   font: inherit;
   font-size: 0.95rem;
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   text-align: center;
   padding: 0;
   margin: 0;
@@ -328,37 +330,108 @@
 .dashboard-shell--warm .timer-card {
   max-width: 100%;
   margin-inline: 0;
+  position: relative;
+  isolation: isolate;
+  border: none;
   background: transparent;
   box-shadow: none;
+}
+
+.dashboard-shell--warm .timer-card::before,
+.dashboard-shell--warm .timer-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset-inline: 10%;
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 180ms ease;
+}
+
+.dashboard-shell--warm .timer-card::before {
+  top: 17%;
+  bottom: 14%;
+  border-radius: 48%;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(255, 233, 151, 0.3) 0%,
+      rgba(255, 163, 74, 0.26) 28%,
+      rgba(255, 102, 34, 0.2) 48%,
+      rgba(99, 21, 4, 0) 76%
+    );
+  filter: blur(30px);
+}
+
+.dashboard-shell--warm .timer-card::after {
+  top: 28%;
+  bottom: 25%;
+  inset-inline: 21%;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 247, 188, 0.2) 0%,
+      rgba(255, 191, 97, 0.16) 18%,
+      rgba(255, 110, 32, 0.14) 44%,
+      rgba(88, 18, 4, 0) 74%
+    );
+  filter: blur(22px);
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
   aspect-ratio: var(--skin-timer-panel-aspect-ratio);
   min-height: clamp(120px, 38vw, 190px);
+  z-index: 1;
 }
 
 .dashboard-shell--warm .timer-card__time {
   font-family: "RedLavaTimer", var(--dashboard-display-font-family);
   font-size: clamp(6rem, 18vw, 8rem);
-  color: #ffca5e;
+  position: relative;
+  z-index: 3;
+  color: #ffd46f;
   text-shadow:
-    0 0 6px rgba(255, 70, 29, 0.65),
-    0 0 14px rgba(255, 149, 44, 0.52),
-    0 0 24px rgba(255, 107, 20, 0.36);
+    0 0 8px rgba(255, 108, 32, 0.55),
+    0 0 18px rgba(255, 171, 78, 0.4),
+    0 0 36px rgba(255, 103, 28, 0.2);
+  filter: drop-shadow(0 0 0.2rem rgba(255, 158, 73, 0.26));
+  transition:
+    color 180ms ease,
+    text-shadow 180ms ease,
+    filter 180ms ease;
 }
 
 .dashboard-shell--warm .timer-card.is-running {
-  box-shadow:
-    0 0 0 1px rgba(255, 173, 97, 0.42),
-    0 0 24px rgba(255, 120, 40, 0.45),
-    0 0 48px rgba(255, 95, 24, 0.35);
+  box-shadow: none;
+}
+
+.dashboard-shell--warm .timer-card.is-running::before {
+  opacity: 0.78;
   animation: timer-lava-glow 1.8s ease-in-out infinite alternate;
+}
+
+.dashboard-shell--warm .timer-card.is-running::after {
+  opacity: 0.52;
+  animation: timer-lava-core 1.8s ease-in-out infinite alternate;
+}
+
+.dashboard-shell--warm .timer-card.is-running .timer-card__time {
+  color: #ffe19a;
+  text-shadow:
+    0 0 10px rgba(255, 130, 44, 0.72),
+    0 0 22px rgba(255, 186, 95, 0.62),
+    0 0 44px rgba(255, 121, 35, 0.42),
+    0 0 72px rgba(255, 88, 21, 0.2);
+  filter:
+    drop-shadow(0 0 0.5rem rgba(255, 176, 88, 0.36))
+    drop-shadow(0 0 1.35rem rgba(255, 106, 33, 0.28));
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 0.2rem 0.45rem 0.28rem;
   background-image: var(--skin-timer-panel-image);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -372,11 +445,31 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(30, 10, 4, 0.05),
-    rgba(30, 10, 4, 0.35)
-  );
+  background:
+    linear-gradient(
+      90deg,
+      rgba(25, 9, 4, 0.34) 0%,
+      rgba(25, 9, 4, 0.16) 4%,
+      rgba(25, 9, 4, 0) 10%,
+      rgba(25, 9, 4, 0) 90%,
+      rgba(25, 9, 4, 0.18) 96%,
+      rgba(25, 9, 4, 0.36) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(22, 8, 4, 0.22) 0%,
+      rgba(22, 8, 4, 0) 12%,
+      rgba(22, 8, 4, 0) 86%,
+      rgba(22, 8, 4, 0.18) 94%,
+      rgba(22, 8, 4, 0.28) 100%
+    ),
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 180, 87, 0.14),
+      rgba(255, 109, 34, 0.06) 26%,
+      rgba(40, 10, 4, 0) 62%
+    ),
+    linear-gradient(180deg, rgba(30, 10, 4, 0.04), rgba(30, 10, 4, 0.34));
   pointer-events: none;
   z-index: 0;
 }
@@ -432,11 +525,79 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  color: #f0c999;
+  text-shadow:
+    0 1px 1px rgba(10, 3, 1, 0.82),
+    0 0 0.2rem rgba(255, 148, 67, 0.12);
+  box-shadow:
+    0 8px 16px rgba(22, 7, 3, 0.16),
+    inset 0 1px 0 rgba(255, 215, 162, 0.08);
+  filter: brightness(0.94) saturate(0.94);
+  transition:
+    color 150ms ease,
+    text-shadow 150ms ease,
+    box-shadow 150ms ease,
+    transform 120ms ease,
+    filter 150ms ease;
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab:hover,
+.dashboard-shell--warm .top-controls .themed-button--tab:focus-visible {
+  color: #ffe2bc;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.84),
+    0 0 0.45rem rgba(255, 179, 94, 0.4);
+  box-shadow:
+    0 10px 18px rgba(30, 8, 3, 0.22),
+    inset 0 1px 0 rgba(255, 229, 191, 0.18);
+  filter:
+    brightness(1.03)
+    saturate(1.02)
+    drop-shadow(0 0 0.55rem rgba(255, 125, 39, 0.22));
+  transform: translateY(-1px);
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab:active {
+  color: #ffd6a7;
+  text-shadow: 0 1px 1px rgba(8, 3, 1, 0.82);
+  box-shadow:
+    inset 0 3px 8px rgba(42, 11, 4, 0.32),
+    inset 0 1px 0 rgba(255, 222, 182, 0.08);
+  filter: brightness(0.96) saturate(1.04);
+  transform: translateY(1px) scale(0.988);
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab.is-active {
+  color: #fff0c5;
+  text-shadow:
+    0 1px 1px rgba(14, 5, 1, 0.86),
+    0 0 0.55rem rgba(255, 201, 114, 0.62),
+    0 0 1rem rgba(255, 115, 32, 0.24);
+  box-shadow:
+    0 12px 20px rgba(35, 9, 3, 0.26),
+    inset 0 1px 0 rgba(255, 233, 202, 0.22);
+  filter:
+    brightness(1.08)
+    saturate(1.08)
+    drop-shadow(0 0 0.65rem rgba(255, 118, 38, 0.28));
+}
+
+.dashboard-shell--warm .top-controls .themed-button--tab.is-active:hover,
+.dashboard-shell--warm .top-controls .themed-button--tab.is-active:focus-visible {
+  color: #fff5d5;
+  box-shadow:
+    0 14px 22px rgba(38, 10, 3, 0.28),
+    inset 0 1px 0 rgba(255, 238, 213, 0.28);
+  filter:
+    brightness(1.12)
+    saturate(1.08)
+    drop-shadow(0 0 0.82rem rgba(255, 128, 40, 0.34));
 }
 
 .dashboard-shell--warm .top-controls .timer-duration-field {
   --top-controls-item-height: clamp(2.25rem, 3.7vw, 2.8rem);
+  position: relative;
+  z-index: 2;
   min-height: 0;
   height: var(--top-controls-item-height);
   width: 100%;
@@ -454,9 +615,36 @@
   background-position: center;
   background-size: 100% 100%;
   color: #ffe2bd;
+  text-shadow: 0 1px 1px rgba(12, 4, 1, 0.7);
+  filter: brightness(0.98);
+  transition:
+    color 150ms ease,
+    text-shadow 150ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease;
+}
+
+.dashboard-shell--warm .top-controls .timer-duration-field.is-active {
+  color: #fff0c7;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.82),
+    0 0 0.5rem rgba(255, 179, 93, 0.28);
+  box-shadow:
+    0 0 0.8rem rgba(255, 107, 30, 0.14),
+    inset 0 1px 0 rgba(255, 229, 194, 0.14);
+  filter: brightness(1.04) saturate(1.04);
+}
+
+.dashboard-shell--warm .top-controls .timer-duration-field.is-editing {
+  box-shadow:
+    0 0 0.95rem rgba(255, 112, 31, 0.2),
+    0 0 1.5rem rgba(255, 158, 76, 0.1);
+  filter: brightness(1.05) saturate(1.06);
 }
 
 .dashboard-shell--warm .top-controls .timer-duration-field__input {
+  position: relative;
+  z-index: 3;
   font-size: 0.68rem;
 }
 
@@ -468,14 +656,53 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
-  box-shadow: 0 8px 14px rgba(17, 5, 2, 0.25);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: #f2d0a8;
+  box-shadow:
+    0 10px 18px rgba(19, 6, 3, 0.34),
+    inset 0 1px 0 rgba(255, 222, 181, 0.08);
+  text-shadow:
+    0 1px 1px rgba(10, 3, 1, 0.88),
+    0 0 0.3rem rgba(255, 163, 75, 0.18);
+  filter: brightness(0.98) saturate(0.98);
+  transition:
+    color 160ms ease,
+    text-shadow 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease,
+    filter 160ms ease;
 }
 
 .dashboard-shell--warm .action-buttons .themed-button--action {
   aspect-ratio: var(--skin-action-button-aspect-ratio);
   width: clamp(9.3rem, 14vw, 11.1rem);
   min-height: 0;
+}
+
+.dashboard-shell--warm .action-buttons .themed-button--action:hover,
+.dashboard-shell--warm .action-buttons .themed-button--action:focus-visible {
+  color: #ffe8c3;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.5rem rgba(255, 187, 104, 0.52);
+  box-shadow:
+    0 13px 22px rgba(24, 7, 3, 0.42),
+    0 0 1rem rgba(255, 116, 34, 0.18),
+    inset 0 1px 0 rgba(255, 232, 200, 0.18);
+  filter:
+    brightness(1.06)
+    saturate(1.04)
+    drop-shadow(0 0 0.65rem rgba(255, 125, 38, 0.24));
+  transform: translateY(-1px);
+}
+
+.dashboard-shell--warm .action-buttons .themed-button--action:active {
+  color: #e8bd8a;
+  text-shadow: 0 1px 1px rgba(8, 3, 1, 0.9);
+  box-shadow:
+    inset 0 0.28rem 0.65rem rgba(47, 12, 4, 0.44),
+    inset 0 1px 0 rgba(255, 227, 188, 0.08);
+  filter: brightness(0.94) saturate(1.02);
+  transform: translateY(1px) scale(0.986);
 }
 
 .dashboard-shell--warm .action-buttons {
@@ -492,23 +719,60 @@
   background-image: var(--skin-start-button-image);
 }
 
+.dashboard-shell--warm .action-buttons__button--start:hover,
+.dashboard-shell--warm .action-buttons__button--start:focus-visible {
+  color: #fff0cd;
+  text-shadow:
+    0 1px 1px rgba(13, 4, 1, 0.9),
+    0 0 0.65rem rgba(255, 205, 118, 0.56);
+}
+
+.dashboard-shell--warm .action-buttons__button--start:active {
+  color: #efc78f;
+}
+
 .dashboard-shell--warm .action-buttons__button--reset {
   background-image: var(--skin-reset-button-image);
+  color: #f0c2a1;
+}
+
+.dashboard-shell--warm .action-buttons__button--reset:hover,
+.dashboard-shell--warm .action-buttons__button--reset:focus-visible {
+  color: #ffd9be;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.65rem rgba(255, 153, 84, 0.5);
+}
+
+.dashboard-shell--warm .action-buttons__button--reset:active {
+  color: #e2ac82;
 }
 
 @keyframes timer-lava-glow {
   from {
-    box-shadow:
-      0 0 0 1px rgba(255, 173, 97, 0.38),
-      0 0 18px rgba(255, 116, 36, 0.35),
-      0 0 36px rgba(255, 95, 24, 0.28);
+    opacity: 0.56;
+    transform: scale(0.94);
+    filter: blur(26px);
   }
 
   to {
-    box-shadow:
-      0 0 0 1px rgba(255, 188, 118, 0.52),
-      0 0 28px rgba(255, 129, 42, 0.52),
-      0 0 56px rgba(255, 103, 22, 0.4);
+    opacity: 0.84;
+    transform: scale(1.04);
+    filter: blur(34px);
+  }
+}
+
+@keyframes timer-lava-core {
+  from {
+    opacity: 0.34;
+    transform: scale(0.9);
+    filter: blur(18px);
+  }
+
+  to {
+    opacity: 0.6;
+    transform: scale(1);
+    filter: blur(24px);
   }
 }
 
@@ -616,6 +880,7 @@
 }
 
 .dashboard-shell--warm .heatmap-card {
+  border: none;
   background: transparent;
 }
 
@@ -662,6 +927,7 @@
   width: min(100%, 392px);
   height: 100%;
   margin-inline: auto;
+  border: none;
   background: transparent;
 }
 
@@ -736,6 +1002,7 @@
 .dashboard-shell--warm .dragon-card {
   width: min(100%, 545px);
   margin-inline: auto;
+  border: none;
   background: transparent;
 }
 
