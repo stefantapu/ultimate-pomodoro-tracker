@@ -38,6 +38,7 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-notes-panel-image": toImageVariable(skin.assets.notesPanel),
     "--skin-heatmap-panel-image": toImageVariable(skin.assets.heatmapPanel),
     "--skin-stats-panel-image": toImageVariable(skin.assets.statsPanel),
+    "--skin-dragon-panel-image": toImageVariable(skin.assets.dragonPanel),
     "--skin-top-controls-panel-image": toImageVariable(skin.assets.topControlsPanel),
     "--skin-mode-tab-button-image": toImageVariable(skin.assets.modeTabButton),
     "--skin-mode-duration-field-image": toImageVariable(skin.assets.modeDurationField),
@@ -64,6 +65,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     ),
     "--skin-stats-panel-aspect-ratio": String(
       skin.assets.statsPanel?.aspectRatio ?? 0.8967,
+    ),
+    "--skin-dragon-panel-aspect-ratio": String(
+      skin.assets.dragonPanel?.aspectRatio ?? 1.55,
     ),
     "--skin-top-controls-panel-aspect-ratio": String(
       skin.assets.topControlsPanel?.aspectRatio ?? 6.5,

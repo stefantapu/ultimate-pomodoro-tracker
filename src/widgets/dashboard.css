@@ -36,6 +36,7 @@
   --skin-notes-panel-image: none;
   --skin-heatmap-panel-image: none;
   --skin-stats-panel-image: none;
+  --skin-dragon-panel-image: none;
   --skin-top-controls-panel-image: none;
   --skin-mode-tab-button-image: none;
   --skin-mode-duration-field-image: none;
@@ -51,6 +52,7 @@
   --skin-notes-panel-aspect-ratio: 0.76;
   --skin-heatmap-panel-aspect-ratio: 2.39;
   --skin-stats-panel-aspect-ratio: 0.8967;
+  --skin-dragon-panel-aspect-ratio: 1.55;
   --skin-top-controls-panel-aspect-ratio: 6.5;
   --skin-mode-tab-button-aspect-ratio: 3.53;
   --skin-mode-duration-field-aspect-ratio: 1.97;
@@ -761,6 +763,70 @@
 
 .dashboard-shell--warm .stats-card__value {
   font-size: 0.95rem;
+}
+
+.dashboard-shell--warm .dragon-card {
+  width: min(100%, 545px);
+  margin-inline: auto;
+  background: transparent;
+}
+
+.dashboard-shell--warm .dragon-card .panel-shell__body {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--skin-dragon-panel-aspect-ratio);
+  min-height: 0;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.dashboard-shell--warm .dragon-card .panel-shell__body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-dragon-panel-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-shell--warm .dragon-card .panel-shell__body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-shell--warm .dragon-card .dragon-card__display {
+  width: min(100%, 90%);
+  min-height: clamp(4.2rem, 27%, 6rem);
+  margin: 0;
+  text-align: center;
+  border: 1px solid rgba(199, 155, 113, 0.35);
+  background: rgba(28, 12, 9, 0.58);
+  color: #f7ddbe;
+}
+
+.dashboard-shell--warm .dragon-card .dragon-card__level-row {
+  width: min(100%, 90%);
+  margin-top: 0;
+  align-items: center;
+  color: #efcda3;
+}
+
+.dashboard-shell--warm .dragon-card .dragon-card__progress {
+  width: min(100%, 90%);
+  margin-top: 0;
+  border: 1px solid rgba(190, 145, 101, 0.45);
+  background: rgba(20, 8, 6, 0.68);
+}
+
+.dashboard-shell--warm .dragon-card .dragon-card__progress-fill {
+  background: linear-gradient(90deg, #c4753d, #f3b67e);
 }
 
 .heatmap-card__content {

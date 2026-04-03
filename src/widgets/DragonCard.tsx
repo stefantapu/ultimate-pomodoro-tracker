@@ -28,7 +28,7 @@ export function DragonCard() {
   );
 
   return (
-    <PanelShell title="dragon" className="dragon-card">
+    <PanelShell className="dragon-card">
       <div className="dragon-card__display">Lvl {profile ? level : "--"}</div>
       <div className="dragon-card__level-row">
         <span className="dragon-card__level-label">level</span>
