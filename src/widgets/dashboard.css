@@ -781,6 +781,7 @@
 }
 
 .heatmap-card__calendar {
+  --heatmap-weekday-gutter: 34px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -794,19 +795,31 @@
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0;
+  padding: 10px;
   overflow: visible;
 }
 
 .heatmap-card__calendar .react-activity-calendar__scroll-container {
   width: 100%;
-  overflow-x: hidden !important;
+  padding-left: var(--heatmap-weekday-gutter);
+  box-sizing: border-box;
+  overflow-x: visible !important;
   overflow-y: visible !important;
 }
 
 .heatmap-card__calendar .react-activity-calendar__calendar {
-  width: 100% !important;
+  margin-left: 0 !important;
+  width: 100%;
+  height: auto;
   max-width: 100%;
-  height: auto !important;
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-weekday {
+  transform: translateX(calc(var(--heatmap-weekday-gutter) * -1 + 6px));
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-weekday text {
+  text-anchor: start;
 }
 
 .heatmap-card__calendar .react-activity-calendar__footer {
