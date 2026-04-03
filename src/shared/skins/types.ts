@@ -22,6 +22,9 @@ export type SkinAssets = {
   autoFocusButton: SkinImageAsset | null;
   autoBreakButton: SkinImageAsset | null;
   soundButton: SkinImageAsset | null;
+  settingsButton: SkinImageAsset | null;
+  exitButton: SkinImageAsset | null;
+  exitIcon: SkinImageAsset | null;
 };
 
 export type SkinColors = {

@@ -20,6 +20,9 @@ const minimalSkin: SkinProfile = {
     autoFocusButton: null,
     autoBreakButton: null,
     soundButton: null,
+    settingsButton: null,
+    exitButton: null,
+    exitIcon: null,
   },
   colors: {
     dashboardBg: "#d9d9d9",
@@ -120,6 +123,18 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/audio_button_w150_h150.webp",
       { width: 150, height: 150 },
     ),
+    settingsButton: buildImageAsset(
+      "/assets/red_lava_theme/settings_button/settings_button_147_144.webp",
+      { width: 147, height: 144 },
+    ),
+    exitButton: buildImageAsset(
+      "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
+      { width: 150, height: 150 },
+    ),
+    exitIcon: buildImageAsset(
+      "/assets/red_lava_theme/exit_icon/exit_icon_15x15.webp",
+      { width: 15, height: 15 },
+    ),
   },
   colors: {
     dashboardBg: "#2b1109",
@@ -182,3 +197,4 @@ export function getSkinById(skinId: string): SkinProfile {
 export function isSkinId(value: string): value is SkinId {
   return skinById.has(value as SkinId);
 }
+

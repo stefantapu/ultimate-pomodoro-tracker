@@ -48,6 +48,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-auto-focus-button-image": toImageVariable(skin.assets.autoFocusButton),
     "--skin-auto-break-button-image": toImageVariable(skin.assets.autoBreakButton),
     "--skin-sound-button-image": toImageVariable(skin.assets.soundButton),
+    "--skin-settings-button-image": toImageVariable(skin.assets.settingsButton),
+    "--skin-exit-button-image": toImageVariable(skin.assets.exitButton),
+    "--skin-exit-icon-image": toImageVariable(skin.assets.exitIcon),
     "--skin-timer-panel-aspect-ratio": String(
       skin.assets.timerPanel?.aspectRatio ?? 2.68,
     ),
@@ -87,3 +90,4 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-square-button-min-height": skin.layout.squareButtonMinHeight,
   };
 }
+
