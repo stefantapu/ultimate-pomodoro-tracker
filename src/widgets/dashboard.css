@@ -1003,9 +1003,9 @@
 .dashboard-shell--warm .dragon-card .panel-shell__body {
   position: relative;
   overflow: hidden;
-  height: 100%;
+  height: 167px;
+  max-height: 167px;
   min-height: 167px;
-  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
