@@ -85,13 +85,8 @@ export function useSettingsSync(
       if (error) {
         console.error("Cloud sync conflict:", error);
       } else if (!silent) {
-        toast("Settings synced to cloud ☁️", {
-          style: {
-            background: "rgba(20, 20, 20, 0.9)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            color: "white",
-            backdropFilter: "blur(10px)",
-          },
+        toast("Settings synced to cloud", {
+          duration: 2200,
         });
       }
     }, 1000);
@@ -99,3 +94,5 @@ export function useSettingsSync(
 
   return { pushSettingsToCloud };
 }
+
+

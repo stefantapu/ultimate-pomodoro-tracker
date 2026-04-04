@@ -79,16 +79,6 @@ export function SettingsModal({
             </label>
           </div>
         </section>
-
-        <footer className="settings-modal__footer">
-          <button
-            type="button"
-            className="settings-modal__button settings-modal__button--primary"
-            onClick={handleCancel}
-          >
-            Close
-          </button>
-        </footer>
       </div>
     </div>
   );

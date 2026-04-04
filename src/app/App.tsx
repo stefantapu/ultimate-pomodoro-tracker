@@ -19,7 +19,16 @@ function App() {
 
   return (
     <>
-      <Toaster position="bottom-right" theme="dark" />
+      <Toaster
+        position="bottom-right"
+        theme="dark"
+        toastOptions={{
+          classNames: {
+            toast: "forge-toast",
+            title: "forge-toast__title",
+          },
+        }}
+      />
 
       {isAuthModalOpen && <AuthBlock />}
 

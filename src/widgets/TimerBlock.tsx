@@ -16,8 +16,10 @@ import { TopControls } from "./TopControls";
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
 const SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
 const SOUND_ENABLED_STORAGE_KEY = "pomodoro-sound-enabled";
-const MIN_DURATION_MINUTES = 15;
-const MAX_DURATION_MINUTES = 90;
+const FOCUS_MIN_DURATION_MINUTES = 15;
+const FOCUS_MAX_DURATION_MINUTES = 90;
+const BREAK_MIN_DURATION_MINUTES = 5;
+const BREAK_MAX_DURATION_MINUTES = 30;
 
 function minutesToSeconds(minutes: number) {
   return minutes * 60;
@@ -27,18 +29,29 @@ function secondsToMinutes(seconds: number) {
   return Math.floor(seconds / 60);
 }
 
-function parseValidMinutes(value: string) {
+function getDurationLimits(field: Mode) {
+  if (field === "focus") {
+    return {
+      min: FOCUS_MIN_DURATION_MINUTES,
+      max: FOCUS_MAX_DURATION_MINUTES,
+    };
+  }
+
+  return {
+    min: BREAK_MIN_DURATION_MINUTES,
+    max: BREAK_MAX_DURATION_MINUTES,
+  };
+}
+
+function parseValidMinutes(field: Mode, value: string) {
   if (!/^\d+$/.test(value)) {
     return null;
   }
 
   const parsed = Number(value);
+  const { min, max } = getDurationLimits(field);
 
-  if (
-    Number.isNaN(parsed) ||
-    parsed < MIN_DURATION_MINUTES ||
-    parsed > MAX_DURATION_MINUTES
-  ) {
+  if (Number.isNaN(parsed) || parsed < min || parsed > max) {
     return null;
   }
 
@@ -224,7 +237,7 @@ export function TimerBlock() {
 
       const draftMinutes =
         field === "focus" ? focusDraftMinutes : breakDraftMinutes;
-      const parsedMinutes = parseValidMinutes(draftMinutes);
+      const parsedMinutes = parseValidMinutes(field, draftMinutes);
 
       if (parsedMinutes === null) {
         handleCancelEdit(field);
