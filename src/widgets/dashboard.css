@@ -1492,6 +1492,10 @@
   gap: 0.9rem;
 }
 
+.auth-block__password-field {
+  position: relative;
+}
+
 .auth-block__input {
   padding: 0.82rem 0.9rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
@@ -1507,6 +1511,12 @@
   box-shadow: 0 0 0.8rem rgba(255, 120, 39, 0.05);
 }
 
+.auth-block__input--password {
+  width: 100%;
+  padding-right: 3rem;
+  box-sizing: border-box;
+}
+
 .auth-block__input::placeholder {
   color: rgba(240, 200, 155, 0.56);
 }
@@ -1517,6 +1527,41 @@
   box-shadow:
     0 0 0 1px rgba(255, 143, 45, 0.14),
     0 0 1rem rgba(255, 120, 39, 0.12);
+}
+
+.auth-block__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.3rem;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 210, 164, 0.78);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    color 140ms ease,
+    filter 140ms ease;
+}
+
+.auth-block__password-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.auth-block__password-toggle:hover,
+.auth-block__password-toggle:focus-visible {
+  color: #ffd9aa;
+  filter: drop-shadow(0 0 0.4rem rgba(255, 144, 48, 0.28));
+}
+
+.auth-block__password-toggle:focus-visible {
+  outline: 1px solid rgba(255, 183, 102, 0.7);
+  outline-offset: 0.08rem;
 }
 
 .auth-block__button {
