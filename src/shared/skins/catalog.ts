@@ -101,9 +101,9 @@ const warmSkin: SkinProfile = {
     modalBorder: "#965226",
   },
   typography: {
-    baseFamily: "'Trebuchet MS', 'Lucida Sans Unicode', 'Segoe UI', sans-serif",
-    displayFamily: "'Palatino Linotype', 'Book Antiqua', serif",
-    buttonFamily: "'Palatino Linotype', 'Book Antiqua', serif",
+    baseFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+    displayFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+    buttonFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
     buttonWeight: 700,
     buttonLetterSpacing: "0.05em",
     buttonTransform: "uppercase",

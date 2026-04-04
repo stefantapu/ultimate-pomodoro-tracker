@@ -15,12 +15,16 @@ export function timerReducer(
       };
     case "PAUSE": {
       const newTimeLeft = action.timeLeft !== undefined ? action.timeLeft : state.timeLeft;
+      const elapsedSeconds = Math.max(0, state.timeLeft - newTimeLeft);
       return {
         ...state,
         status: "paused",
         targetTimestamp: null,
         timeLeft: newTimeLeft,
-        accumulatedSeconds: state.accumulatedSeconds + Math.max(0, state.timeLeft - newTimeLeft),
+        sessionStartedAt: action.checkpoint ? null : state.sessionStartedAt,
+        accumulatedSeconds: action.checkpoint
+          ? 0
+          : state.accumulatedSeconds + elapsedSeconds,
       };
     }
     case "RESET":

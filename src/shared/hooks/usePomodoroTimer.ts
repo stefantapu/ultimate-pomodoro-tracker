@@ -49,7 +49,7 @@ export function usePomodoroTimer({
 
       if (
         currentState.sessionStartedAt &&
-        accumulated >= 10
+        accumulated > 0
       ) {
         syncSession({
           mode: currentState.mode,
@@ -138,11 +138,21 @@ export function usePomodoroTimer({
         0,
         Math.round((currentState.targetTimestamp - Date.now()) / 1000),
       );
-      dispatch({ type: "PAUSE", timeLeft: remaining });
+      const finalAccum =
+        currentState.accumulatedSeconds +
+        Math.max(0, currentState.timeLeft - remaining);
+
+      checkAndSyncSession("interrupted", finalAccum);
+
+      dispatch({
+        type: "PAUSE",
+        timeLeft: remaining,
+        checkpoint: finalAccum > 0,
+      });
     } else {
       dispatch({ type: "PAUSE" });
     }
-  }, []);
+  }, [checkAndSyncSession]);
 
   const reset = useCallback(() => {
     const currentState = stateRef.current;

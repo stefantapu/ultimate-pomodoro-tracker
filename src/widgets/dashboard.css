@@ -25,9 +25,9 @@
   --dashboard-modal-overlay: rgba(0, 0, 0, 0.45);
   --dashboard-modal-surface: #202020;
   --dashboard-modal-border: #444;
-  --dashboard-font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-  --dashboard-display-font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-  --dashboard-button-font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  --dashboard-font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --dashboard-display-font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --dashboard-button-font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   --dashboard-button-font-weight: 500;
   --dashboard-button-letter-spacing: 0.06em;
   --dashboard-button-text-transform: uppercase;
