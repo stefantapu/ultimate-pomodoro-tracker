@@ -1,72 +1,10 @@
 import { buildImageAsset } from "./assetUtils";
 import type { SkinId, SkinProfile } from "./types";
 
-const minimalSkin: SkinProfile = {
-  id: "minimal",
-  label: "Ultra Minimal",
-  description: "Current clean monochrome dashboard.",
-  assets: {
-    pageBackground: null,
-    notesPanel: null,
-    heatmapPanel: null,
-    statsPanel: null,
-    dragonPanel: null,
-    topControlsPanel: null,
-    modeTabButton: null,
-    modeDurationField: null,
-    timerPanel: null,
-    startButton: null,
-    resetButton: null,
-    autoFocusButton: null,
-    autoBreakButton: null,
-    soundButton: null,
-    settingsButton: null,
-    settingsIcon: null,
-    exitButton: null,
-    exitIcon: null,
-  },
-  colors: {
-    dashboardBg: "#d9d9d9",
-    panel: "#232323",
-    panelBorder: "#141414",
-    panelInner: "#efefef",
-    text: "#f7f7f7",
-    textDark: "#1f1f1f",
-    textMuted: "#c7c7c7",
-    button: "#202020",
-    buttonActive: "#4a4a4a",
-    buttonText: "#f5f5f5",
-    input: "#2d2d2d",
-    track: "#d7d7d7",
-    fill: "#707070",
-    accent: "#7d7d7d",
-    toolbarBg: "transparent",
-    toolbarBorder: "transparent",
-    modalOverlay: "rgba(0, 0, 0, 0.45)",
-    modalSurface: "#202020",
-    modalBorder: "#444",
-  },
-  typography: {
-    baseFamily: "system-ui, 'Segoe UI', Roboto, sans-serif",
-    displayFamily: "system-ui, 'Segoe UI', Roboto, sans-serif",
-    buttonFamily: "system-ui, 'Segoe UI', Roboto, sans-serif",
-    buttonWeight: 500,
-    buttonLetterSpacing: "0.06em",
-    buttonTransform: "uppercase",
-  },
-  layout: {
-    timerPanelMaxWidth: "100%",
-    timerPanelMinHeight: "260px",
-    timerPanelOverlayOpacity: 0,
-    actionButtonMinHeight: "4.5rem",
-    squareButtonMinHeight: "4.5rem",
-  },
-};
-
 const warmSkin: SkinProfile = {
   id: "warm",
-  label: "Red Lava",
-  description: "Warm fantasy palette with themed timer controls.",
+  label: "Warm",
+  description: "Primary warm palette with themed timer controls.",
   assets: {
     pageBackground: buildImageAsset("/assets/red_lava_theme/background.webp", {
       width: 1920,
@@ -179,13 +117,13 @@ const warmSkin: SkinProfile = {
   },
 };
 
-const skins: SkinProfile[] = [minimalSkin, warmSkin];
+const skins: SkinProfile[] = [warmSkin];
 
 const skinById = new Map<SkinId, SkinProfile>(
   skins.map((skin) => [skin.id, skin]),
 );
 
-export const DEFAULT_SKIN_ID: SkinId = "minimal";
+export const DEFAULT_SKIN_ID: SkinId = "warm";
 
 export function listSkins(): SkinProfile[] {
   return skins;

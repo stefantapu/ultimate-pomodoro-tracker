@@ -1007,7 +1007,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.7rem;
 }
 
 .dashboard-shell--warm .dragon-card .panel-shell__body::before {
@@ -1028,12 +1027,11 @@
 }
 
 .dashboard-shell--warm .dragon-card .dragon-card__display {
-  width: min(100%, 90%);
+  width:;
   min-height: 4.2rem;
   margin: 0;
   text-align: center;
-  border: 1px solid rgba(199, 155, 113, 0.35);
-  background: rgba(28, 12, 9, 0.58);
+  background: rgba(28, 12, 9, 0);
   color: #f7ddbe;
   font-size: 1.7rem;
 }
@@ -1051,10 +1049,17 @@
   margin-top: 0;
   border: 1px solid rgba(190, 145, 101, 0.45);
   background: rgba(20, 8, 6, 0.68);
+  border-radius: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 198, 142, 0.06),
+    0 0 10px rgba(255, 137, 58, 0.08);
 }
 
 .dashboard-shell--warm .dragon-card .dragon-card__progress-fill {
-  background: linear-gradient(90deg, #c4753d, #f3b67e);
+  background: #d88b52;
+  box-shadow:
+    0 0 8px rgba(255, 172, 98, 0.22),
+    0 0 14px rgba(255, 121, 41, 0.12);
 }
 
 .heatmap-card__content {
@@ -1233,40 +1238,25 @@
   display: grid;
   place-items: center;
   background: var(--dashboard-panel-inner);
-  border-radius: calc(var(--dashboard-radius) - 0.1rem);
   color: var(--dashboard-text-dark);
-  font-size: 1.7rem;
   font-family: var(--dashboard-display-font-family);
 }
 
 .dragon-card__level-row {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
-  color: var(--dashboard-text-muted);
-}
-
-.dragon-card__level-label {
-  text-transform: lowercase;
-}
-
-.dragon-card__level-value {
-  font-size: 0.9rem;
+  justify-content: center;
+  max-width: 70%;
 }
 
 .dragon-card__progress {
-  width: 100%;
-  height: 1rem;
-  margin-top: 0.75rem;
-  border-radius: 999px;
+  height: 0.2rem;
   background: var(--dashboard-track);
   overflow: hidden;
+  max-width: 70%;
 }
 
 .dragon-card__progress-fill {
   height: 100%;
-  background: var(--dashboard-fill);
 }
 
 .settings-modal__overlay {

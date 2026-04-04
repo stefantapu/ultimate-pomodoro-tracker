@@ -1,8 +1,4 @@
-import { listSkins } from "@shared/skins/catalog";
-import type { SkinId } from "@shared/skins/types";
-import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
-import { useMemo, useState } from "react";
 
 type SettingsModalProps = {
   autoFocus: boolean;
@@ -23,26 +19,12 @@ export function SettingsModal({
 }: SettingsModalProps) {
   const isOpen = useUIStore((state) => state.isSettingsModalOpen);
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
-  const activeSkinId = useSkinStore((state) => state.activeSkinId);
-  const setActiveSkinId = useSkinStore((state) => state.setActiveSkinId);
-  const [selectedSkinId, setSelectedSkinId] = useState<SkinId | null>(null);
-
-  const skins = useMemo(() => listSkins(), []);
 
   if (!isOpen) {
     return null;
   }
 
-  const effectiveSelectedSkinId = selectedSkinId ?? activeSkinId;
-
   const handleCancel = () => {
-    setSelectedSkinId(null);
-    setSettingsModalOpen(false);
-  };
-
-  const handleApply = () => {
-    setActiveSkinId(effectiveSelectedSkinId);
-    setSelectedSkinId(null);
     setSettingsModalOpen(false);
   };
 
@@ -97,57 +79,13 @@ export function SettingsModal({
           </div>
         </section>
 
-        <section className="settings-modal__section">
-          <h3 className="settings-modal__section-title">Skin</h3>
-        <div className="settings-modal__options">
-          {skins.map((skin) => {
-            const isSelected = effectiveSelectedSkinId === skin.id;
-
-            return (
-              <label
-                key={skin.id}
-                className={`settings-modal__option${isSelected ? " is-selected" : ""}`}
-              >
-                <input
-                  type="radio"
-                  name="skin-selection"
-                  value={skin.id}
-                  checked={isSelected}
-                  onChange={() => setSelectedSkinId(skin.id)}
-                />
-                <div className="settings-modal__option-content">
-                  <div className="settings-modal__option-top">
-                    <span className="settings-modal__option-label">{skin.label}</span>
-                    <span
-                      className="settings-modal__swatch"
-                      style={{ background: skin.colors.accent }}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <p className="settings-modal__option-description">
-                    {skin.description}
-                  </p>
-                </div>
-              </label>
-            );
-          })}
-        </div>
-        </section>
-
         <footer className="settings-modal__footer">
           <button
             type="button"
-            className="settings-modal__button settings-modal__button--secondary"
+            className="settings-modal__button settings-modal__button--primary"
             onClick={handleCancel}
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="settings-modal__button settings-modal__button--primary"
-            onClick={handleApply}
-          >
-            Apply
+            Close
           </button>
         </footer>
       </div>

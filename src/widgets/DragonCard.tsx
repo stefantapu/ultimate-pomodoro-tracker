@@ -9,7 +9,10 @@ function getLevelProgress(totalXp: number, level: number) {
   const progressPct =
     xpRequiredForNext === 0
       ? 0
-      : Math.min(100, Math.max(0, (xpInCurrentLevel / xpRequiredForNext) * 100));
+      : Math.min(
+          100,
+          Math.max(0, (xpInCurrentLevel / xpRequiredForNext) * 100),
+        );
 
   return {
     xpInCurrentLevel,
@@ -31,7 +34,6 @@ export function DragonCard() {
     <PanelShell className="dragon-card">
       <div className="dragon-card__display">Lvl {profile ? level : "--"}</div>
       <div className="dragon-card__level-row">
-        <span className="dragon-card__level-label">level</span>
         <span className="dragon-card__level-value">
           {profile ? `${xpInCurrentLevel} / ${xpRequiredForNext} XP` : "--"}
         </span>
@@ -45,4 +47,3 @@ export function DragonCard() {
     </PanelShell>
   );
 }
-

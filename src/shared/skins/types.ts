@@ -1,4 +1,4 @@
-export type SkinId = "minimal" | "warm";
+export type SkinId = "warm";
 
 export type SkinImageAsset = {
   src: string;

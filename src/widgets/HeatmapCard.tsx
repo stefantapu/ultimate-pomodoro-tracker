@@ -1,5 +1,4 @@
 import type { HeatmapData } from "@shared/hooks/useAnalytics";
-import { useSkinStore } from "@shared/stores/skinStore";
 import { ActivityCalendar } from "react-activity-calendar";
 import { PanelShell } from "./PanelShell";
 
@@ -39,8 +38,6 @@ function getCalendarData(heatmapData: HeatmapData[]) {
 }
 
 export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
-  const activeSkinId = useSkinStore((state) => state.activeSkinId);
-  const isWarmSkin = activeSkinId === "warm";
   const totalFocusedHours = (
     heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
   ).toFixed(1);
@@ -50,15 +47,10 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
     return `${Number(day)}/${Number(month)}`;
   };
 
-  const calendarTheme = isWarmSkin
-    ? {
-        light: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
-        dark: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
-      }
-    : {
-        light: ["#d7d7d7", "#a9a9a9", "#7f7f7f", "#555555", "#2b2b2b"],
-        dark: ["#d7d7d7", "#a9a9a9", "#7f7f7f", "#555555", "#2b2b2b"],
-      };
+  const calendarTheme = {
+    light: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
+    dark: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
+  };
 
   return (
     <PanelShell className="heatmap-card">
@@ -70,11 +62,11 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
             <ActivityCalendar
               data={getCalendarData(heatmapData)}
               theme={calendarTheme}
-              colorScheme={isWarmSkin ? "dark" : "light"}
+              colorScheme="dark"
               maxLevel={4}
-              blockSize={isWarmSkin ? 12 : 14}
+              blockSize={12}
               blockMargin={4}
-              fontSize={isWarmSkin ? 12 : 13}
+              fontSize={12}
               showWeekdayLabels
               tooltips={{
                 activity: {
