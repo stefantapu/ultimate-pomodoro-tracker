@@ -153,9 +153,14 @@
 }
 
 .top-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+}
+
+.top-controls__group {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .timer-duration-field {
@@ -460,6 +465,18 @@
 .dashboard-shell--warm .top-controls > * {
   position: relative;
   z-index: 1;
+}
+
+.dashboard-shell--warm .top-controls {
+  position: relative;
+  min-height: clamp(3.3rem, 5.8vw, 4rem);
+  padding: clamp(0.25rem, 0.7vw, 0.4rem) clamp(0.45rem, 1vw, 0.7rem);
+  gap: clamp(0.55rem, 1vw, 0.8rem);
+}
+
+.dashboard-shell--warm .top-controls__group {
+  display: flex;
+  gap: 10px;
 }
 
 .dashboard-shell--warm .top-controls .themed-button--tab {
@@ -1467,10 +1484,12 @@
 
   .dashboard-shell--warm .top-controls {
     min-height: clamp(3.3rem, 14vw, 4rem);
-    grid-template-columns:
-      minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr)
-      minmax(0, 0.9fr);
-    gap: 0.4rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .dashboard-shell--warm .top-controls__group {
+    gap: 0.35rem;
   }
 
   .dashboard-shell--warm .stats-card .panel-shell__body {
