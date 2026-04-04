@@ -351,7 +351,9 @@
 }
 
 .dashboard-shell--warm .timer-card {
-  max-width: min(100%, 612px);
+  width: 612px;
+  min-width: 612px;
+  max-width: 612px;
   margin-inline: auto;
   position: relative;
   isolation: isolate;
@@ -401,8 +403,10 @@
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
-  aspect-ratio: var(--skin-timer-panel-aspect-ratio);
-  min-height: clamp(120px, 38vw, 190px);
+  width: 100%;
+  height: 228px;
+  min-height: 228px;
+  aspect-ratio: auto;
   z-index: 1;
 }
 
@@ -470,18 +474,6 @@
   z-index: 0;
 }
 
-.dashboard-shell--warm .top-controls::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--skin-top-controls-panel-image);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .dashboard-shell--warm .top-controls > * {
   position: relative;
   z-index: 1;
@@ -492,8 +484,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: clamp(3.3rem, 5.8vw, 4rem);
-  gap: clamp(0.55rem, 1vw, 0.8rem);
 }
 
 .dashboard-shell--warm .top-controls .themed-button--tab {
@@ -792,8 +782,15 @@
   padding: 5rem 3rem;
   resize: none;
   overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  font-size: 12px;
   line-height: 1.4;
   font-family: inherit;
+}
+
+.notes-panel__notepad::-webkit-scrollbar {
+  display: none;
 }
 
 .notes-panel__notepad:focus {
@@ -1032,12 +1029,13 @@
 
 .dashboard-shell--warm .dragon-card .dragon-card__display {
   width: min(100%, 90%);
-  min-height: clamp(4.2rem, 27%, 6rem);
+  min-height: 4.2rem;
   margin: 0;
   text-align: center;
   border: 1px solid rgba(199, 155, 113, 0.35);
   background: rgba(28, 12, 9, 0.58);
   color: #f7ddbe;
+  font-size: 1.7rem;
 }
 
 .dashboard-shell--warm .dragon-card .dragon-card__level-row {
@@ -1045,6 +1043,7 @@
   margin-top: 0;
   align-items: center;
   color: #efcda3;
+  font-size: 0.9rem;
 }
 
 .dashboard-shell--warm .dragon-card .dragon-card__progress {
@@ -1505,19 +1504,6 @@
 
   .dashboard-shell--warm .action-buttons .themed-button--action {
     width: clamp(8.1rem, 38vw, 9.3rem);
-  }
-
-  .dashboard-shell--warm .top-controls {
-    min-height: clamp(3.3rem, 14vw, 4rem);
-    gap: 0.45rem;
-  }
-
-  .dashboard-shell--warm .stats-card__label {
-    font-size: 0.62rem;
-  }
-
-  .dashboard-shell--warm .stats-card__value {
-    font-size: 1.08rem;
   }
 
   .settings-modal {
