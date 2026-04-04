@@ -48,7 +48,7 @@ export function DashboardLayout({
                 {!user && <LockedOverlayComponent />}
               </div>
 
-              <div className="dashboard-lock-wrap">
+              <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
                 <StatsCard data={analytics.data} loading={analytics.loading} />
                 {!user && <LockedOverlayComponent />}
               </div>
