@@ -1,8 +1,8 @@
+import { memo, useMemo, type ComponentType } from "react";
 import { useAnalytics } from "@shared/hooks/useAnalytics";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import type { User } from "@supabase/supabase-js";
-import type { ComponentType } from "react";
 import "./dashboard.css";
 import { DragonCard } from "./DragonCard";
 import { HeatmapCard } from "./HeatmapCard";
@@ -12,22 +12,28 @@ import { SettingsButton } from "./SettingsButton";
 import { StatsCard } from "./StatsCard";
 import { TimerBlock } from "./TimerBlock";
 
+const EMPTY_HEATMAP_DATA: Array<{ date: string; value: number }> = [];
+
 type DashboardLayoutProps = {
   user: User | null;
   LockedOverlayComponent: ComponentType;
 };
 
-export function DashboardLayout({
+export const DashboardLayout = memo(function DashboardLayout({
   user,
   LockedOverlayComponent,
 }: DashboardLayoutProps) {
   const analytics = useAnalytics();
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const skinCssVariables = useMemo(
+    () => mapSkinToCssVariables(activeSkin),
+    [activeSkin],
+  );
 
   return (
     <div
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
-      style={mapSkinToCssVariables(activeSkin)}
+      style={skinCssVariables}
     >
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
@@ -42,7 +48,7 @@ export function DashboardLayout({
             <div className="dashboard-bottom-row">
               <div className="dashboard-lock-wrap">
                 <HeatmapCard
-                  heatmapData={analytics.data?.heatmap_data ?? []}
+                  heatmapData={analytics.data?.heatmap_data ?? EMPTY_HEATMAP_DATA}
                   loading={analytics.loading}
                 />
                 {!user && <LockedOverlayComponent />}
@@ -70,4 +76,4 @@ export function DashboardLayout({
       </div>
     </div>
   );
-}
+});

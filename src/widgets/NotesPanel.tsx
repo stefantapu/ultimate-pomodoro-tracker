@@ -1,5 +1,5 @@
 import { useNotes } from "@shared/hooks/useNotes";
-import { memo, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { PanelShell } from "./PanelShell";
 
 const MAX_NOTEPAD_LENGTH = 340;
@@ -47,7 +47,7 @@ function NotesPanelBase() {
 
   const primaryNote = notes[0] ?? null;
 
-  const syncTextareaValue = (nextValue: string) => {
+  const syncTextareaValue = useCallback((nextValue: string) => {
     const fittedValue = fitNotepadContent(textareaRef.current, nextValue);
     const textarea = textareaRef.current;
 
@@ -58,9 +58,9 @@ function NotesPanelBase() {
     }
 
     return fittedValue;
-  };
+  }, []);
 
-  const schedulePersist = (nextValue: string) => {
+  const schedulePersist = useCallback((nextValue: string) => {
     if (saveTimeoutRef.current) {
       window.clearTimeout(saveTimeoutRef.current);
     }
@@ -90,7 +90,7 @@ function NotesPanelBase() {
         isPersistingRef.current = false;
       }
     }, 450);
-  };
+  }, [addNote, deleteNote, updateNote]);
 
   useEffect(() => {
     if (isPersistingRef.current) {
@@ -99,7 +99,7 @@ function NotesPanelBase() {
 
     activeNoteIdRef.current = primaryNote?.id ?? null;
     syncTextareaValue(primaryNote?.content ?? "");
-  }, [primaryNote?.content, primaryNote?.id]);
+  }, [primaryNote?.content, primaryNote?.id, syncTextareaValue]);
 
   useEffect(() => {
     const nextContent = fitNotepadContent(
@@ -131,7 +131,7 @@ function NotesPanelBase() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [schedulePersist, syncTextareaValue]);
 
   useEffect(() => {
     return () => {

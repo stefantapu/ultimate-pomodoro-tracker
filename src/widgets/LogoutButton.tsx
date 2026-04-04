@@ -1,9 +1,10 @@
-import { useAuth } from "@app/providers/AuthProvider";
+import { memo } from "react";
+import { useAuth } from "@app/providers/useAuth";
 import { useUIStore } from "@shared/stores/uiStore";
 import { supabase } from "../../utils/supabase";
 import { ThemedButton } from "./ThemedButton";
 
-export function LogoutButton() {
+export const LogoutButton = memo(function LogoutButton() {
   const { user, loading } = useAuth();
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
   const triggerTimerReset = useUIStore((state) => state.triggerTimerReset);
@@ -44,4 +45,4 @@ export function LogoutButton() {
       </>
     </ThemedButton>
   );
-}
+});

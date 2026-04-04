@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { useUIStore } from "@shared/stores/uiStore";
 import { ThemedButton } from "./ThemedButton";
 
-export function SettingsButton() {
+export const SettingsButton = memo(function SettingsButton() {
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
 
   return (
@@ -18,4 +19,4 @@ export function SettingsButton() {
       </>
     </ThemedButton>
   );
-}
+});

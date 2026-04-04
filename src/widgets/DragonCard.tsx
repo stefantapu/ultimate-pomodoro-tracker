@@ -1,4 +1,5 @@
-﻿import { useProfile } from "@shared/hooks/useProfile";
+import { memo } from "react";
+import { useProfile } from "@shared/hooks/useProfile";
 import { PanelShell } from "./PanelShell";
 
 function getLevelProgress(totalXp: number, level: number) {
@@ -21,7 +22,7 @@ function getLevelProgress(totalXp: number, level: number) {
   };
 }
 
-export function DragonCard() {
+export const DragonCard = memo(function DragonCard() {
   const { profile } = useProfile();
   const level = profile?.level ?? 1;
   const totalXp = profile?.total_xp ?? 0;
@@ -46,4 +47,4 @@ export function DragonCard() {
       </div>
     </PanelShell>
   );
-}
+});

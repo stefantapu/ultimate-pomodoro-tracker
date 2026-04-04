@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { HeatmapData } from "@shared/hooks/useAnalytics";
 import { ActivityCalendar } from "react-activity-calendar";
 import { PanelShell } from "./PanelShell";
@@ -37,7 +38,10 @@ function getCalendarData(heatmapData: HeatmapData[]) {
   return calendarData;
 }
 
-export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
+export const HeatmapCard = memo(function HeatmapCard({
+  heatmapData,
+  loading,
+}: HeatmapCardProps) {
   const totalFocusedHours = (
     heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
   ).toFixed(1);
@@ -101,4 +105,4 @@ export function HeatmapCard({ heatmapData, loading }: HeatmapCardProps) {
       </div>
     </PanelShell>
   );
-}
+});

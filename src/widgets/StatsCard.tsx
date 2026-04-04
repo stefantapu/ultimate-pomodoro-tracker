@@ -1,4 +1,5 @@
-﻿import type { AnalyticsData } from "@shared/hooks/useAnalytics";
+import { memo } from "react";
+import type { AnalyticsData } from "@shared/hooks/useAnalytics";
 import { PanelShell } from "./PanelShell";
 
 type StatsCardProps = {
@@ -10,7 +11,10 @@ function formatHours(seconds: number) {
   return `${(seconds / 3600).toFixed(1)}h`;
 }
 
-export function StatsCard({ data, loading }: StatsCardProps) {
+export const StatsCard = memo(function StatsCard({
+  data,
+  loading,
+}: StatsCardProps) {
   const items = [
     {
       label: "Focus",
@@ -42,5 +46,4 @@ export function StatsCard({ data, loading }: StatsCardProps) {
       </div>
     </PanelShell>
   );
-}
-
+});

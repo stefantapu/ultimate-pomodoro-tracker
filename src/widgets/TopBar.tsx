@@ -1,4 +1,4 @@
-import { useAuth } from "../app/providers/AuthProvider";
+import { useAuth } from "../app/providers/useAuth";
 import { useUIStore } from "../shared/stores/uiStore";
 import { supabase } from "../../utils/supabase";
 import { useProfile } from "../shared/hooks/useProfile";

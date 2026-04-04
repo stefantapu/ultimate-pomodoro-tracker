@@ -1,7 +1,7 @@
 ﻿import { AuthBlock } from "../widgets/AuthBlock";
 import { DashboardLayout } from "../widgets/DashboardLayout";
 import { LockedOverlay } from "../widgets/LockedOverlay";
-import { useAuth } from "./providers/AuthProvider";
+import { useAuth } from "./providers/useAuth";
 import { useUIStore } from "../shared/stores/uiStore";
 import { Toaster } from "sonner";
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { AuthError } from "@supabase/supabase-js";
 import { supabase } from "../../utils/supabase";
 import { useUIStore } from "../shared/stores/uiStore";
 
@@ -32,8 +33,15 @@ export const AuthBlock = () => {
         if (error) throw error;
         setIsSuccess(true);
       }
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
+    } catch (error: unknown) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof (error as AuthError).message === "string"
+          ? (error as AuthError).message
+          : "An error occurred";
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import { ActivityCalendar } from "react-activity-calendar";
 import { useAnalytics } from "../shared/hooks/useAnalytics";
-import { useAuth } from "../app/providers/AuthProvider";
+import { useAuth } from "../app/providers/useAuth";
 
 export function StatsDashboard() {
   const { data, loading } = useAnalytics();
