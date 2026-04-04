@@ -115,6 +115,10 @@ export function usePomodoroTimer({
 
   const start = useCallback(() => {
     const currentState = stateRef.current;
+    const currentDuration =
+      currentState.mode === "focus" ? focusDuration : breakDuration;
+    const nextTimeLeft =
+      currentState.timeLeft > 0 ? currentState.timeLeft : currentDuration;
 
     if (currentState.status === "running") {
       return;
@@ -122,9 +126,10 @@ export function usePomodoroTimer({
 
     dispatch({
       type: "START",
-      targetTimestamp: Date.now() + currentState.timeLeft * 1000,
+      timeLeft: nextTimeLeft,
+      targetTimestamp: Date.now() + nextTimeLeft * 1000,
     });
-  }, []);
+  }, [breakDuration, focusDuration]);
 
   const pause = useCallback(() => {
     const currentState = stateRef.current;

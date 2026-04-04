@@ -9,6 +9,7 @@ export function timerReducer(
       return {
         ...state,
         status: "running",
+        timeLeft: action.timeLeft ?? state.timeLeft,
         targetTimestamp: action.targetTimestamp,
         sessionStartedAt: state.sessionStartedAt || new Date().toISOString(),
       };
