@@ -991,6 +991,7 @@
 
 .dashboard-shell--warm .dragon-card {
   width: min(100%, 545px);
+  height: 167px;
   margin-inline: auto;
   border: none;
   background: transparent;
@@ -999,8 +1000,8 @@
 .dashboard-shell--warm .dragon-card .panel-shell__body {
   position: relative;
   overflow: hidden;
-  aspect-ratio: var(--skin-dragon-panel-aspect-ratio);
-  min-height: 0;
+  height: 100%;
+  min-height: 167px;
   padding: 1.2rem;
   display: flex;
   flex-direction: column;
@@ -1570,10 +1571,10 @@
 }
 
 .dashboard-shell--warm .toolbar-icon-button {
-  width: clamp(3.25rem, 5.4vw, 4rem);
-  height: clamp(3.25rem, 5.4vw, 4rem);
-  min-width: 0;
-  min-height: 0;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  min-height: 50px;
   padding: 0;
   border: none;
   border-radius: 0;
@@ -1662,9 +1663,3 @@
     drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.72));
 }
 
-@media (max-width: 640px) {
-  .dashboard-shell--warm .toolbar-icon-button {
-    width: clamp(3rem, 13vw, 3.45rem);
-    height: clamp(3rem, 13vw, 3.45rem);
-  }
-}

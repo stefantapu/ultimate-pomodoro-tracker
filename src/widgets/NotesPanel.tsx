@@ -1,5 +1,5 @@
 import { useNotes } from "@shared/hooks/useNotes";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef } from "react";
 import { PanelShell } from "./PanelShell";
 
 const MAX_NOTEPAD_LENGTH = 340;
@@ -37,75 +37,28 @@ function fitNotepadContent(
   return fittedValue;
 }
 
-export function NotesPanel() {
+function NotesPanelBase() {
   const { notes, loading, addNote, updateNote, deleteNote } = useNotes();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const activeNoteIdRef = useRef<string | null>(null);
   const saveTimeoutRef = useRef<number | null>(null);
   const isPersistingRef = useRef(false);
+  const contentRef = useRef("");
 
   const primaryNote = notes[0] ?? null;
-  const [content, setContent] = useState("");
 
-  useEffect(() => {
-    if (isPersistingRef.current) {
-      return;
+  const syncTextareaValue = (nextValue: string) => {
+    const fittedValue = fitNotepadContent(textareaRef.current, nextValue);
+    const textarea = textareaRef.current;
+
+    contentRef.current = fittedValue;
+
+    if (textarea && textarea.value !== fittedValue) {
+      textarea.value = fittedValue;
     }
 
-    const nextContent = fitNotepadContent(
-      textareaRef.current,
-      primaryNote?.content ?? "",
-    );
-
-    activeNoteIdRef.current = primaryNote?.id ?? null;
-    setContent(nextContent);
-  }, [primaryNote?.content, primaryNote?.id]);
-
-  useEffect(() => {
-    const nextContent = fitNotepadContent(
-      textareaRef.current,
-      primaryNote?.content ?? "",
-    );
-
-    if (!primaryNote?.id || primaryNote.content === nextContent) {
-      return;
-    }
-
-    updateNote(primaryNote.id, { content: nextContent });
-  }, [primaryNote?.content, primaryNote?.id, updateNote]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const textarea = textareaRef.current;
-
-      if (!textarea) {
-        return;
-      }
-
-      const fittedValue = fitNotepadContent(textarea, content);
-
-      if (fittedValue === content) {
-        return;
-      }
-
-      setContent(fittedValue);
-      schedulePersist(fittedValue);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [content]);
-
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        window.clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
+    return fittedValue;
+  };
 
   const schedulePersist = (nextValue: string) => {
     if (saveTimeoutRef.current) {
@@ -139,6 +92,55 @@ export function NotesPanel() {
     }, 450);
   };
 
+  useEffect(() => {
+    if (isPersistingRef.current) {
+      return;
+    }
+
+    activeNoteIdRef.current = primaryNote?.id ?? null;
+    syncTextareaValue(primaryNote?.content ?? "");
+  }, [primaryNote?.content, primaryNote?.id]);
+
+  useEffect(() => {
+    const nextContent = fitNotepadContent(
+      textareaRef.current,
+      primaryNote?.content ?? "",
+    );
+
+    if (!primaryNote?.id || primaryNote.content === nextContent) {
+      return;
+    }
+
+    updateNote(primaryNote.id, { content: nextContent });
+  }, [primaryNote?.content, primaryNote?.id, updateNote]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const previousValue = contentRef.current;
+      const fittedValue = syncTextareaValue(previousValue);
+
+      if (fittedValue === previousValue) {
+        return;
+      }
+
+      schedulePersist(fittedValue);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        window.clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <PanelShell
       className="notes-panel"
@@ -151,7 +153,7 @@ export function NotesPanel() {
           id="notes-notepad"
           ref={textareaRef}
           className="notes-panel__notepad"
-          value={content}
+          defaultValue={normalizeNotepadContent(primaryNote?.content ?? "")}
           rows={MAX_NOTEPAD_LINES}
           maxLength={MAX_NOTEPAD_LENGTH}
           aria-label="Notes notepad"
@@ -161,7 +163,12 @@ export function NotesPanel() {
               event.currentTarget.value,
             );
 
-            setContent(nextValue);
+            contentRef.current = nextValue;
+
+            if (event.currentTarget.value !== nextValue) {
+              event.currentTarget.value = nextValue;
+            }
+
             schedulePersist(nextValue);
           }}
           placeholder="Write notes..."
@@ -171,3 +178,5 @@ export function NotesPanel() {
     </PanelShell>
   );
 }
+
+export const NotesPanel = memo(NotesPanelBase);
