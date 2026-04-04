@@ -7,6 +7,7 @@ import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
+import { BackgroundEmbers } from "./BackgroundEmbers";
 import { DragonCard } from "./DragonCard";
 import { HeatmapCard } from "./HeatmapCard";
 import { LogoutButton } from "./LogoutButton";
@@ -70,6 +71,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
+      {activeSkin.id === "warm" ? <BackgroundEmbers /> : null}
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <SettingsButton />
