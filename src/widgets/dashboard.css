@@ -352,14 +352,13 @@
   top: 17%;
   bottom: 14%;
   border-radius: 48%;
-  background:
-    radial-gradient(
-      circle at 50% 46%,
-      rgba(255, 233, 151, 0.3) 0%,
-      rgba(255, 163, 74, 0.26) 28%,
-      rgba(255, 102, 34, 0.2) 48%,
-      rgba(99, 21, 4, 0) 76%
-    );
+  background: radial-gradient(
+    circle at 50% 46%,
+    rgba(255, 233, 151, 0.3) 0%,
+    rgba(255, 163, 74, 0.26) 28%,
+    rgba(255, 102, 34, 0.2) 48%,
+    rgba(99, 21, 4, 0) 76%
+  );
   filter: blur(30px);
 }
 
@@ -368,14 +367,13 @@
   bottom: 25%;
   inset-inline: 21%;
   border-radius: 50%;
-  background:
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 247, 188, 0.2) 0%,
-      rgba(255, 191, 97, 0.16) 18%,
-      rgba(255, 110, 32, 0.14) 44%,
-      rgba(88, 18, 4, 0) 74%
-    );
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 247, 188, 0.2) 0%,
+    rgba(255, 191, 97, 0.16) 18%,
+    rgba(255, 110, 32, 0.14) 44%,
+    rgba(88, 18, 4, 0) 74%
+  );
   filter: blur(22px);
 }
 
@@ -423,8 +421,7 @@
     0 0 22px rgba(255, 186, 95, 0.62),
     0 0 44px rgba(255, 121, 35, 0.42),
     0 0 72px rgba(255, 88, 21, 0.2);
-  filter:
-    drop-shadow(0 0 0.5rem rgba(255, 176, 88, 0.36))
+  filter: drop-shadow(0 0 0.5rem rgba(255, 176, 88, 0.36))
     drop-shadow(0 0 1.35rem rgba(255, 106, 33, 0.28));
 }
 
@@ -526,9 +523,7 @@
   box-shadow:
     0 10px 18px rgba(30, 8, 3, 0.22),
     inset 0 1px 0 rgba(255, 229, 191, 0.18);
-  filter:
-    brightness(1.03)
-    saturate(1.02)
+  filter: brightness(1.03) saturate(1.02)
     drop-shadow(0 0 0.55rem rgba(255, 125, 39, 0.22));
   transform: translateY(-1px);
 }
@@ -552,21 +547,19 @@
   box-shadow:
     0 12px 20px rgba(35, 9, 3, 0.26),
     inset 0 1px 0 rgba(255, 233, 202, 0.22);
-  filter:
-    brightness(1.08)
-    saturate(1.08)
+  filter: brightness(1.08) saturate(1.08)
     drop-shadow(0 0 0.65rem rgba(255, 118, 38, 0.28));
 }
 
 .dashboard-shell--warm .top-controls .themed-button--tab.is-active:hover,
-.dashboard-shell--warm .top-controls .themed-button--tab.is-active:focus-visible {
+.dashboard-shell--warm
+  .top-controls
+  .themed-button--tab.is-active:focus-visible {
   color: #fff5d5;
   box-shadow:
     0 14px 22px rgba(38, 10, 3, 0.28),
     inset 0 1px 0 rgba(255, 238, 213, 0.28);
-  filter:
-    brightness(1.12)
-    saturate(1.08)
+  filter: brightness(1.12) saturate(1.08)
     drop-shadow(0 0 0.82rem rgba(255, 128, 40, 0.34));
 }
 
@@ -664,9 +657,7 @@
     0 13px 22px rgba(24, 7, 3, 0.42),
     0 0 1rem rgba(255, 116, 34, 0.18),
     inset 0 1px 0 rgba(255, 232, 200, 0.18);
-  filter:
-    brightness(1.06)
-    saturate(1.04)
+  filter: brightness(1.06) saturate(1.04)
     drop-shadow(0 0 0.65rem rgba(255, 125, 38, 0.24));
   transform: translateY(-1px);
 }
@@ -1526,8 +1517,6 @@
   }
 }
 
-
-
 .dashboard-shell {
   --skin-settings-button-image: none;
   --skin-exit-button-image: none;
@@ -1598,28 +1587,31 @@
   pointer-events: none;
 }
 
-.dashboard-shell--warm .toolbar-icon-button--exit .toolbar-icon-button__icon::before {
+.dashboard-shell--warm
+  .toolbar-icon-button--exit
+  .toolbar-icon-button__icon::before {
   content: "";
   position: absolute;
-  left: 50%;
+  left: 56%;
   top: 50%;
-  width: 15%;
-  height: 15%;
-  min-width: 0.7rem;
-  min-height: 0.7rem;
+  width: 60%;
+  height: 60%;
+  min-width: 1rem;
+  min-height: 1rem;
   transform: translate(-50%, -50%);
   background-image: var(--skin-exit-icon-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  filter: drop-shadow(0 0 0 rgba(255, 187, 111, 0));
-  transition: filter 150ms ease;
 }
 
-.dashboard-shell--warm .toolbar-icon-button--exit:hover .toolbar-icon-button__icon::before,
-.dashboard-shell--warm .toolbar-icon-button--exit:focus-visible .toolbar-icon-button__icon::before {
-  filter:
-    drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.9))
+.dashboard-shell--warm
+  .toolbar-icon-button--exit:hover
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--exit:focus-visible
+  .toolbar-icon-button__icon::before {
+  filter: drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.9))
     drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.72));
 }
 
