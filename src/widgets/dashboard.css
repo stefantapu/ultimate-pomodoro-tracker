@@ -52,7 +52,6 @@
   --skin-notes-panel-aspect-ratio: 0.76;
   --skin-heatmap-panel-aspect-ratio: 2.39;
   --skin-stats-panel-aspect-ratio: 0.8967;
-  --skin-dragon-panel-aspect-ratio: 1.55;
   --skin-top-controls-panel-aspect-ratio: 6.5;
   --skin-mode-tab-button-aspect-ratio: 3.53;
   --skin-mode-duration-field-aspect-ratio: 1.97;
@@ -158,14 +157,10 @@
 }
 
 .top-controls {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: center;
-}
-
-.top-controls__group {
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 0.75rem;
 }
 
 .timer-duration-field {
@@ -271,7 +266,7 @@
 
 .timer-card__time {
   font-family: var(--dashboard-display-font-family);
-  font-size: clamp(3rem, 9vw, 5rem);
+  font-size: 5rem;
   line-height: 1;
 }
 
@@ -306,8 +301,16 @@
 }
 
 .top-controls .themed-button--tab {
-  height: 57px;
-  min-height: 57px;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  height: 50px;
+  min-height: 50px;
+}
+
+.top-controls .timer-duration-field {
+  height: 50px;
+  min-height: 50px;
 }
 
 .themed-button--action {
@@ -405,7 +408,7 @@
 
 .dashboard-shell--warm .timer-card__time {
   font-family: "RedLavaTimer", var(--dashboard-display-font-family);
-  font-size: clamp(6rem, 18vw, 8rem);
+  font-size: 8rem;
   position: relative;
   z-index: 3;
   color: #ffd46f;
@@ -486,23 +489,20 @@
 
 .dashboard-shell--warm .top-controls {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: clamp(3.3rem, 5.8vw, 4rem);
   gap: clamp(0.55rem, 1vw, 0.8rem);
 }
 
-.dashboard-shell--warm .top-controls__group {
-  display: flex;
-  gap: 10px;
-}
-
 .dashboard-shell--warm .top-controls .themed-button--tab {
-  --top-controls-item-height: 57px;
+  --top-controls-item-height: 50px;
   min-height: 0;
   height: var(--top-controls-item-height);
-  width: 100%;
-  max-width: calc(
-    var(--top-controls-item-height) * var(--skin-mode-tab-button-aspect-ratio)
-  );
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
   justify-self: center;
   align-self: center;
   font-size: 0.8rem;
@@ -578,7 +578,7 @@
 }
 
 .dashboard-shell--warm .top-controls .timer-duration-field {
-  --top-controls-item-height: clamp(2.25rem, 3.7vw, 2.8rem);
+  --top-controls-item-height: 50px;
   position: relative;
   z-index: 2;
   min-height: 0;
@@ -802,11 +802,13 @@
 }
 
 .dashboard-shell--warm .notes-panel {
-  width: 100%;
-  max-width: 545px;
+  width: 283px;
+  min-width: 283px;
+  max-width: 283px;
   margin-inline: auto;
-  min-height: 0;
-  height: auto;
+  height: 372px;
+  min-height: 372px;
+  max-height: 372px;
   overflow: hidden;
   border: none;
   border-radius: 0;
@@ -816,8 +818,10 @@
 .dashboard-shell--warm .notes-panel .panel-shell__body {
   position: relative;
   overflow: hidden;
-  aspect-ratio: var(--skin-notes-panel-aspect-ratio);
-  min-height: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 372px;
+  aspect-ratio: auto;
 }
 
 .dashboard-shell--warm .notes-panel .panel-shell__body::before {
@@ -853,12 +857,6 @@
 
 .dashboard-shell--warm .notes-panel__notepad:focus {
   outline-color: rgba(255, 180, 96, 0.9);
-}
-
-.dashboard-shell--warm .dashboard-column--right .dashboard-lock-wrap {
-  width: 100%;
-  max-width: 545px;
-  margin-inline: auto;
 }
 
 .dashboard-shell--warm .heatmap-card {
@@ -990,8 +988,13 @@
 }
 
 .dashboard-shell--warm .dragon-card {
-  width: min(100%, 545px);
+  width: 283px;
+  min-width: 283px;
+  max-width: 283px;
   height: 167px;
+  min-height: 167px;
+  max-height: 167px;
+  flex: 0 0 283px;
   margin-inline: auto;
   border: none;
   background: transparent;
@@ -1469,7 +1472,6 @@
     gap: 0.45rem;
   }
 
-  .top-controls,
   .action-buttons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1507,12 +1509,7 @@
 
   .dashboard-shell--warm .top-controls {
     min-height: clamp(3.3rem, 14vw, 4rem);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.45rem;
-  }
-
-  .dashboard-shell--warm .top-controls__group {
-    gap: 0.35rem;
   }
 
   .dashboard-shell--warm .stats-card__label {
@@ -1662,4 +1659,3 @@
   filter: drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.9))
     drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.72));
 }
-

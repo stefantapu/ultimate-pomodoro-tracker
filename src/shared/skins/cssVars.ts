@@ -70,9 +70,6 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-stats-panel-aspect-ratio": String(
       skin.assets.statsPanel?.aspectRatio ?? 0.8967,
     ),
-    "--skin-dragon-panel-aspect-ratio": String(
-      skin.assets.dragonPanel?.aspectRatio ?? 1.55,
-    ),
     "--skin-top-controls-panel-aspect-ratio": String(
       skin.assets.topControlsPanel?.aspectRatio ?? 6.5,
     ),

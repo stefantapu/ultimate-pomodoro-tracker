@@ -32,46 +32,42 @@ export const TopControls = memo(function TopControls({
 }: TopControlsProps) {
   return (
     <div className="top-controls">
-      <div className="top-controls__group">
-        <ThemedButton
-          variant="tab"
-          active={mode === "focus"}
-          onClick={() => onSelectMode("focus")}
-        >
-          Focus
-        </ThemedButton>
-        <TimerDurationField
-          field="focus"
-          displayMinutes={focusLastValidMinutes}
-          draftMinutes={focusDraftMinutes}
-          isEditing={activeEditedField === "focus"}
-          isActiveMode={mode === "focus"}
-          onStartEdit={onStartEditField}
-          onDraftChange={onDraftChange}
-          onApply={onApplyDuration}
-          onCancelEdit={onCancelEdit}
-        />
-      </div>
-      <div className="top-controls__group">
-        <ThemedButton
-          variant="tab"
-          active={mode === "break"}
-          onClick={() => onSelectMode("break")}
-        >
-          Break
-        </ThemedButton>
-        <TimerDurationField
-          field="break"
-          displayMinutes={breakLastValidMinutes}
-          draftMinutes={breakDraftMinutes}
-          isEditing={activeEditedField === "break"}
-          isActiveMode={mode === "break"}
-          onStartEdit={onStartEditField}
-          onDraftChange={onDraftChange}
-          onApply={onApplyDuration}
-          onCancelEdit={onCancelEdit}
-        />
-      </div>
+      <TimerDurationField
+        field="focus"
+        displayMinutes={focusLastValidMinutes}
+        draftMinutes={focusDraftMinutes}
+        isEditing={activeEditedField === "focus"}
+        isActiveMode={mode === "focus"}
+        onStartEdit={onStartEditField}
+        onDraftChange={onDraftChange}
+        onApply={onApplyDuration}
+        onCancelEdit={onCancelEdit}
+      />
+      <ThemedButton
+        variant="tab"
+        active={mode === "focus"}
+        onClick={() => onSelectMode("focus")}
+      >
+        Focus
+      </ThemedButton>
+      <ThemedButton
+        variant="tab"
+        active={mode === "break"}
+        onClick={() => onSelectMode("break")}
+      >
+        Break
+      </ThemedButton>
+      <TimerDurationField
+        field="break"
+        displayMinutes={breakLastValidMinutes}
+        draftMinutes={breakDraftMinutes}
+        isEditing={activeEditedField === "break"}
+        isActiveMode={mode === "break"}
+        onStartEdit={onStartEditField}
+        onDraftChange={onDraftChange}
+        onApply={onApplyDuration}
+        onCancelEdit={onCancelEdit}
+      />
     </div>
   );
 });
