@@ -1,4 +1,5 @@
 import { useUIStore } from "@shared/stores/uiStore";
+import { createPortal } from "react-dom";
 
 type SettingsModalProps = {
   autoFocus: boolean;
@@ -28,7 +29,7 @@ export function SettingsModal({
     setSettingsModalOpen(false);
   };
 
-  return (
+  const modal = (
     <div className="settings-modal__overlay" onClick={handleCancel}>
       <div
         className="settings-modal"
@@ -91,4 +92,10 @@ export function SettingsModal({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") {
+    return modal;
+  }
+
+  return createPortal(modal, document.body);
 }
