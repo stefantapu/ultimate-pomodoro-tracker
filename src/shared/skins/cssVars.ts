@@ -49,6 +49,7 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-auto-break-button-image": toImageVariable(skin.assets.autoBreakButton),
     "--skin-sound-button-image": toImageVariable(skin.assets.soundButton),
     "--skin-settings-button-image": toImageVariable(skin.assets.settingsButton),
+    "--skin-settings-icon-image": toImageVariable(skin.assets.settingsIcon),
     "--skin-exit-button-image": toImageVariable(skin.assets.exitButton),
     "--skin-exit-icon-image": toImageVariable(skin.assets.exitIcon),
     "--skin-timer-panel-aspect-ratio": String(

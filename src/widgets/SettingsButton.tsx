@@ -18,7 +18,10 @@ export function SettingsButton() {
       title="Open settings"
     >
       {isWarmSkin ? (
-        <span className="toolbar-icon-button__label">Open settings</span>
+        <>
+          <span className="toolbar-icon-button__label">Open settings</span>
+          <span className="toolbar-icon-button__icon" aria-hidden="true" />
+        </>
       ) : (
         "Settings"
       )}

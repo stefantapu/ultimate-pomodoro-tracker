@@ -21,6 +21,7 @@ const minimalSkin: SkinProfile = {
     autoBreakButton: null,
     soundButton: null,
     settingsButton: null,
+    settingsIcon: null,
     exitButton: null,
     exitIcon: null,
   },
@@ -124,8 +125,12 @@ const warmSkin: SkinProfile = {
       { width: 150, height: 150 },
     ),
     settingsButton: buildImageAsset(
-      "/assets/red_lava_theme/settings_button/settings_button_147_144.webp",
-      { width: 147, height: 144 },
+      "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
+      { width: 150, height: 150 },
+    ),
+    settingsIcon: buildImageAsset(
+      "/assets/red_lava_theme/settings_button/settings_icon_100x100.webp",
+      { width: 100, height: 100 },
     ),
     exitButton: buildImageAsset(
       "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",

@@ -23,6 +23,7 @@ export type SkinAssets = {
   autoBreakButton: SkinImageAsset | null;
   soundButton: SkinImageAsset | null;
   settingsButton: SkinImageAsset | null;
+  settingsIcon: SkinImageAsset | null;
   exitButton: SkinImageAsset | null;
   exitIcon: SkinImageAsset | null;
 };

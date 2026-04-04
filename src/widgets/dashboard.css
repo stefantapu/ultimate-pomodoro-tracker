@@ -1519,6 +1519,7 @@
 
 .dashboard-shell {
   --skin-settings-button-image: none;
+  --skin-settings-icon-image: none;
   --skin-exit-button-image: none;
   --skin-exit-icon-image: none;
 }
@@ -1588,6 +1589,9 @@
 }
 
 .dashboard-shell--warm
+  .toolbar-icon-button--settings
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
   .toolbar-icon-button--exit
   .toolbar-icon-button__icon::before {
   content: "";
@@ -1599,12 +1603,37 @@
   min-width: 1rem;
   min-height: 1rem;
   transform: translate(-50%, -50%);
-  background-image: var(--skin-exit-icon-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  filter: drop-shadow(0 0 0 rgba(255, 187, 111, 0));
+  transition: filter 150ms ease;
 }
 
+.dashboard-shell--warm
+  .toolbar-icon-button--settings
+  .toolbar-icon-button__icon::before {
+  left: 50%;
+}
+
+.dashboard-shell--warm
+  .toolbar-icon-button--settings
+  .toolbar-icon-button__icon::before {
+  background-image: var(--skin-settings-icon-image);
+}
+
+.dashboard-shell--warm
+  .toolbar-icon-button--exit
+  .toolbar-icon-button__icon::before {
+  background-image: var(--skin-exit-icon-image);
+}
+
+.dashboard-shell--warm
+  .toolbar-icon-button--settings:hover
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--settings:focus-visible
+  .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--exit:hover
   .toolbar-icon-button__icon::before,
