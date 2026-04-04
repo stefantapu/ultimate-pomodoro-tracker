@@ -1,5 +1,8 @@
 import { memo, useMemo, type ComponentType } from "react";
-import { useAnalytics } from "@shared/hooks/useAnalytics";
+import {
+  useAnalytics,
+  type HeatmapData,
+} from "@shared/hooks/useAnalytics";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import type { User } from "@supabase/supabase-js";
@@ -13,6 +16,35 @@ import { StatsCard } from "./StatsCard";
 import { TimerBlock } from "./TimerBlock";
 
 const EMPTY_HEATMAP_DATA: Array<{ date: string; value: number }> = [];
+const HEATMAP_MOCK_WINDOW_DAYS = 183;
+
+function buildMockHeatmapData(): HeatmapData[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Array.from({ length: HEATMAP_MOCK_WINDOW_DAYS }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (HEATMAP_MOCK_WINDOW_DAYS - 1 - index));
+
+    const weekday = date.getDay();
+    const weekIndex = Math.floor(index / 7);
+    let value = 0;
+
+    if (weekday === 1) value = 1500;
+    if (weekday === 2) value = 2700;
+    if (weekday === 3) value = weekIndex % 2 === 0 ? 0 : 1800;
+    if (weekday === 4) value = 4200;
+    if (weekday === 5) value = weekIndex % 3 === 0 ? 5400 : 3000;
+    if (weekday === 6) value = weekIndex % 2 === 0 ? 2400 : 900;
+
+    return {
+      date: date.toISOString().split("T")[0],
+      value,
+    };
+  });
+}
+
+const MOCK_HEATMAP_DATA = buildMockHeatmapData();
 
 type DashboardLayoutProps = {
   user: User | null;
@@ -29,6 +61,9 @@ export const DashboardLayout = memo(function DashboardLayout({
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
+  const heatmapData = user
+    ? analytics.data?.heatmap_data ?? EMPTY_HEATMAP_DATA
+    : MOCK_HEATMAP_DATA;
 
   return (
     <div
@@ -48,7 +83,7 @@ export const DashboardLayout = memo(function DashboardLayout({
             <div className="dashboard-bottom-row">
               <div className="dashboard-lock-wrap">
                 <HeatmapCard
-                  heatmapData={analytics.data?.heatmap_data ?? EMPTY_HEATMAP_DATA}
+                  heatmapData={heatmapData}
                   loading={analytics.loading}
                 />
                 {!user && <LockedOverlayComponent />}
