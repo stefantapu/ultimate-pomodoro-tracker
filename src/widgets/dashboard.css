@@ -1259,6 +1259,251 @@
   height: 100%;
 }
 
+.locked-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 0.7rem;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(24, 8, 4, 0.1), rgba(13, 4, 2, 0.74)),
+    radial-gradient(
+      circle at 50% 28%,
+      rgba(255, 170, 90, 0.12),
+      transparent 42%
+    );
+  backdrop-filter: blur(1.5px);
+}
+
+.locked-overlay__content {
+  display: grid;
+  place-items: center;
+  width: min(calc(100% - 0.2rem), 9rem);
+}
+
+.locked-overlay__copy {
+  min-width: min(100%, 6.5rem);
+  padding: 0.45rem 0.55rem 0.5rem;
+  border: 1px solid rgba(255, 181, 101, 0.44);
+  background: transparent;
+  box-shadow: none;
+  color: #fff0d5;
+  font-family: var(--dashboard-button-font-family);
+  font-size: clamp(0.5rem, 0.46rem + 0.18vw, 0.63rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.35rem rgba(255, 161, 74, 0.18);
+}
+
+.locked-overlay:hover .locked-overlay__copy,
+.locked-overlay:focus-visible .locked-overlay__copy {
+  border-color: rgba(255, 202, 132, 0.68);
+  box-shadow:
+    0 0 0.7rem rgba(255, 120, 39, 0.18);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.locked-overlay:focus-visible {
+  outline: none;
+}
+
+.locked-overlay:active .locked-overlay__copy {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+.auth-block {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(18, 6, 3, 0.5), rgba(9, 3, 2, 0.82)),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(255, 149, 58, 0.14),
+      transparent 32%
+    );
+  backdrop-filter: blur(8px);
+}
+
+.auth-block__panel {
+  position: relative;
+  width: min(25rem, 100%);
+  padding: 2rem 1.5rem 1.4rem;
+  border: 1px solid rgba(255, 176, 98, 0.38);
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 181, 98, 0.08), rgba(255, 181, 98, 0)),
+    linear-gradient(180deg, rgba(54, 21, 11, 0.98), rgba(29, 10, 6, 0.98));
+  color: #fff0d9;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 217, 171, 0.06),
+    0 1.4rem 3rem rgba(0, 0, 0, 0.38);
+}
+
+.auth-block__crest {
+  width: 3rem;
+  height: 0.28rem;
+  margin: 0 auto 1.15rem;
+  background: linear-gradient(90deg, transparent, #ffb45c, transparent);
+  box-shadow: 0 0 0.7rem rgba(255, 133, 35, 0.28);
+}
+
+.auth-block__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 182, 104, 0.28);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f2caa0;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-block__title {
+  margin: 0 0 0.75rem;
+  color: #ffe4bc;
+  text-align: center;
+  font-family: var(--dashboard-display-font-family);
+  font-size: 1.7rem;
+  letter-spacing: 0.03em;
+}
+
+.auth-block__description {
+  margin: 0 0 1.2rem;
+  color: #e9c093;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.auth-block__success {
+  text-align: center;
+}
+
+.auth-block__error {
+  margin-bottom: 1rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(255, 127, 92, 0.28);
+  background: rgba(123, 23, 10, 0.34);
+  color: #ffbe9f;
+  text-align: center;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.auth-block__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.auth-block__input {
+  padding: 0.82rem 0.9rem;
+  border: 1px solid rgba(255, 180, 101, 0.22);
+  border-radius: 0;
+  background: rgba(13, 4, 2, 0.56);
+  color: #fff0dd;
+  outline: none;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease;
+}
+
+.auth-block__input::placeholder {
+  color: rgba(240, 200, 155, 0.56);
+}
+
+.auth-block__input:focus {
+  border-color: rgba(255, 187, 111, 0.54);
+  background: rgba(17, 6, 3, 0.74);
+  box-shadow: 0 0 0 1px rgba(255, 143, 45, 0.18);
+}
+
+.auth-block__button {
+  padding: 0.82rem 1rem;
+  border: 1px solid rgba(255, 184, 108, 0.28);
+  border-radius: 0;
+  font-family: var(--dashboard-button-font-family);
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    filter 140ms ease,
+    box-shadow 160ms ease;
+}
+
+.auth-block__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.auth-block__button--primary {
+  margin-top: 0.3rem;
+  background:
+    linear-gradient(180deg, rgba(255, 193, 113, 0.1), rgba(255, 193, 113, 0)),
+    linear-gradient(180deg, #a43c1a 0%, #74170a 100%);
+  color: #fff1da;
+  box-shadow: 0 0.8rem 1.4rem rgba(20, 5, 2, 0.24);
+}
+
+.auth-block__button--secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4d0a8;
+}
+
+.auth-block__button:hover,
+.auth-block__button:focus-visible,
+.auth-block__close:hover,
+.auth-block__close:focus-visible,
+.auth-block__switch-button:hover,
+.auth-block__switch-button:focus-visible {
+  filter: brightness(1.06);
+}
+
+.auth-block__button:hover,
+.auth-block__button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1rem 1.6rem rgba(21, 5, 2, 0.28),
+    0 0 0.85rem rgba(255, 120, 39, 0.12);
+}
+
+.auth-block__switch-text {
+  margin: 1rem 0 0;
+  color: #cfa57f;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.auth-block__switch-button {
+  margin-left: 0.45rem;
+  border: none;
+  padding: 0;
+  background: none;
+  color: #ffbf78;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.14rem;
+}
+
 .settings-modal__overlay {
   position: fixed;
   inset: 0;
@@ -1506,6 +1751,29 @@
 
   .settings-modal__button {
     flex: 1 1 auto;
+  }
+
+  .locked-overlay {
+    padding: 0.45rem;
+  }
+
+  .locked-overlay__content {
+    width: min(calc(100% - 0.1rem), 7.5rem);
+  }
+
+  .locked-overlay__copy {
+    min-width: min(100%, 5.6rem);
+    padding: 0.38rem 0.45rem 0.42rem;
+    font-size: 0.48rem;
+    letter-spacing: 0.1em;
+  }
+
+  .auth-block__panel {
+    padding: 1.75rem 1.1rem 1.15rem;
+  }
+
+  .auth-block__title {
+    font-size: 1.45rem;
   }
 }
 
