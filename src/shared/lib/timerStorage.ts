@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Mode,
   TimerSettings,
   TimerState,
@@ -16,8 +16,8 @@ type StoredTimerState = {
 };
 
 const DEFAULT_TIMER_SETTINGS: TimerSettings = {
-  focusDuration: 600,
-  breakDuration: 600,
+  focusDuration: 1500,
+  breakDuration: 300,
   autoBreak: false,
   autoFocus: false,
 };
@@ -154,3 +154,4 @@ export function writeTimerState(
 ) {
   localStorage.setItem(stateStorageKey, JSON.stringify(timerState));
 }
+

@@ -1,16 +1,31 @@
-import { useAuth } from "../app/providers/AuthProvider";
+import { useAuth } from "../app/providers/useAuth";
 import { useUIStore } from "../shared/stores/uiStore";
 import { supabase } from "../../utils/supabase";
+import { useProfile } from "../shared/hooks/useProfile";
 
 export const TopBar = () => {
   const { user, loading } = useAuth();
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
   const triggerTimerReset = useUIStore((state) => state.triggerTimerReset);
+  const { profile } = useProfile();
 
   const handleLogout = async () => {
     triggerTimerReset(); // Reset timer and sync final seconds
     await supabase.auth.signOut();
   };
+
+  // XP Calculations
+  let xpInCurrentLevel = 0;
+  let xpRequiredForNext = 100;
+  let progressPct = 0;
+  
+  if (profile) {
+    const baseXP = Math.pow(profile.level - 1, 2) * 100;
+    const nextLevelXP = Math.pow(profile.level, 2) * 100;
+    xpInCurrentLevel = profile.total_xp - baseXP;
+    xpRequiredForNext = nextLevelXP - baseXP;
+    progressPct = Math.min(100, Math.max(0, (xpInCurrentLevel / xpRequiredForNext) * 100));
+  }
 
   return (
     <div
@@ -42,7 +57,31 @@ export const TopBar = () => {
       <div>
         {!loading && (
           user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+              
+              {/* Profile XP Info */}
+              {profile && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", minWidth: "140px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: "0.75rem", fontWeight: "bold", color: "#e2e8f0" }}>
+                    <span style={{ color: "#a777e3", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "4px" }}>
+                      ⭐ Lvl {profile.level}
+                    </span>
+                    <span style={{ opacity: 0.7, fontSize: "0.7rem", fontWeight: "normal" }}>
+                      {xpInCurrentLevel} / {xpRequiredForNext} XP
+                    </span>
+                  </div>
+                  <div style={{ height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
+                    <div style={{ 
+                      position: "absolute",
+                      left: 0, top: 0, bottom: 0,
+                      background: "linear-gradient(90deg, #6e8efb, #a777e3)", 
+                      width: `${progressPct}%`,
+                      transition: "width 0.5s ease-out"
+                    }} />
+                  </div>
+                </div>
+              )}
+
               <div 
                 style={{ 
                   width: "36px", 

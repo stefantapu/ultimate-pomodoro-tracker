@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { supabase } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/AuthProvider";
+import { useAuth } from "../../app/providers/useAuth";
 import { useUIStore } from "../stores/uiStore";
 import type { Mode } from "../lib/timerTypes";
 
@@ -13,64 +13,80 @@ export type SessionPayload = {
   finished_at: string;
 };
 
-const SYNC_QUEUE_KEY = "pomodoro_sync_queue";
+const SYNC_QUEUE_KEY_PREFIX = "pomodoro_sync_queue";
+
+function getSyncQueueKey(userId: string) {
+  return `${SYNC_QUEUE_KEY_PREFIX}:${userId}`;
+}
 
 export function useSyncSession() {
   const { user } = useAuth();
   const refreshAnalytics = useUIStore((state) => state.refreshAnalytics);
 
-  const getQueue = (): SessionPayload[] => {
+  const getQueue = useCallback((): SessionPayload[] => {
+    if (!user) {
+      return [];
+    }
+
     try {
-      const q = localStorage.getItem(SYNC_QUEUE_KEY);
-      return q ? JSON.parse(q) : [];
+      const queue = localStorage.getItem(getSyncQueueKey(user.id));
+      return queue ? JSON.parse(queue) : [];
     } catch {
       return [];
     }
-  };
+  }, [user]);
 
-  const saveQueue = (q: SessionPayload[]) => {
-    localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(q));
-  };
+  const saveQueue = useCallback(
+    (queue: SessionPayload[]) => {
+      if (!user) {
+        return;
+      }
 
-  const flushQueue = async () => {
+      localStorage.setItem(getSyncQueueKey(user.id), JSON.stringify(queue));
+    },
+    [user],
+  );
+
+  const flushQueue = useCallback(async () => {
     if (!user) return;
+
     const queue = getQueue();
     if (queue.length === 0) return;
 
-    // Attach user_id to all items
     const payloads = queue.map((item) => ({ ...item, user_id: user.id }));
 
     try {
       const { error } = await supabase.from("focus_sessions").insert(payloads);
+
       if (!error) {
-        // Clear queue on success sync
         saveQueue([]);
-        refreshAnalytics(); // Triggers global UI store to refresh stats
+        refreshAnalytics();
       } else {
         console.error("Failed to sync sessions:", error);
       }
-    } catch (e) {
-      console.error("Sync stream err:", e);
+    } catch (error) {
+      console.error("Sync stream err:", error);
     }
-  };
+  }, [getQueue, refreshAnalytics, saveQueue, user]);
 
-  // Attempt to flush queue on hook mount (and when user is populated)
   useEffect(() => {
     if (user) {
-      flushQueue();
+      void flushQueue();
     }
-  }, [user]);
+  }, [flushQueue, user]);
 
-  const syncSession = async (session: SessionPayload) => {
-    if (!user) return;
+  const syncSession = useCallback(
+    async (session: SessionPayload) => {
+      if (!user) return;
 
-    const queue = getQueue();
-    queue.push(session);
-    saveQueue(queue);
+      const queue = getQueue();
+      queue.push(session);
+      saveQueue(queue);
 
-    // Attempt immediately
-    await flushQueue();
-  };
+      await flushQueue();
+    },
+    [flushQueue, getQueue, saveQueue, user],
+  );
 
   return { syncSession };
 }

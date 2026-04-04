@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/AuthProvider";
+import { useAuth } from "../../app/providers/useAuth";
 
 export type Note = {
   id: string;
@@ -14,51 +14,74 @@ export type Note = {
 export function useNotes() {
   const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [notesUserId, setNotesUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchNotes = useCallback(async () => {
     if (!user) return;
+
     setLoading(true);
+
     const { data, error } = await supabase
       .from("notes")
       .select("*")
       .order("created_at", { ascending: false });
+
     if (!error && data) {
       setNotes(data);
+      setNotesUserId(user.id);
     }
+
     setLoading(false);
   }, [user]);
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    if (!user) {
+      return;
+    }
 
-  const addNote = async (content: string) => {
-    if (!user || !content.trim()) return;
-    // Optimistic UI could go here, but doing standard wait.
-    const { data, error } = await supabase
-      .from("notes")
-      .insert([{ user_id: user.id, content }])
-      .select()
+    queueMicrotask(() => {
+      void fetchNotes();
+    });
+  }, [fetchNotes, user]);
+
+  const addNote = useCallback(
+    async (content: string): Promise<Note | null> => {
+      if (!user || !content.trim()) return null;
+
+      const { data, error } = await supabase
+        .from("notes")
+        .insert([{ user_id: user.id, content }])
+        .select()
       .single();
+
     if (!error && data) {
       setNotes((prev) => [data, ...prev]);
+      setNotesUserId(user.id);
+      return data;
     }
-  };
 
-  const updateNote = async (id: string, updates: Partial<Note>) => {
-    // Optimistically update
-    setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, ...updates } : n))
-    );
+      return null;
+    },
+    [user],
+  );
+
+  const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
+    setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...updates } : n)));
     await supabase.from("notes").update(updates).eq("id", id);
-  };
+  }, []);
 
-  const deleteNote = async (id: string) => {
-    // Optimistically update
+  const deleteNote = useCallback(async (id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
     await supabase.from("notes").delete().eq("id", id);
-  };
+  }, []);
 
-  return { notes, loading, addNote, updateNote, deleteNote, fetchNotes };
+  return {
+    notes: user && notesUserId === user.id ? notes : [],
+    loading: user ? loading : false,
+    addNote,
+    updateNote,
+    deleteNote,
+    fetchNotes,
+  };
 }
