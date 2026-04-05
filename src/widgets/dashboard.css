@@ -302,6 +302,28 @@
   font-family: var(--dashboard-display-font-family);
   font-size: 5rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.timer-card__digit,
+.timer-card__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.timer-card__digit {
+  width: 1ch;
+}
+
+.timer-card__separator {
+  width: 0.6ch;
 }
 
 .action-buttons {
@@ -889,8 +911,16 @@
 }
 
 .dashboard-shell--warm .dashboard-lock-wrap--stats {
-  width: 100%;
-  max-width: 392px;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  justify-self: center;
+}
+
+.dashboard-shell--warm .dashboard-lock-wrap--notes,
+.dashboard-shell--warm .dashboard-lock-wrap--dragon {
+  width: fit-content;
+  max-width: 100%;
   margin-inline: auto;
 }
 
@@ -1315,7 +1345,9 @@
 .auth-block__panel {
   position: relative;
   width: min(25rem, 100%);
+  max-width: 100%;
   padding: 2rem 1.5rem 1.4rem;
+  box-sizing: border-box;
   border: 1px solid rgba(255, 184, 108, 0.34);
   border-radius: 0;
   background: rgba(24, 8, 4, 0.34);
@@ -1396,12 +1428,15 @@
 }
 
 .auth-block__input {
+  width: 100%;
+  min-width: 0;
   padding: 0.82rem 0.9rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
   border-radius: 0;
   background: rgba(13, 4, 2, 0.16);
   color: #fff0dd;
   font-family: var(--dashboard-button-font-family);
+  box-sizing: border-box;
   outline: none;
   transition:
     border-color 140ms ease,
@@ -1464,9 +1499,12 @@
 }
 
 .auth-block__button {
+  width: 100%;
+  min-width: 0;
   padding: 0.82rem 1rem;
   border: 1px solid rgba(255, 184, 108, 0.28);
   border-radius: 0;
+  box-sizing: border-box;
   font-family: var(--dashboard-button-font-family);
   font-size: 0.98rem;
   font-weight: 700;
@@ -1999,7 +2037,9 @@
     width: min(100%, 22rem);
     max-height: calc(100dvh - 1.5rem);
     padding: 1.35rem 0.95rem 1rem;
+    box-sizing: border-box;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
