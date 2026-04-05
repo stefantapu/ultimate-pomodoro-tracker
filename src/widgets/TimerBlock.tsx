@@ -229,6 +229,12 @@ export function TimerBlock() {
     [activeEditedField, restoreFieldDraftToLastValid],
   );
 
+  const handleResetDurationDrafts = useCallback(() => {
+    setFocusDraftMinutes(focusLastValidMinutes.toString());
+    setBreakDraftMinutes(breakLastValidMinutes.toString());
+    setActiveEditedField(null);
+  }, [breakLastValidMinutes, focusLastValidMinutes]);
+
   const handleApplyDuration = useCallback(
     (field: Mode) => {
       if (activeEditedField !== field) {
@@ -341,26 +347,22 @@ export function TimerBlock() {
   return (
     <div className="timer-block">
       <SettingsModal
-        autoFocus={autoFocus}
-        autoBreak={autoBreak}
-        soundEnabled={soundEnabled}
-        onToggleAutoFocus={handleToggleAutoFocus}
-        onToggleAutoBreak={handleToggleAutoBreak}
-        onToggleSound={handleToggleSound}
-      />
-      <TopControls
-        mode={mode}
-        focusLastValidMinutes={focusLastValidMinutes}
-        breakLastValidMinutes={breakLastValidMinutes}
         focusDraftMinutes={focusDraftMinutes}
         breakDraftMinutes={breakDraftMinutes}
         activeEditedField={activeEditedField}
-        onSelectMode={switchMode}
+        autoFocus={autoFocus}
+        autoBreak={autoBreak}
+        soundEnabled={soundEnabled}
         onStartEditField={handleStartEditField}
         onDraftChange={handleDraftChange}
         onApplyDuration={handleApplyDuration}
         onCancelEdit={handleCancelEdit}
+        onResetDurationDrafts={handleResetDurationDrafts}
+        onToggleAutoFocus={handleToggleAutoFocus}
+        onToggleAutoBreak={handleToggleAutoBreak}
+        onToggleSound={handleToggleSound}
       />
+      <TopControls mode={mode} onSelectMode={switchMode} />
       <TimerCard
         mode={mode}
         status={status}
