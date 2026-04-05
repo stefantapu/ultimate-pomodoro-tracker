@@ -15,8 +15,8 @@ export type SkinAssets = {
   dragonPanel: SkinImageAsset | null;
   topControlsPanel: SkinImageAsset | null;
   modeTabButton: SkinImageAsset | null;
-  modeDurationField: SkinImageAsset | null;
   timerPanel: SkinImageAsset | null;
+  timerPanelMobile: SkinImageAsset | null;
   startButton: SkinImageAsset | null;
   resetButton: SkinImageAsset | null;
   autoFocusButton: SkinImageAsset | null;

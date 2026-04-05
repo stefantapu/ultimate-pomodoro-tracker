@@ -55,7 +55,21 @@ const TimerCardTime = memo(function TimerCardTime({
     };
   }, [status, targetTimestamp, timeLeft]);
 
-  return <div className="timer-card__time">{timeLabel}</div>;
+  return (
+    <div aria-label={timeLabel} className="timer-card__time">
+      {timeLabel.split("").map((character, index) => (
+        <span
+          key={`${character}-${index}`}
+          aria-hidden="true"
+          className={
+            character === ":" ? "timer-card__separator" : "timer-card__digit"
+          }
+        >
+          {character}
+        </span>
+      ))}
+    </div>
+  );
 });
 
 export const TimerCard = memo(function TimerCard({

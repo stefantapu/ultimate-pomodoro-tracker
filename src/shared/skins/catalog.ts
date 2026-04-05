@@ -34,13 +34,13 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/top_control_panel/brek_and_focus_button_background_w335_h95.webp",
       { width: 335, height: 95 },
     ),
-    modeDurationField: buildImageAsset(
-      "/assets/red_lava_theme/top_control_panel/focus_and_break_minute_selector_background_w250_h127.webp",
-      { width: 250, height: 127 },
-    ),
     timerPanel: buildImageAsset(
       "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
       { width: 1047, height: 390 },
+    ),
+    timerPanelMobile: buildImageAsset(
+      "/assets/red_lava_theme/timer_panel/timer_panel_square_mobile.webp",
+      { width: 1, height: 1 },
     ),
     startButton: buildImageAsset(
       "/assets/red_lava_theme/start_button_w321_h107.webp",

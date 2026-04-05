@@ -99,12 +99,12 @@ export const DashboardLayout = memo(function DashboardLayout({
           </section>
 
           <section className="dashboard-column dashboard-column--right">
-            <div className="dashboard-lock-wrap dashboard-notes-wrap">
+            <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
               <NotesPanel />
               {!user && <LockedOverlayComponent />}
             </div>
 
-            <div className="dashboard-lock-wrap">
+            <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
               <DragonCard />
               {!user && <LockedOverlayComponent />}
             </div>

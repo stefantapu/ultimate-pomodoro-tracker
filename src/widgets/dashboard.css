@@ -39,8 +39,8 @@
   --skin-dragon-panel-image: none;
   --skin-top-controls-panel-image: none;
   --skin-mode-tab-button-image: none;
-  --skin-mode-duration-field-image: none;
   --skin-timer-panel-image: none;
+  --skin-timer-panel-image-mobile: none;
   --skin-start-button-image: none;
   --skin-reset-button-image: none;
   --skin-auto-focus-button-image: none;
@@ -54,7 +54,7 @@
   --skin-stats-panel-aspect-ratio: 0.8967;
   --skin-top-controls-panel-aspect-ratio: 6.5;
   --skin-mode-tab-button-aspect-ratio: 3.53;
-  --skin-mode-duration-field-aspect-ratio: 1.97;
+  --skin-timer-panel-mobile-aspect-ratio: 1;
   --skin-timer-panel-max-width: 100%;
   --skin-timer-panel-min-height: 260px;
   --skin-timer-panel-overlay-opacity: 0;
@@ -241,50 +241,6 @@
   gap: 0.75rem;
 }
 
-.timer-duration-field {
-  min-height: 3rem;
-  border: 1px solid var(--dashboard-panel-border);
-  border-radius: var(--dashboard-radius);
-  background: var(--dashboard-button);
-  color: var(--dashboard-button-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0 0.55rem;
-  box-sizing: border-box;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease;
-  cursor: text;
-}
-
-.timer-duration-field.is-active {
-  background: var(--dashboard-button-active);
-}
-
-.timer-duration-field.is-editing {
-  border-color: var(--dashboard-text-muted);
-}
-
-.timer-duration-field__input {
-  width: 5.6ch;
-  min-width: 0;
-  border: none;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 0.95rem;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  cursor: text;
-}
-
 .panel-shell {
   min-width: 0;
   min-height: 0;
@@ -346,6 +302,28 @@
   font-family: var(--dashboard-display-font-family);
   font-size: 5rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.timer-card__digit,
+.timer-card__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.timer-card__digit {
+  width: 1ch;
+}
+
+.timer-card__separator {
+  width: 0.6ch;
 }
 
 .action-buttons {
@@ -388,11 +366,6 @@
   min-height: 50px;
 }
 
-.top-controls .timer-duration-field {
-  height: 50px;
-  min-height: 50px;
-}
-
 .themed-button--action {
   min-height: var(--skin-action-button-min-height);
   font-size: 1.1rem;
@@ -431,12 +404,13 @@
 }
 
 .dashboard-shell--warm .timer-card {
-  width: 612px;
-  min-width: 612px;
-  max-width: 612px;
+  width: 100%;
+  min-width: 0;
+  max-width: min(100%, 612px);
   margin-inline: auto;
   position: relative;
   isolation: isolate;
+  container-type: inline-size;
   border: none;
   background: transparent;
   box-shadow: none;
@@ -484,15 +458,16 @@
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
   width: 100%;
-  height: 228px;
-  min-height: 228px;
-  aspect-ratio: auto;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: var(--skin-timer-panel-aspect-ratio);
   z-index: 1;
 }
 
 .dashboard-shell--warm .timer-card__time {
   font-family: "RedLavaTimer", var(--dashboard-display-font-family);
-  font-size: 8rem;
+  font-size: clamp(4.7rem, 14vw, 8rem);
+  font-size: clamp(4.7rem, 21cqi, 8rem);
   position: relative;
   z-index: 3;
   color: #ffd46f;
@@ -645,60 +620,6 @@
     inset 0 1px 0 rgba(255, 238, 213, 0.28);
   filter: brightness(1.12) saturate(1.08)
     drop-shadow(0 0 0.82rem rgba(255, 128, 40, 0.34));
-}
-
-.dashboard-shell--warm .top-controls .timer-duration-field {
-  --top-controls-item-height: 50px;
-  position: relative;
-  z-index: 2;
-  min-height: 0;
-  height: var(--top-controls-item-height);
-  width: 100%;
-  max-width: calc(
-    var(--top-controls-item-height) *
-      var(--skin-mode-duration-field-aspect-ratio)
-  );
-  justify-self: center;
-  align-self: center;
-  padding: 0 0.3rem;
-  border: none;
-  background-color: transparent;
-  background-image: var(--skin-mode-duration-field-image);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  color: #ffe2bd;
-  text-shadow: 0 1px 1px rgba(12, 4, 1, 0.7);
-  filter: brightness(0.98);
-  transition:
-    color 150ms ease,
-    text-shadow 150ms ease,
-    box-shadow 150ms ease,
-    filter 150ms ease;
-}
-
-.dashboard-shell--warm .top-controls .timer-duration-field.is-active {
-  color: #fff0c7;
-  text-shadow:
-    0 1px 1px rgba(12, 4, 1, 0.82),
-    0 0 0.5rem rgba(255, 179, 93, 0.28);
-  box-shadow:
-    0 0 0.8rem rgba(255, 107, 30, 0.14),
-    inset 0 1px 0 rgba(255, 229, 194, 0.14);
-  filter: brightness(1.04) saturate(1.04);
-}
-
-.dashboard-shell--warm .top-controls .timer-duration-field.is-editing {
-  box-shadow:
-    0 0 0.95rem rgba(255, 112, 31, 0.2),
-    0 0 1.5rem rgba(255, 158, 76, 0.1);
-  filter: brightness(1.05) saturate(1.06);
-}
-
-.dashboard-shell--warm .top-controls .timer-duration-field__input {
-  position: relative;
-  z-index: 3;
-  font-size: 0.68rem;
 }
 
 .dashboard-shell--warm .action-buttons .themed-button--action,
@@ -990,8 +911,16 @@
 }
 
 .dashboard-shell--warm .dashboard-lock-wrap--stats {
-  width: 100%;
-  max-width: 392px;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  justify-self: center;
+}
+
+.dashboard-shell--warm .dashboard-lock-wrap--notes,
+.dashboard-shell--warm .dashboard-lock-wrap--dragon {
+  width: fit-content;
+  max-width: 100%;
   margin-inline: auto;
 }
 
@@ -1416,7 +1345,9 @@
 .auth-block__panel {
   position: relative;
   width: min(25rem, 100%);
+  max-width: 100%;
   padding: 2rem 1.5rem 1.4rem;
+  box-sizing: border-box;
   border: 1px solid rgba(255, 184, 108, 0.34);
   border-radius: 0;
   background: rgba(24, 8, 4, 0.34);
@@ -1497,12 +1428,15 @@
 }
 
 .auth-block__input {
+  width: 100%;
+  min-width: 0;
   padding: 0.82rem 0.9rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
   border-radius: 0;
   background: rgba(13, 4, 2, 0.16);
   color: #fff0dd;
   font-family: var(--dashboard-button-font-family);
+  box-sizing: border-box;
   outline: none;
   transition:
     border-color 140ms ease,
@@ -1565,9 +1499,12 @@
 }
 
 .auth-block__button {
+  width: 100%;
+  min-width: 0;
   padding: 0.82rem 1rem;
   border: 1px solid rgba(255, 184, 108, 0.28);
   border-radius: 0;
+  box-sizing: border-box;
   font-family: var(--dashboard-button-font-family);
   font-size: 0.98rem;
   font-weight: 700;
@@ -1717,6 +1654,91 @@
 .settings-modal__toggles {
   display: grid;
   gap: 0.65rem;
+}
+
+.settings-modal__duration-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.settings-modal__field {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.82rem 0.9rem;
+  border: 1px solid rgba(255, 180, 101, 0.26);
+  border-radius: 0;
+  background: rgba(13, 4, 2, 0.16);
+  color: #fff0dd;
+  box-shadow: 0 0 0.8rem rgba(255, 120, 39, 0.05);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease;
+}
+
+.settings-modal__field:hover,
+.settings-modal__field:focus-within {
+  border-color: rgba(255, 187, 111, 0.54);
+  background: rgba(17, 6, 3, 0.24);
+  box-shadow:
+    0 0 0 1px rgba(255, 143, 45, 0.14),
+    0 0 1rem rgba(255, 120, 39, 0.12);
+}
+
+.settings-modal__field.is-editing {
+  box-shadow:
+    0 0 0 1px rgba(255, 143, 45, 0.18),
+    0 0 1.15rem rgba(255, 120, 39, 0.16);
+}
+
+.settings-modal__field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffe0b3;
+}
+
+.settings-modal__field-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.settings-modal__field-input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 190, 120, 0.24);
+  border-radius: 0;
+  background: rgba(7, 2, 1, 0.26);
+  color: #fff3de;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.2;
+  padding: 0.72rem 0.8rem;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.settings-modal__field-input:focus {
+  border-color: rgba(255, 190, 120, 0.5);
+  box-shadow: 0 0 0 1px rgba(255, 158, 76, 0.16);
+}
+
+.settings-modal__field-unit,
+.settings-modal__field-hint {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-modal__field-unit {
+  color: #efc18f;
+}
+
+.settings-modal__field-hint {
+  color: #d7aa77;
 }
 
 .settings-modal__toggle {
@@ -1912,6 +1934,27 @@
     background-attachment: scroll;
   }
 
+  .dashboard-shell--warm .timer-card {
+    width: min(100%, 19.75rem);
+    min-width: 0;
+    max-width: 19.75rem;
+  }
+
+  .dashboard-shell--warm .timer-card .panel-shell__body {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: var(--skin-timer-panel-mobile-aspect-ratio);
+  }
+
+  .dashboard-shell--warm .timer-card .panel-shell__body::before {
+    inset: 0.18rem;
+    background-image: var(--skin-timer-panel-image-mobile);
+  }
+
+  .dashboard-shell--warm .timer-card__time {
+    font-size: clamp(4.7rem, 18vw, 5.8rem);
+  }
+
   .dashboard-shell--warm .action-buttons {
     width: min(100%, 19.5rem);
     gap: 0.5rem;
@@ -1921,8 +1964,58 @@
     width: clamp(8.1rem, 38vw, 9.3rem);
   }
 
+  .auth-block,
+  .settings-modal__overlay {
+    padding: 0.75rem;
+  }
+
   .settings-modal {
-    width: min(520px, 100%);
+    width: min(100%, 22rem);
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .settings-modal__header {
+    gap: 0.6rem;
+    padding: 0.95rem 1rem 0.75rem;
+  }
+
+  .settings-modal__header h2 {
+    font-size: 0.98rem;
+    letter-spacing: 0.1em;
+  }
+
+  .settings-modal__close {
+    width: 1.85rem;
+    height: 1.85rem;
+    font-size: 0.95rem;
+  }
+
+  .settings-modal__section {
+    padding: 0.85rem 1rem 1rem;
+  }
+
+  .settings-modal__section-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .settings-modal__toggle,
+  .settings-modal__option,
+  .settings-modal__field {
+    padding: 0.72rem 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .settings-modal__option-top {
+    gap: 0.55rem;
+  }
+
+  .settings-modal__field-input {
+    padding: 0.68rem 0.72rem;
+    font-size: 0.95rem;
   }
 
   .locked-overlay {
@@ -1941,11 +2034,78 @@
   }
 
   .auth-block__panel {
-    padding: 1.75rem 1.1rem 1.15rem;
+    width: min(100%, 22rem);
+    max-height: calc(100dvh - 1.5rem);
+    padding: 1.35rem 0.95rem 1rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .auth-block__close {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1rem;
   }
 
   .auth-block__title {
-    font-size: 1.12rem;
+    font-size: clamp(0.98rem, 4.6vw, 1.12rem);
+    letter-spacing: 0.11em;
+  }
+
+  .auth-block__description,
+  .auth-block__switch-text,
+  .auth-block__error {
+    font-size: 0.86rem;
+  }
+
+  .auth-block__input,
+  .auth-block__button {
+    padding: 0.76rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .auth-block__input--password {
+    padding-right: 2.8rem;
+  }
+
+  .auth-block__password-toggle {
+    right: 0.22rem;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .auth-block__password-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-block,
+  .settings-modal__overlay {
+    padding: 0.55rem;
+  }
+
+  .auth-block__panel,
+  .settings-modal {
+    max-height: calc(100dvh - 1.1rem);
+  }
+
+  .auth-block__panel {
+    padding: 1.1rem 0.8rem 0.9rem;
+  }
+
+  .settings-modal__header {
+    padding: 0.85rem 0.85rem 0.7rem;
+  }
+
+  .settings-modal__section {
+    padding: 0.78rem 0.85rem 0.9rem;
   }
 }
 
