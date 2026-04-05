@@ -382,12 +382,13 @@
 }
 
 .dashboard-shell--warm .timer-card {
-  width: 612px;
-  min-width: 612px;
-  max-width: 612px;
+  width: 100%;
+  min-width: 0;
+  max-width: min(100%, 612px);
   margin-inline: auto;
   position: relative;
   isolation: isolate;
+  container-type: inline-size;
   border: none;
   background: transparent;
   box-shadow: none;
@@ -435,15 +436,16 @@
 
 .dashboard-shell--warm .timer-card .panel-shell__body {
   width: 100%;
-  height: 228px;
-  min-height: 228px;
-  aspect-ratio: auto;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: var(--skin-timer-panel-aspect-ratio);
   z-index: 1;
 }
 
 .dashboard-shell--warm .timer-card__time {
   font-family: "RedLavaTimer", var(--dashboard-display-font-family);
-  font-size: 8rem;
+  font-size: clamp(4.7rem, 14vw, 8rem);
+  font-size: clamp(4.7rem, 21cqi, 8rem);
   position: relative;
   z-index: 3;
   color: #ffd46f;
