@@ -42,6 +42,10 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
       { width: 1047, height: 390 },
     ),
+    timerPanelMobile: buildImageAsset(
+      "/assets/red_lava_theme/timer_panel/timer_panel_square_mobile.webp",
+      { width: 1, height: 1 },
+    ),
     startButton: buildImageAsset(
       "/assets/red_lava_theme/start_button_w321_h107.webp",
       { width: 321, height: 107 },

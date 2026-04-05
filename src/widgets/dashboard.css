@@ -41,6 +41,7 @@
   --skin-mode-tab-button-image: none;
   --skin-mode-duration-field-image: none;
   --skin-timer-panel-image: none;
+  --skin-timer-panel-image-mobile: none;
   --skin-start-button-image: none;
   --skin-reset-button-image: none;
   --skin-auto-focus-button-image: none;
@@ -55,6 +56,7 @@
   --skin-top-controls-panel-aspect-ratio: 6.5;
   --skin-mode-tab-button-aspect-ratio: 3.53;
   --skin-mode-duration-field-aspect-ratio: 1.97;
+  --skin-timer-panel-mobile-aspect-ratio: 1;
   --skin-timer-panel-max-width: 100%;
   --skin-timer-panel-min-height: 260px;
   --skin-timer-panel-overlay-opacity: 0;
@@ -1912,6 +1914,27 @@
     background-attachment: scroll;
   }
 
+  .dashboard-shell--warm .timer-card {
+    width: min(100%, 19.75rem);
+    min-width: 0;
+    max-width: 19.75rem;
+  }
+
+  .dashboard-shell--warm .timer-card .panel-shell__body {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: var(--skin-timer-panel-mobile-aspect-ratio);
+  }
+
+  .dashboard-shell--warm .timer-card .panel-shell__body::before {
+    inset: 0.18rem;
+    background-image: var(--skin-timer-panel-image-mobile);
+  }
+
+  .dashboard-shell--warm .timer-card__time {
+    font-size: clamp(4.7rem, 18vw, 5.8rem);
+  }
+
   .dashboard-shell--warm .action-buttons {
     width: min(100%, 19.5rem);
     gap: 0.5rem;
@@ -1921,8 +1944,52 @@
     width: clamp(8.1rem, 38vw, 9.3rem);
   }
 
+  .auth-block,
+  .settings-modal__overlay {
+    padding: 0.75rem;
+  }
+
   .settings-modal {
-    width: min(520px, 100%);
+    width: min(100%, 22rem);
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .settings-modal__header {
+    gap: 0.6rem;
+    padding: 0.95rem 1rem 0.75rem;
+  }
+
+  .settings-modal__header h2 {
+    font-size: 0.98rem;
+    letter-spacing: 0.1em;
+  }
+
+  .settings-modal__close {
+    width: 1.85rem;
+    height: 1.85rem;
+    font-size: 0.95rem;
+  }
+
+  .settings-modal__section {
+    padding: 0.85rem 1rem 1rem;
+  }
+
+  .settings-modal__section-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .settings-modal__toggle,
+  .settings-modal__option {
+    padding: 0.72rem 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .settings-modal__option-top {
+    gap: 0.55rem;
   }
 
   .locked-overlay {
@@ -1941,11 +2008,76 @@
   }
 
   .auth-block__panel {
-    padding: 1.75rem 1.1rem 1.15rem;
+    width: min(100%, 22rem);
+    max-height: calc(100dvh - 1.5rem);
+    padding: 1.35rem 0.95rem 1rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .auth-block__close {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1rem;
   }
 
   .auth-block__title {
-    font-size: 1.12rem;
+    font-size: clamp(0.98rem, 4.6vw, 1.12rem);
+    letter-spacing: 0.11em;
+  }
+
+  .auth-block__description,
+  .auth-block__switch-text,
+  .auth-block__error {
+    font-size: 0.86rem;
+  }
+
+  .auth-block__input,
+  .auth-block__button {
+    padding: 0.76rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .auth-block__input--password {
+    padding-right: 2.8rem;
+  }
+
+  .auth-block__password-toggle {
+    right: 0.22rem;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .auth-block__password-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-block,
+  .settings-modal__overlay {
+    padding: 0.55rem;
+  }
+
+  .auth-block__panel,
+  .settings-modal {
+    max-height: calc(100dvh - 1.1rem);
+  }
+
+  .auth-block__panel {
+    padding: 1.1rem 0.8rem 0.9rem;
+  }
+
+  .settings-modal__header {
+    padding: 0.85rem 0.85rem 0.7rem;
+  }
+
+  .settings-modal__section {
+    padding: 0.78rem 0.85rem 0.9rem;
   }
 }
 

@@ -43,6 +43,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-mode-tab-button-image": toImageVariable(skin.assets.modeTabButton),
     "--skin-mode-duration-field-image": toImageVariable(skin.assets.modeDurationField),
     "--skin-timer-panel-image": toImageVariable(skin.assets.timerPanel),
+    "--skin-timer-panel-image-mobile": toImageVariable(
+      skin.assets.timerPanelMobile,
+    ),
     "--skin-start-button-image": toImageVariable(skin.assets.startButton),
     "--skin-reset-button-image": toImageVariable(skin.assets.resetButton),
     "--skin-auto-focus-button-image": toImageVariable(skin.assets.autoFocusButton),
@@ -54,6 +57,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-exit-icon-image": toImageVariable(skin.assets.exitIcon),
     "--skin-timer-panel-aspect-ratio": String(
       skin.assets.timerPanel?.aspectRatio ?? 2.68,
+    ),
+    "--skin-timer-panel-mobile-aspect-ratio": String(
+      skin.assets.timerPanelMobile?.aspectRatio ?? 1,
     ),
     "--skin-action-button-aspect-ratio": String(
       skin.assets.startButton?.aspectRatio ?? 3,
