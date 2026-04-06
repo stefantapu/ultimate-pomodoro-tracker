@@ -1,4 +1,5 @@
 import type { Mode, TimerStatus } from "@shared/lib/timerTypes";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { memo, useEffect, useState } from "react";
 import { PanelShell } from "./PanelShell";
 
@@ -88,8 +89,35 @@ export const TimerCard = memo(function TimerCard({
   timeLeft,
   targetTimestamp,
 }: TimerCardProps) {
+  const timerPanel = useSkinStore((state) => state.activeSkin.assets.timerPanel);
+  const timerPanelMobile = useSkinStore(
+    (state) => state.activeSkin.assets.timerPanelMobile,
+  );
+
   return (
     <PanelShell className={`timer-card${status === "running" ? " is-running" : ""}`}>
+      {timerPanel ? (
+        <picture className="timer-card__panel-art" aria-hidden="true">
+          {timerPanelMobile ? (
+            <source
+              media="(max-width: 640px)"
+              srcSet={timerPanelMobile.src}
+              width={timerPanelMobile.width}
+              height={timerPanelMobile.height}
+            />
+          ) : null}
+          <img
+            alt=""
+            className="timer-card__panel-image"
+            decoding="async"
+            fetchPriority="high"
+            height={timerPanel.height}
+            loading="eager"
+            src={timerPanel.src}
+            width={timerPanel.width}
+          />
+        </picture>
+      ) : null}
       <TimerCardTime
         status={status}
         timeLeft={timeLeft}

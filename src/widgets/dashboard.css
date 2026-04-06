@@ -521,17 +521,20 @@
     drop-shadow(0 0 1.35rem rgba(255, 106, 33, 0.28));
 }
 
-.dashboard-shell--warm .timer-card .panel-shell__body::before {
-  content: "";
+.dashboard-shell--warm .timer-card__panel-art {
   position: absolute;
   inset: 0.2rem 0.45rem 0.28rem;
-  background-image: var(--skin-timer-panel-image);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: var(--skin-timer-panel-overlay-opacity);
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+  opacity: var(--skin-timer-panel-overlay-opacity);
+}
+
+.dashboard-shell--warm .timer-card__panel-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body::after {
@@ -1960,9 +1963,8 @@
     aspect-ratio: var(--skin-timer-panel-mobile-aspect-ratio);
   }
 
-  .dashboard-shell--warm .timer-card .panel-shell__body::before {
+  .dashboard-shell--warm .timer-card__panel-art {
     inset: 0.18rem;
-    background-image: var(--skin-timer-panel-image-mobile);
   }
 
   .dashboard-shell--warm .timer-card__time {

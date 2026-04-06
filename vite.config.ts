@@ -4,6 +4,11 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    minify: "esbuild",
+    cssMinify: true,
+    sourcemap: false,
+  },
   resolve: {
     tsconfigPaths: true,
     alias: {

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:prod": "vite preview --host",
+    "lighthouse:local": "npm run build && vite preview --host"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
