@@ -1,4 +1,5 @@
 import type { Mode, TimerStatus } from "@shared/lib/timerTypes";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { memo, useEffect, useState } from "react";
 import { PanelShell } from "./PanelShell";
 
@@ -18,6 +19,13 @@ function formatTime(seconds: number) {
   return `${minutes}:${secondsDisplay}`;
 }
 
+function formatDuration(seconds: number) {
+  const normalized = Math.max(0, seconds);
+  const minutes = Math.floor(normalized / 60);
+  const secondsDisplay = normalized % 60;
+  return `PT${minutes}M${secondsDisplay}S`;
+}
+
 const TimerCardTime = memo(function TimerCardTime({
   status,
   timeLeft,
@@ -27,19 +35,22 @@ const TimerCardTime = memo(function TimerCardTime({
   timeLeft: number;
   targetTimestamp: number | null;
 }) {
-  const [timeLabel, setTimeLabel] = useState(() => formatTime(timeLeft));
+  const [remainingSeconds, setRemainingSeconds] = useState(() =>
+    Math.max(0, timeLeft),
+  );
+  const timeLabel = formatTime(remainingSeconds);
 
   useEffect(() => {
     const computeRemaining = () => {
       if (status !== "running" || !targetTimestamp) {
-        return timeLeft;
+        return Math.max(0, timeLeft);
       }
 
       return Math.max(0, Math.round((targetTimestamp - Date.now()) / 1000));
     };
 
     const applyNextLabel = () => {
-      setTimeLabel(formatTime(computeRemaining()));
+      setRemainingSeconds(computeRemaining());
     };
 
     applyNextLabel();
@@ -56,7 +67,8 @@ const TimerCardTime = memo(function TimerCardTime({
   }, [status, targetTimestamp, timeLeft]);
 
   return (
-    <div aria-label={timeLabel} className="timer-card__time">
+    <time className="timer-card__time" dateTime={formatDuration(remainingSeconds)}>
+      <span className="visually-hidden">{timeLabel}</span>
       {timeLabel.split("").map((character, index) => (
         <span
           key={`${character}-${index}`}
@@ -68,7 +80,7 @@ const TimerCardTime = memo(function TimerCardTime({
           {character}
         </span>
       ))}
-    </div>
+    </time>
   );
 });
 
@@ -77,8 +89,35 @@ export const TimerCard = memo(function TimerCard({
   timeLeft,
   targetTimestamp,
 }: TimerCardProps) {
+  const timerPanel = useSkinStore((state) => state.activeSkin.assets.timerPanel);
+  const timerPanelMobile = useSkinStore(
+    (state) => state.activeSkin.assets.timerPanelMobile,
+  );
+
   return (
     <PanelShell className={`timer-card${status === "running" ? " is-running" : ""}`}>
+      {timerPanel ? (
+        <picture className="timer-card__panel-art" aria-hidden="true">
+          {timerPanelMobile ? (
+            <source
+              media="(max-width: 640px)"
+              srcSet={timerPanelMobile.src}
+              width={timerPanelMobile.width}
+              height={timerPanelMobile.height}
+            />
+          ) : null}
+          <img
+            alt=""
+            className="timer-card__panel-image"
+            decoding="async"
+            fetchPriority="high"
+            height={timerPanel.height}
+            loading="eager"
+            src={timerPanel.src}
+            width={timerPanel.width}
+          />
+        </picture>
+      ) : null}
       <TimerCardTime
         status={status}
         timeLeft={timeLeft}

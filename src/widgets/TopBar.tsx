@@ -1,6 +1,6 @@
 import { useAuth } from "../app/providers/useAuth";
 import { useUIStore } from "../shared/stores/uiStore";
-import { supabase } from "../../utils/supabase";
+import { getSupabaseClient } from "../../utils/supabase";
 import { useProfile } from "../shared/hooks/useProfile";
 
 export const TopBar = () => {
@@ -11,6 +11,7 @@ export const TopBar = () => {
 
   const handleLogout = async () => {
     triggerTimerReset(); // Reset timer and sync final seconds
+    const supabase = await getSupabaseClient();
     await supabase.auth.signOut();
   };
 

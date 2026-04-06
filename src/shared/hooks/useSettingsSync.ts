@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
-import { supabase } from "../../../utils/supabase";
+import { getSupabaseClient } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/useAuth";
 import type { TimerSettings } from "../lib/timerTypes";
-import { toast } from "sonner";
+import { showToast } from "../stores/uiStore";
 
 export function useSettingsSync(
   currentSettings: TimerSettings,
@@ -32,6 +32,7 @@ export function useSettingsSync(
       }
 
       debounceTimerRef.current = window.setTimeout(async () => {
+        const supabase = await getSupabaseClient();
         const { error } = await supabase
           .from("profiles")
           .update({
@@ -45,7 +46,7 @@ export function useSettingsSync(
         if (error) {
           console.error("Cloud sync conflict:", error);
         } else if (!silent) {
-          toast("Settings synced to cloud", {
+          void showToast("Settings synced to cloud", {
             duration: 2200,
           });
         }
@@ -61,6 +62,7 @@ export function useSettingsSync(
     loadingRef.current = true;
 
     const fetchSettings = async () => {
+      const supabase = await getSupabaseClient();
       const { data, error } = await supabase
         .from("profiles")
         .select("focus_duration, break_duration, auto_break, auto_focus")

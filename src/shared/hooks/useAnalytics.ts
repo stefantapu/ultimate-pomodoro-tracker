@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "../../../utils/supabase";
+import { getSupabaseClient } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/useAuth";
 import { useUIStore } from "../stores/uiStore";
 
@@ -31,6 +31,7 @@ export function useAnalytics() {
     setError(null);
 
     try {
+      const supabase = await getSupabaseClient();
       const { data: result, error: rpcError } = await supabase.rpc(
         "get_user_analytics",
         { target_user_id: user.id },

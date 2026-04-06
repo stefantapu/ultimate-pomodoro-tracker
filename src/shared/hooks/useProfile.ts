@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { supabase } from "../../../utils/supabase";
+import { getSupabaseClient } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/useAuth";
 import { useUIStore } from "../stores/uiStore";
 
@@ -16,6 +16,7 @@ export function useProfile() {
 
   const fetchProfile = useCallback(async () => {
     if (!user) return;
+    const supabase = await getSupabaseClient();
 
     const { data, error } = await supabase
       .from("profiles")

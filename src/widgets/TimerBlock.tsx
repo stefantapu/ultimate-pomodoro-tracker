@@ -7,11 +7,24 @@ import {
 } from "@shared/lib/timerStorage";
 import type { Mode, TimerSettings } from "@shared/lib/timerTypes";
 import { useUIStore } from "@shared/stores/uiStore";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ActionButtons } from "./ActionButtons";
-import { SettingsModal } from "./SettingsModal";
 import { TimerCard } from "./TimerCard";
 import { TopControls } from "./TopControls";
+
+const LazySettingsModal = lazy(() =>
+  import("./SettingsModal").then((module) => ({
+    default: module.SettingsModal,
+  })),
+);
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
 const SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
@@ -76,8 +89,24 @@ function readSoundEnabled() {
   }
 }
 
+function SettingsModalFallback() {
+  return (
+    <div className="settings-modal__overlay">
+      <div className="settings-modal">
+        <header className="settings-modal__header">
+          <h2>Settings</h2>
+        </header>
+        <section className="settings-modal__section">
+          <p className="settings-modal__section-title">Loading settings...</p>
+        </section>
+      </div>
+    </div>
+  );
+}
+
 export function TimerBlock() {
   const { play } = useAlarm();
+  const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
     () => readTimerSettings(SETTINGS_STORAGE_KEY),
     [],
@@ -346,22 +375,26 @@ export function TimerBlock() {
 
   return (
     <div className="timer-block">
-      <SettingsModal
-        focusDraftMinutes={focusDraftMinutes}
-        breakDraftMinutes={breakDraftMinutes}
-        activeEditedField={activeEditedField}
-        autoFocus={autoFocus}
-        autoBreak={autoBreak}
-        soundEnabled={soundEnabled}
-        onStartEditField={handleStartEditField}
-        onDraftChange={handleDraftChange}
-        onApplyDuration={handleApplyDuration}
-        onCancelEdit={handleCancelEdit}
-        onResetDurationDrafts={handleResetDurationDrafts}
-        onToggleAutoFocus={handleToggleAutoFocus}
-        onToggleAutoBreak={handleToggleAutoBreak}
-        onToggleSound={handleToggleSound}
-      />
+      {isSettingsModalOpen ? (
+        <Suspense fallback={<SettingsModalFallback />}>
+          <LazySettingsModal
+            focusDraftMinutes={focusDraftMinutes}
+            breakDraftMinutes={breakDraftMinutes}
+            activeEditedField={activeEditedField}
+            autoFocus={autoFocus}
+            autoBreak={autoBreak}
+            soundEnabled={soundEnabled}
+            onStartEditField={handleStartEditField}
+            onDraftChange={handleDraftChange}
+            onApplyDuration={handleApplyDuration}
+            onCancelEdit={handleCancelEdit}
+            onResetDurationDrafts={handleResetDurationDrafts}
+            onToggleAutoFocus={handleToggleAutoFocus}
+            onToggleAutoBreak={handleToggleAutoBreak}
+            onToggleSound={handleToggleSound}
+          />
+        </Suspense>
+      ) : null}
       <TopControls mode={mode} onSelectMode={switchMode} />
       <TimerCard
         mode={mode}

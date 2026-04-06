@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
-import { supabase } from "../../utils/supabase";
+import { getSupabaseClient } from "../../utils/supabase";
 import { useUIStore } from "../shared/stores/uiStore";
 
 export const AuthBlock = () => {
@@ -19,6 +19,8 @@ export const AuthBlock = () => {
     setError(null);
 
     try {
+      const supabase = await getSupabaseClient();
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
           email,

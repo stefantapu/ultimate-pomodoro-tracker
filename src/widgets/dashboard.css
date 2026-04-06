@@ -112,7 +112,7 @@
 .dashboard-ember {
   position: absolute;
   left: var(--ember-left);
-  bottom: -8svh;
+  bottom: calc(var(--ember-start-offset, 8svh) * -1);
   width: var(--ember-size);
   height: var(--ember-size);
   border-radius: 999px;
@@ -135,6 +135,7 @@
 
 @keyframes ember-rise {
   0% {
+    bottom: calc(var(--ember-start-offset, 8svh) * -1);
     transform: translate3d(0, 0, 0) scale(0.72);
     opacity: 0;
   }
@@ -152,7 +153,8 @@
   }
 
   100% {
-    transform: translate3d(var(--ember-drift), -108svh, 0) scale(0.38);
+    bottom: calc(100% + var(--ember-start-offset, 8svh));
+    transform: translate3d(var(--ember-drift), 0, 0) scale(0.38);
     opacity: 0;
   }
 }
@@ -324,6 +326,18 @@
 
 .timer-card__separator {
   width: 0.6ch;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .action-buttons {
@@ -507,17 +521,20 @@
     drop-shadow(0 0 1.35rem rgba(255, 106, 33, 0.28));
 }
 
-.dashboard-shell--warm .timer-card .panel-shell__body::before {
-  content: "";
+.dashboard-shell--warm .timer-card__panel-art {
   position: absolute;
   inset: 0.2rem 0.45rem 0.28rem;
-  background-image: var(--skin-timer-panel-image);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: var(--skin-timer-panel-overlay-opacity);
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+  opacity: var(--skin-timer-panel-overlay-opacity);
+}
+
+.dashboard-shell--warm .timer-card__panel-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 
 .dashboard-shell--warm .timer-card .panel-shell__body::after {
@@ -1946,9 +1963,8 @@
     aspect-ratio: var(--skin-timer-panel-mobile-aspect-ratio);
   }
 
-  .dashboard-shell--warm .timer-card .panel-shell__body::before {
+  .dashboard-shell--warm .timer-card__panel-art {
     inset: 0.18rem;
-    background-image: var(--skin-timer-panel-image-mobile);
   }
 
   .dashboard-shell--warm .timer-card__time {

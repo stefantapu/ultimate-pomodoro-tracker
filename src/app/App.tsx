@@ -1,13 +1,55 @@
-﻿import { AuthBlock } from "../widgets/AuthBlock";
+import { Suspense, lazy, useEffect } from "react";
 import { DashboardLayout } from "../widgets/DashboardLayout";
 import { LockedOverlay } from "../widgets/LockedOverlay";
+import {
+  markToastHostReady,
+  useUIStore,
+} from "../shared/stores/uiStore";
 import { useAuth } from "./providers/useAuth";
-import { useUIStore } from "../shared/stores/uiStore";
-import { Toaster } from "sonner";
+
+const LazyAuthBlock = lazy(() =>
+  import("../widgets/AuthBlock").then((module) => ({
+    default: module.AuthBlock,
+  })),
+);
+
+const LazyToastHost = lazy(() =>
+  import("sonner").then(({ Toaster }) => ({
+    default: function ToastHost() {
+      useEffect(() => {
+        markToastHostReady();
+      }, []);
+
+      return (
+        <Toaster
+          position="bottom-right"
+          theme="dark"
+          toastOptions={{
+            classNames: {
+              toast: "forge-toast",
+              title: "forge-toast__title",
+            },
+          }}
+        />
+      );
+    },
+  })),
+);
+
+function AuthModalFallback() {
+  return (
+    <div className="auth-block">
+      <div className="auth-block__panel">
+        <p className="auth-block__description">Loading sign in...</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const { user, loading } = useAuth();
   const isAuthModalOpen = useUIStore((state) => state.isAuthModalOpen);
+  const isToastHostEnabled = useUIStore((state) => state.isToastHostEnabled);
 
   if (loading) {
     return (
@@ -19,18 +61,17 @@ function App() {
 
   return (
     <>
-      <Toaster
-        position="bottom-right"
-        theme="dark"
-        toastOptions={{
-          classNames: {
-            toast: "forge-toast",
-            title: "forge-toast__title",
-          },
-        }}
-      />
+      {isToastHostEnabled ? (
+        <Suspense fallback={null}>
+          <LazyToastHost />
+        </Suspense>
+      ) : null}
 
-      {isAuthModalOpen && <AuthBlock />}
+      {isAuthModalOpen ? (
+        <Suspense fallback={<AuthModalFallback />}>
+          <LazyAuthBlock />
+        </Suspense>
+      ) : null}
 
       <DashboardLayout user={user} LockedOverlayComponent={LockedOverlay} />
     </>
@@ -38,4 +79,3 @@ function App() {
 }
 
 export default App;
-
