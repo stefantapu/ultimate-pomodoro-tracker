@@ -112,7 +112,7 @@
 .dashboard-ember {
   position: absolute;
   left: var(--ember-left);
-  bottom: -8svh;
+  bottom: calc(var(--ember-start-offset, 8svh) * -1);
   width: var(--ember-size);
   height: var(--ember-size);
   border-radius: 999px;
@@ -135,6 +135,7 @@
 
 @keyframes ember-rise {
   0% {
+    bottom: calc(var(--ember-start-offset, 8svh) * -1);
     transform: translate3d(0, 0, 0) scale(0.72);
     opacity: 0;
   }
@@ -152,7 +153,8 @@
   }
 
   100% {
-    transform: translate3d(var(--ember-drift), -108svh, 0) scale(0.38);
+    bottom: calc(100% + var(--ember-start-offset, 8svh));
+    transform: translate3d(var(--ember-drift), 0, 0) scale(0.38);
     opacity: 0;
   }
 }
