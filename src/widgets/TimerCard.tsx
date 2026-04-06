@@ -18,6 +18,13 @@ function formatTime(seconds: number) {
   return `${minutes}:${secondsDisplay}`;
 }
 
+function formatDuration(seconds: number) {
+  const normalized = Math.max(0, seconds);
+  const minutes = Math.floor(normalized / 60);
+  const secondsDisplay = normalized % 60;
+  return `PT${minutes}M${secondsDisplay}S`;
+}
+
 const TimerCardTime = memo(function TimerCardTime({
   status,
   timeLeft,
@@ -27,19 +34,22 @@ const TimerCardTime = memo(function TimerCardTime({
   timeLeft: number;
   targetTimestamp: number | null;
 }) {
-  const [timeLabel, setTimeLabel] = useState(() => formatTime(timeLeft));
+  const [remainingSeconds, setRemainingSeconds] = useState(() =>
+    Math.max(0, timeLeft),
+  );
+  const timeLabel = formatTime(remainingSeconds);
 
   useEffect(() => {
     const computeRemaining = () => {
       if (status !== "running" || !targetTimestamp) {
-        return timeLeft;
+        return Math.max(0, timeLeft);
       }
 
       return Math.max(0, Math.round((targetTimestamp - Date.now()) / 1000));
     };
 
     const applyNextLabel = () => {
-      setTimeLabel(formatTime(computeRemaining()));
+      setRemainingSeconds(computeRemaining());
     };
 
     applyNextLabel();
@@ -56,7 +66,8 @@ const TimerCardTime = memo(function TimerCardTime({
   }, [status, targetTimestamp, timeLeft]);
 
   return (
-    <div aria-label={timeLabel} className="timer-card__time">
+    <time className="timer-card__time" dateTime={formatDuration(remainingSeconds)}>
+      <span className="visually-hidden">{timeLabel}</span>
       {timeLabel.split("").map((character, index) => (
         <span
           key={`${character}-${index}`}
@@ -68,7 +79,7 @@ const TimerCardTime = memo(function TimerCardTime({
           {character}
         </span>
       ))}
-    </div>
+    </time>
   );
 });
 
