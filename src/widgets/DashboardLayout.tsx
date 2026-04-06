@@ -1,70 +1,165 @@
-import { memo, useMemo, type ComponentType } from "react";
-import {
-  useAnalytics,
-  type HeatmapData,
-} from "@shared/hooks/useAnalytics";
+import { memo, Suspense, lazy, useMemo, type ComponentType } from "react";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
 import { BackgroundEmbers } from "./BackgroundEmbers";
-import { DragonCard } from "./DragonCard";
-import { HeatmapCard } from "./HeatmapCard";
+import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
-import { NotesPanel } from "./NotesPanel";
 import { SettingsButton } from "./SettingsButton";
-import { StatsCard } from "./StatsCard";
 import { TimerBlock } from "./TimerBlock";
 
-const EMPTY_HEATMAP_DATA: Array<{ date: string; value: number }> = [];
-const HEATMAP_MOCK_WINDOW_DAYS = 183;
+const LazyAuthenticatedAnalyticsPanels = lazy(() =>
+  import("./StatsDashboard").then((module) => ({
+    default: module.AuthenticatedAnalyticsPanels,
+  })),
+);
 
-function buildMockHeatmapData(): HeatmapData[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+const LazyNotesPanel = lazy(() =>
+  import("./NotesPanel").then((module) => ({
+    default: module.NotesPanel,
+  })),
+);
 
-  return Array.from({ length: HEATMAP_MOCK_WINDOW_DAYS }, (_, index) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (HEATMAP_MOCK_WINDOW_DAYS - 1 - index));
-
-    const weekday = date.getDay();
-    const weekIndex = Math.floor(index / 7);
-    let value = 0;
-
-    if (weekday === 1) value = 1500;
-    if (weekday === 2) value = 2700;
-    if (weekday === 3) value = weekIndex % 2 === 0 ? 0 : 1800;
-    if (weekday === 4) value = 4200;
-    if (weekday === 5) value = weekIndex % 3 === 0 ? 5400 : 3000;
-    if (weekday === 6) value = weekIndex % 2 === 0 ? 2400 : 900;
-
-    return {
-      date: date.toISOString().split("T")[0],
-      value,
-    };
-  });
-}
-
-const MOCK_HEATMAP_DATA = buildMockHeatmapData();
+const LazyDragonCard = lazy(() =>
+  import("./DragonCard").then((module) => ({
+    default: module.DragonCard,
+  })),
+);
 
 type DashboardLayoutProps = {
   user: User | null;
   LockedOverlayComponent: ComponentType;
 };
 
+type PanelFallbackProps = {
+  message: string;
+};
+
+function PlaceholderHeatmapCard({ message }: PanelFallbackProps) {
+  return (
+    <PanelShell className="heatmap-card">
+      <div className="heatmap-card__content">
+        <div className="heatmap-card__status">{message}</div>
+      </div>
+    </PanelShell>
+  );
+}
+
+function PlaceholderStatsCard({ message }: PanelFallbackProps) {
+  const items = [
+    { label: "Focus", value: message },
+    { label: "Break", value: message },
+    { label: "Cycles", value: message },
+    { label: "Streak", value: message },
+  ];
+
+  return (
+    <PanelShell className="stats-card">
+      <div className="stats-card__grid">
+        {items.map((item) => (
+          <div key={item.label} className="stats-card__item">
+            <span className="stats-card__label">{item.label}</span>
+            <span className="stats-card__value">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </PanelShell>
+  );
+}
+
+function PlaceholderNotesPanel({ message }: PanelFallbackProps) {
+  return (
+    <PanelShell
+      className="notes-panel"
+      bodyClassName="notes-panel__body notes-panel__body--notepad"
+    >
+      <p className="notes-panel__status">{message}</p>
+    </PanelShell>
+  );
+}
+
+function PlaceholderDragonCard({ message }: PanelFallbackProps) {
+  return (
+    <PanelShell className="dragon-card">
+      <div className="dragon-card__display">Lvl --</div>
+      <div className="dragon-card__level-row">
+        <span className="dragon-card__level-value">{message}</span>
+      </div>
+      <div className="dragon-card__progress">
+        <div className="dragon-card__progress-fill" style={{ width: "0%" }} />
+      </div>
+    </PanelShell>
+  );
+}
+
+function GuestAnalyticsPanels({
+  LockedOverlayComponent,
+}: {
+  LockedOverlayComponent: ComponentType;
+}) {
+  return (
+    <>
+      <div className="dashboard-lock-wrap">
+        <PlaceholderHeatmapCard message="Sign in to view focus history." />
+        <LockedOverlayComponent />
+      </div>
+
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
+        <PlaceholderStatsCard message="--" />
+        <LockedOverlayComponent />
+      </div>
+    </>
+  );
+}
+
+function GuestSidePanels({
+  LockedOverlayComponent,
+}: {
+  LockedOverlayComponent: ComponentType;
+}) {
+  return (
+    <>
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+        <PlaceholderNotesPanel message="Sign in to save notes." />
+        <LockedOverlayComponent />
+      </div>
+
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+        <PlaceholderDragonCard message="Sign in to track your level." />
+        <LockedOverlayComponent />
+      </div>
+    </>
+  );
+}
+
+function AuthenticatedSidePanels() {
+  return (
+    <>
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+        <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
+          <LazyNotesPanel />
+        </Suspense>
+      </div>
+
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+        <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
+          <LazyDragonCard />
+        </Suspense>
+      </div>
+    </>
+  );
+}
+
 export const DashboardLayout = memo(function DashboardLayout({
   user,
   LockedOverlayComponent,
 }: DashboardLayoutProps) {
-  const analytics = useAnalytics();
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
-  const heatmapData = user
-    ? analytics.data?.heatmap_data ?? EMPTY_HEATMAP_DATA
-    : MOCK_HEATMAP_DATA;
 
   return (
     <div
@@ -83,31 +178,35 @@ export const DashboardLayout = memo(function DashboardLayout({
             <TimerBlock />
 
             <div className="dashboard-bottom-row">
-              <div className="dashboard-lock-wrap">
-                <HeatmapCard
-                  heatmapData={heatmapData}
-                  loading={analytics.loading}
+              {user ? (
+                <Suspense
+                  fallback={
+                    <>
+                      <div className="dashboard-lock-wrap">
+                        <PlaceholderHeatmapCard message="Loading heat map..." />
+                      </div>
+                      <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
+                        <PlaceholderStatsCard message="..." />
+                      </div>
+                    </>
+                  }
+                >
+                  <LazyAuthenticatedAnalyticsPanels />
+                </Suspense>
+              ) : (
+                <GuestAnalyticsPanels
+                  LockedOverlayComponent={LockedOverlayComponent}
                 />
-                {!user && <LockedOverlayComponent />}
-              </div>
-
-              <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
-                <StatsCard data={analytics.data} loading={analytics.loading} />
-                {!user && <LockedOverlayComponent />}
-              </div>
+              )}
             </div>
           </section>
 
           <section className="dashboard-column dashboard-column--right">
-            <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
-              <NotesPanel />
-              {!user && <LockedOverlayComponent />}
-            </div>
-
-            <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-              <DragonCard />
-              {!user && <LockedOverlayComponent />}
-            </div>
+            {user ? (
+              <AuthenticatedSidePanels />
+            ) : (
+              <GuestSidePanels LockedOverlayComponent={LockedOverlayComponent} />
+            )}
           </section>
         </main>
       </div>

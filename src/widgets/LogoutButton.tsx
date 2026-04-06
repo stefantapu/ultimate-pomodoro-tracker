@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useAuth } from "@app/providers/useAuth";
 import { useUIStore } from "@shared/stores/uiStore";
-import { supabase } from "../../utils/supabase";
+import { getSupabaseClient } from "../../utils/supabase";
 import { ThemedButton } from "./ThemedButton";
 
 export const LogoutButton = memo(function LogoutButton() {
@@ -11,6 +11,7 @@ export const LogoutButton = memo(function LogoutButton() {
 
   const handleLogout = async () => {
     triggerTimerReset();
+    const supabase = await getSupabaseClient();
     await supabase.auth.signOut();
   };
 

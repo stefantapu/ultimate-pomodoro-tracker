@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "../../../utils/supabase";
+import { getSupabaseClient } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/useAuth";
 
 export type Note = {
@@ -21,6 +21,7 @@ export function useNotes() {
     if (!user) return;
 
     setLoading(true);
+    const supabase = await getSupabaseClient();
 
     const { data, error } = await supabase
       .from("notes")
@@ -48,6 +49,7 @@ export function useNotes() {
   const addNote = useCallback(
     async (content: string): Promise<Note | null> => {
       if (!user || !content.trim()) return null;
+      const supabase = await getSupabaseClient();
 
       const { data, error } = await supabase
         .from("notes")
@@ -68,11 +70,13 @@ export function useNotes() {
 
   const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...updates } : n)));
+    const supabase = await getSupabaseClient();
     await supabase.from("notes").update(updates).eq("id", id);
   }, []);
 
   const deleteNote = useCallback(async (id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
+    const supabase = await getSupabaseClient();
     await supabase.from("notes").delete().eq("id", id);
   }, []);
 

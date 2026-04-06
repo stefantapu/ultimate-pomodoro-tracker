@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { supabase } from "../../../utils/supabase";
+import { getSupabaseClient } from "../../../utils/supabase";
 import { useAuth } from "../../app/providers/useAuth";
 import { useUIStore } from "../stores/uiStore";
 import type { Mode } from "../lib/timerTypes";
@@ -56,6 +56,7 @@ export function useSyncSession() {
     const payloads = queue.map((item) => ({ ...item, user_id: user.id }));
 
     try {
+      const supabase = await getSupabaseClient();
       const { error } = await supabase.from("focus_sessions").insert(payloads);
 
       if (!error) {
