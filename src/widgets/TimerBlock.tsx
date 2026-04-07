@@ -33,6 +33,7 @@ const FOCUS_MIN_DURATION_MINUTES = 15;
 const FOCUS_MAX_DURATION_MINUTES = 90;
 const BREAK_MIN_DURATION_MINUTES = 5;
 const BREAK_MAX_DURATION_MINUTES = 30;
+const DEFAULT_PAGE_TITLE = "Forge Timer - Pomodoro";
 
 function minutesToSeconds(minutes: number) {
   return minutes * 60;
@@ -40,6 +41,15 @@ function minutesToSeconds(minutes: number) {
 
 function secondsToMinutes(seconds: number) {
   return Math.floor(seconds / 60);
+}
+
+function formatTitleTime(seconds: number) {
+  const normalized = Math.max(0, seconds);
+  const minutes = Math.floor(normalized / 60)
+    .toString()
+    .padStart(2, "0");
+  const secondsDisplay = (normalized % 60).toString().padStart(2, "0");
+  return `${minutes}:${secondsDisplay}`;
 }
 
 function getDurationLimits(field: Mode) {
@@ -324,6 +334,41 @@ export function TimerBlock() {
       hardReset();
     }
   }, [hardReset, resetTimerTrigger]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const computeRemaining = () => {
+      if (status !== "running" || !targetTimestamp) {
+        return Math.max(0, timeLeft);
+      }
+
+      return Math.max(0, Math.round((targetTimestamp - Date.now()) / 1000));
+    };
+
+    const updateTitle = () => {
+      if (status !== "running") {
+        document.title = DEFAULT_PAGE_TITLE;
+        return;
+      }
+
+      document.title = `${formatTitleTime(computeRemaining())} - Forge Timer`;
+    };
+
+    updateTitle();
+
+    if (status !== "running") {
+      return;
+    }
+
+    const intervalId = window.setInterval(updateTitle, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [status, targetTimestamp, timeLeft]);
 
   useEffect(() => {
     if (
