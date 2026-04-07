@@ -1787,6 +1787,27 @@
     0 0 1rem rgba(255, 120, 39, 0.12);
 }
 
+.settings-modal__contact {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.settings-modal__contact-link {
+  width: fit-content;
+  max-width: 100%;
+  color: #ffe0b3;
+  font-size: 0.92rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
+.settings-modal__contact-link:hover,
+.settings-modal__contact-link:focus-visible {
+  color: #fff3de;
+}
+
 .settings-modal__options {
   display: grid;
   gap: 0.65rem;

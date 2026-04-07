@@ -238,6 +238,16 @@ export function SettingsModal({
             </label>
           </div>
         </section>
+
+        <section className="settings-modal__section settings-modal__contact">
+          <h3 className="settings-modal__section-title">Contact</h3>
+          <a
+            className="settings-modal__contact-link"
+            href="mailto:tapushtefan@gmail.com"
+          >
+            tapushtefan@gmail.com
+          </a>
+        </section>
       </div>
     </div>
   );
