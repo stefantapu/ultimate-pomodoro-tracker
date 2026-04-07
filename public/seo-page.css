@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background: #120603;
+  color: #ffe7c7;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(140deg, rgba(16, 5, 2, 0.86), rgba(51, 17, 7, 0.76)),
+    url("/assets/red_lava_theme/background.webp") center / cover fixed;
+}
+
+a {
+  color: #ffd199;
+}
+
+a:hover,
+a:focus-visible {
+  color: #fff4dd;
+}
+
+.page {
+  width: min(52rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.crumbs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+  color: #f0caa0;
+  font-size: 0.92rem;
+}
+
+.hero,
+.content-card {
+  border: 1px solid rgba(255, 184, 108, 0.22);
+  background: rgba(12, 4, 2, 0.72);
+  box-shadow: 0 0 1.4rem rgba(255, 120, 39, 0.12);
+}
+
+.hero {
+  padding: 1.4rem;
+}
+
+.content-card {
+  margin-top: 1rem;
+  padding: 1.2rem 1.4rem;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.7rem;
+  color: #ffe4bc;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1;
+}
+
+h2 {
+  color: #ffe0b3;
+  font-size: 1.15rem;
+}
+
+p,
+li {
+  color: #f4d0aa;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.answer {
+  margin-bottom: 0;
+  color: #fff3de;
+  font-size: 1.08rem;
+}
+
+.links {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}

@@ -1,0 +1,20 @@
+# Forge Timer
+
+Forge Timer is a free web-based gamified Pomodoro timer for focused work, study sessions, breaks, notes, streaks, analytics, and account-based cloud sync.
+
+## Core pages
+
+- [Home](https://forgetimer.dev/)
+- [Pomodoro Timer](https://forgetimer.dev/pomodoro-timer/)
+- [Focus Timer](https://forgetimer.dev/focus-timer/)
+- [Study Timer](https://forgetimer.dev/study-timer/)
+- [AI summary](https://forgetimer.dev/ai/forge-timer.md)
+
+## Facts
+
+- Forge Timer is a free web app for English-speaking global users.
+- The app includes focus and break timers with editable durations.
+- Guests can use the timer locally without an account.
+- Signed-in users can use notes, analytics, streak tracking, progress tracking, and cloud sync.
+- Forge Timer is designed for Pomodoro-style work sessions, deep work, and study routines.
+- This llms.txt file is an experimental convention for AI agents and is not required by Google Search.
