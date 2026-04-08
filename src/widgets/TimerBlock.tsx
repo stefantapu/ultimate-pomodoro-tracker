@@ -237,6 +237,14 @@ export function TimerBlock() {
     reset();
   }, [playButtonClick, reset]);
 
+  const handleSelectMode = useCallback(
+    (nextMode: Mode) => {
+      playButtonClick();
+      switchMode(nextMode);
+    },
+    [playButtonClick, switchMode],
+  );
+
   const restoreFieldDraftToLastValid = useCallback(
     (field: Mode) => {
       if (field === "focus") {
@@ -463,7 +471,7 @@ export function TimerBlock() {
           />
         </Suspense>
       ) : null}
-      <TopControls mode={mode} onSelectMode={switchMode} />
+      <TopControls mode={mode} onSelectMode={handleSelectMode} />
       <TimerCard
         mode={mode}
         status={status}
