@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
+import { mapSkinToCssVariables } from "@shared/skins/cssVars";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { getSupabaseClient } from "../../utils/supabase";
 import { useUIStore } from "../shared/stores/uiStore";
 
@@ -12,6 +14,11 @@ export const AuthBlock = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
+  const activeSkin = useSkinStore((state) => state.activeSkin);
+  const skinCssVariables = useMemo(
+    () => mapSkinToCssVariables(activeSkin),
+    [activeSkin],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +58,7 @@ export const AuthBlock = () => {
   };
 
   return (
-    <div className="auth-block">
+    <div className="auth-block" style={skinCssVariables}>
       <div className="auth-block__panel">
         <button
           type="button"

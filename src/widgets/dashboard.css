@@ -2544,3 +2544,75 @@
   filter: drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.9))
     drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.72));
 }
+
+.auth-block,
+.settings-modal__overlay {
+  cursor: var(--skin-cursor-default, auto);
+}
+
+.auth-block button,
+.auth-block a,
+.auth-block [role="button"],
+.auth-block input[type="button"],
+.auth-block input[type="checkbox"],
+.auth-block input[type="radio"],
+.auth-block input[type="submit"],
+.auth-block input[type="reset"],
+.auth-block select,
+.auth-block summary,
+.settings-modal__overlay button,
+.settings-modal__overlay a,
+.settings-modal__overlay [role="button"],
+.settings-modal__overlay input[type="button"],
+.settings-modal__overlay input[type="checkbox"],
+.settings-modal__overlay input[type="radio"],
+.settings-modal__overlay input[type="submit"],
+.settings-modal__overlay input[type="reset"],
+.settings-modal__overlay select,
+.settings-modal__overlay summary {
+  cursor: var(--skin-cursor-pointer, pointer);
+}
+
+.auth-block input:not([type="button"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="submit"]):not([type="reset"]),
+.auth-block textarea,
+.auth-block [contenteditable="true"],
+.settings-modal__overlay input:not([type="button"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="submit"]):not([type="reset"]),
+.settings-modal__overlay textarea,
+.settings-modal__overlay [contenteditable="true"] {
+  cursor: var(--skin-cursor-text, text);
+}
+
+.auth-block button:disabled,
+.auth-block input:disabled,
+.auth-block textarea:disabled,
+.auth-block select:disabled,
+.auth-block .is-disabled,
+.auth-block .is-disabled *,
+.auth-block [aria-disabled="true"],
+.settings-modal__overlay button:disabled,
+.settings-modal__overlay input:disabled,
+.settings-modal__overlay textarea:disabled,
+.settings-modal__overlay select:disabled,
+.settings-modal__overlay .is-disabled,
+.settings-modal__overlay .is-disabled *,
+.settings-modal__overlay [aria-disabled="true"] {
+  cursor: var(--skin-cursor-disabled, not-allowed);
+}
+
+.settings-modal__field:not(.is-disabled),
+.settings-modal__field:not(.is-disabled) .settings-modal__field-label,
+.settings-modal__field:not(.is-disabled) .settings-modal__field-input-row,
+.settings-modal__field:not(.is-disabled) .settings-modal__field-unit,
+.settings-modal__field:not(.is-disabled) .settings-modal__field-hint,
+.settings-modal__field:not(.is-disabled) .settings-modal__field-error {
+  cursor: var(--skin-cursor-text, text);
+}
+
+.settings-modal__toggle:not(.is-disabled),
+.settings-modal__toggle:not(.is-disabled) * {
+  cursor: var(--skin-cursor-pointer, pointer);
+}
