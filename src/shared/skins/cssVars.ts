@@ -1,10 +1,18 @@
 import type { CSSProperties } from "react";
-import type { SkinImageAsset, SkinProfile } from "./types";
+import type { SkinCursorAsset, SkinImageAsset, SkinProfile } from "./types";
 
 type SkinCSSVariables = CSSProperties & Record<`--${string}`, string>;
 
 function toImageVariable(asset: SkinImageAsset | null) {
   return asset ? `url("${asset.src}")` : "none";
+}
+
+function toCursorVariable(asset: SkinCursorAsset | null, fallback: string) {
+  if (!asset) {
+    return fallback;
+  }
+
+  return `url("${asset.src}") ${asset.hotspotX} ${asset.hotspotY}, ${fallback}`;
 }
 
 export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
@@ -54,6 +62,19 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--skin-settings-icon-image": toImageVariable(skin.assets.settingsIcon),
     "--skin-exit-button-image": toImageVariable(skin.assets.exitButton),
     "--skin-exit-icon-image": toImageVariable(skin.assets.exitIcon),
+    "--skin-cursor-default": toCursorVariable(
+      skin.assets.cursorDefault,
+      "auto",
+    ),
+    "--skin-cursor-pointer": toCursorVariable(
+      skin.assets.cursorPointer,
+      "pointer",
+    ),
+    "--skin-cursor-text": toCursorVariable(skin.assets.cursorText, "text"),
+    "--skin-cursor-disabled": toCursorVariable(
+      skin.assets.cursorDisabled,
+      "not-allowed",
+    ),
     "--skin-timer-panel-aspect-ratio": String(
       skin.assets.timerPanel?.aspectRatio ?? 2.68,
     ),

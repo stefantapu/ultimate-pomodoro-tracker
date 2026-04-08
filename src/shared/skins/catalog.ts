@@ -78,6 +78,26 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/exit_icon/exit_icon_15x15.webp",
       { width: 15, height: 15 },
     ),
+    cursorDefault: {
+      src: "/assets/red_lava_theme/cursors/cursor_default.png",
+      hotspotX: 0,
+      hotspotY: 5,
+    },
+    cursorPointer: {
+      src: "/assets/red_lava_theme/cursors/cursor_pointer.png",
+      hotspotX: 0,
+      hotspotY: 7,
+    },
+    cursorText: {
+      src: "/assets/red_lava_theme/cursors/cursor_text.png",
+      hotspotX: 0,
+      hotspotY: 9,
+    },
+    cursorDisabled: {
+      src: "/assets/red_lava_theme/cursors/cursor_disabled.png",
+      hotspotX: 0,
+      hotspotY: 10,
+    },
   },
   colors: {
     dashboardBg: "#2b1109",
