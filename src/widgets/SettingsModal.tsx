@@ -1,12 +1,11 @@
 import type { Mode } from "@shared/lib/timerTypes";
+import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useUIStore } from "@shared/stores/uiStore";
+import { useSkinStore } from "@shared/stores/skinStore";
 import {
-  useEffect,
-  useRef,
+  useMemo,
   type ChangeEvent,
   type KeyboardEvent,
-  type MouseEvent,
-  type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -17,11 +16,14 @@ type DurationFieldProps = {
   isEditing: boolean;
   minMinutes: number;
   maxMinutes: number;
+  error: string | null;
+  disabled: boolean;
+  canSave: boolean;
   onStartEdit: (field: Mode) => void;
   onDraftChange: (field: Mode, nextDraft: string) => void;
-  onApply: (field: Mode) => void;
   onCancelEdit: (field: Mode) => void;
-  closePendingRef: RefObject<boolean>;
+  onCancelSettings: () => void;
+  onSaveSettings: () => void;
 };
 
 function DurationField({
@@ -31,11 +33,14 @@ function DurationField({
   isEditing,
   minMinutes,
   maxMinutes,
+  error,
+  disabled,
+  canSave,
   onStartEdit,
   onDraftChange,
-  onApply,
   onCancelEdit,
-  closePendingRef,
+  onCancelSettings,
+  onSaveSettings,
 }: DurationFieldProps) {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const filteredValue = event.target.value.replace(/\D+/g, "");
@@ -43,30 +48,39 @@ function DurationField({
   };
 
   const handleBlur = () => {
-    if (closePendingRef.current) {
-      onCancelEdit(field);
-      return;
-    }
-
-    onApply(field);
+    onCancelEdit(field);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      onApply(field);
+
+      if (canSave) {
+        onSaveSettings();
+      }
+
       return;
     }
 
     if (event.key === "Escape") {
       event.preventDefault();
-      onCancelEdit(field);
+      onCancelSettings();
     }
   };
 
+  const hintId = `settings-${field}-duration-hint`;
+  const errorId = `settings-${field}-duration-error`;
+
   return (
     <label
-      className={`settings-modal__field${isEditing ? " is-editing" : ""}`}
+      className={[
+        "settings-modal__field",
+        isEditing ? "is-editing" : "",
+        error ? "has-error" : "",
+        disabled ? "is-disabled" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <span className="settings-modal__field-label">{label}</span>
       <span className="settings-modal__field-input-row">
@@ -76,6 +90,9 @@ function DurationField({
           inputMode="numeric"
           value={draftMinutes}
           aria-label={`${label} in minutes`}
+          aria-describedby={error ? `${hintId} ${errorId}` : hintId}
+          aria-invalid={error ? true : undefined}
+          disabled={disabled}
           onFocus={() => onStartEdit(field)}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -83,9 +100,14 @@ function DurationField({
         />
         <span className="settings-modal__field-unit">min</span>
       </span>
-      <span className="settings-modal__field-hint">
+      <span className="settings-modal__field-hint" id={hintId}>
         {minMinutes}-{maxMinutes} minutes
       </span>
+      {error ? (
+        <span className="settings-modal__field-error" id={errorId}>
+          {error}
+        </span>
+      ) : null}
     </label>
   );
 }
@@ -94,14 +116,20 @@ type SettingsModalProps = {
   focusDraftMinutes: string;
   breakDraftMinutes: string;
   activeEditedField: Mode | null;
-  autoFocus: boolean;
-  autoBreak: boolean;
+  autoFocusDraft: boolean;
+  autoBreakDraft: boolean;
   soundEnabled: boolean;
+  isTimerSettingsLocked: boolean;
+  focusDraftError: string | null;
+  breakDraftError: string | null;
+  isTimerSettingsDirty: boolean;
+  canSaveTimerSettings: boolean;
+  willResetCurrentTimer: boolean;
   onStartEditField: (field: Mode) => void;
   onDraftChange: (field: Mode, nextDraft: string) => void;
-  onApplyDuration: (field: Mode) => void;
   onCancelEdit: (field: Mode) => void;
-  onResetDurationDrafts: () => void;
+  onCancelTimerSettings: () => void;
+  onSaveTimerSettings: () => void;
   onToggleAutoFocus: () => void;
   onToggleAutoBreak: () => void;
   onToggleSound: () => void;
@@ -111,48 +139,54 @@ export function SettingsModal({
   focusDraftMinutes,
   breakDraftMinutes,
   activeEditedField,
-  autoFocus,
-  autoBreak,
+  autoFocusDraft,
+  autoBreakDraft,
   soundEnabled,
+  isTimerSettingsLocked,
+  focusDraftError,
+  breakDraftError,
+  isTimerSettingsDirty,
+  canSaveTimerSettings,
+  willResetCurrentTimer,
   onStartEditField,
   onDraftChange,
-  onApplyDuration,
   onCancelEdit,
-  onResetDurationDrafts,
+  onCancelTimerSettings,
+  onSaveTimerSettings,
   onToggleAutoFocus,
   onToggleAutoBreak,
   onToggleSound,
 }: SettingsModalProps) {
   const isOpen = useUIStore((state) => state.isSettingsModalOpen);
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
-  const closePendingRef = useRef(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      closePendingRef.current = false;
-    }
-  }, [isOpen]);
+  const activeSkin = useSkinStore((state) => state.activeSkin);
+  const skinCssVariables = useMemo(
+    () => mapSkinToCssVariables(activeSkin),
+    [activeSkin],
+  );
 
   if (!isOpen) {
     return null;
   }
 
   const handleCancel = () => {
-    closePendingRef.current = true;
-    onResetDurationDrafts();
+    onCancelTimerSettings();
     setSettingsModalOpen(false);
   };
 
-  const handleOverlayMouseDown = (event: MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      closePendingRef.current = true;
+  const handleSave = () => {
+    if (!canSaveTimerSettings) {
+      return;
     }
+
+    onSaveTimerSettings();
+    setSettingsModalOpen(false);
   };
 
   const modal = (
     <div
       className="settings-modal__overlay"
-      onMouseDown={handleOverlayMouseDown}
+      style={skinCssVariables}
       onClick={handleCancel}
     >
       <div
@@ -167,9 +201,6 @@ export function SettingsModal({
           <button
             type="button"
             className="settings-modal__close"
-            onMouseDown={() => {
-              closePendingRef.current = true;
-            }}
             onClick={handleCancel}
             aria-label="Close settings"
           >
@@ -179,6 +210,11 @@ export function SettingsModal({
 
         <section className="settings-modal__section">
           <h3 className="settings-modal__section-title">Timer Durations</h3>
+          {isTimerSettingsLocked ? (
+            <p className="settings-modal__notice" role="status">
+              Timer is running. Pause or reset before changing timer settings.
+            </p>
+          ) : null}
           <div className="settings-modal__duration-grid">
             <DurationField
               field="focus"
@@ -187,11 +223,14 @@ export function SettingsModal({
               isEditing={activeEditedField === "focus"}
               minMinutes={15}
               maxMinutes={90}
+              error={focusDraftError}
+              disabled={isTimerSettingsLocked}
+              canSave={canSaveTimerSettings}
               onStartEdit={onStartEditField}
               onDraftChange={onDraftChange}
-              onApply={onApplyDuration}
               onCancelEdit={onCancelEdit}
-              closePendingRef={closePendingRef}
+              onCancelSettings={onCancelTimerSettings}
+              onSaveSettings={handleSave}
             />
             <DurationField
               field="break"
@@ -200,11 +239,14 @@ export function SettingsModal({
               isEditing={activeEditedField === "break"}
               minMinutes={5}
               maxMinutes={30}
+              error={breakDraftError}
+              disabled={isTimerSettingsLocked}
+              canSave={canSaveTimerSettings}
               onStartEdit={onStartEditField}
               onDraftChange={onDraftChange}
-              onApply={onApplyDuration}
               onCancelEdit={onCancelEdit}
-              closePendingRef={closePendingRef}
+              onCancelSettings={onCancelTimerSettings}
+              onSaveSettings={handleSave}
             />
           </div>
         </section>
@@ -212,18 +254,28 @@ export function SettingsModal({
         <section className="settings-modal__section">
           <h3 className="settings-modal__section-title">Timer Preferences</h3>
           <div className="settings-modal__toggles">
-            <label className="settings-modal__toggle">
+            <label
+              className={`settings-modal__toggle${
+                isTimerSettingsLocked ? " is-disabled" : ""
+              }`}
+            >
               <input
                 type="checkbox"
-                checked={autoFocus}
+                checked={autoFocusDraft}
+                disabled={isTimerSettingsLocked}
                 onChange={onToggleAutoFocus}
               />
               <span>Auto Focus</span>
             </label>
-            <label className="settings-modal__toggle">
+            <label
+              className={`settings-modal__toggle${
+                isTimerSettingsLocked ? " is-disabled" : ""
+              }`}
+            >
               <input
                 type="checkbox"
-                checked={autoBreak}
+                checked={autoBreakDraft}
+                disabled={isTimerSettingsLocked}
                 onChange={onToggleAutoBreak}
               />
               <span>Auto Break</span>
@@ -248,6 +300,31 @@ export function SettingsModal({
             tapushtefan@gmail.com
           </a>
         </section>
+
+        <footer className="settings-modal__footer">
+          {willResetCurrentTimer ? (
+            <p className="settings-modal__warning" role="status">
+              Saving duration changes resets the current timer.
+            </p>
+          ) : null}
+          <div className="settings-modal__actions">
+            <button
+              type="button"
+              className="settings-modal__button settings-modal__button--secondary"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="settings-modal__button settings-modal__button--primary"
+              disabled={!canSaveTimerSettings}
+              onClick={handleSave}
+            >
+              {isTimerSettingsDirty ? "Save settings" : "No changes"}
+            </button>
+          </div>
+        </footer>
       </div>
     </div>
   );

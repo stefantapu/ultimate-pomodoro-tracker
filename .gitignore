@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 supabase/
+!supabase/
+supabase/*
+!supabase/migrations/
+!supabase/migrations/*.sql
 *.local
 
 # Editor directories and files

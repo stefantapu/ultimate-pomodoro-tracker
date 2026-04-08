@@ -64,7 +64,7 @@ This file is a quick map of the repository so navigation is faster.
 ## Public assets (`public/`)
 
 - `public/assets/red_lava_theme/` warm theme images/fonts
-- `public/sounds/alarm.wav` timer alarm
+- `public/sounds/alarm.mp3` timer alarm
 - `public/images/` app favicon images
 
 ### Red Lava theme assets

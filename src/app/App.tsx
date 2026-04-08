@@ -36,6 +36,12 @@ const LazyToastHost = lazy(() =>
   })),
 );
 
+const LazyInfographicsModal = lazy(() =>
+  import("../widgets/InfographicsModal").then((module) => ({
+    default: module.InfographicsModal,
+  })),
+);
+
 function AuthModalFallback() {
   return (
     <div className="auth-block">
@@ -49,6 +55,9 @@ function AuthModalFallback() {
 function App() {
   const { user, loading } = useAuth();
   const isAuthModalOpen = useUIStore((state) => state.isAuthModalOpen);
+  const isInfographicsModalOpen = useUIStore(
+    (state) => state.isInfographicsModalOpen,
+  );
   const isToastHostEnabled = useUIStore((state) => state.isToastHostEnabled);
 
   if (loading) {
@@ -70,6 +79,12 @@ function App() {
       {isAuthModalOpen ? (
         <Suspense fallback={<AuthModalFallback />}>
           <LazyAuthBlock />
+        </Suspense>
+      ) : null}
+
+      {isInfographicsModalOpen ? (
+        <Suspense fallback={null}>
+          <LazyInfographicsModal />
         </Suspense>
       ) : null}
 

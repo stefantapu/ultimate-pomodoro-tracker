@@ -70,6 +70,10 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/settings_button/settings_icon_100x100.webp",
       { width: 100, height: 100 },
     ),
+    historyIcon: buildImageAsset(
+      "/assets/red_lava_theme/history_icon.webp",
+      { width: 100, height: 100 },
+    ),
     exitButton: buildImageAsset(
       "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
       { width: 150, height: 150 },
@@ -78,6 +82,26 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/exit_icon/exit_icon_15x15.webp",
       { width: 15, height: 15 },
     ),
+    cursorDefault: {
+      src: "/assets/red_lava_theme/cursors/diablo/DII.cur",
+      hotspotX: 0,
+      hotspotY: 5,
+    },
+    cursorPointer: {
+      src: "/assets/red_lava_theme/cursors/diablo/DII-Link.cur",
+      hotspotX: 0,
+      hotspotY: 5,
+    },
+    cursorText: {
+      src: "/assets/red_lava_theme/cursors/diablo/DII-Beam.cur",
+      hotspotX: 0,
+      hotspotY: 9,
+    },
+    cursorDisabled: {
+      src: "/assets/red_lava_theme/cursors/diablo/DII-No.cur",
+      hotspotX: 0,
+      hotspotY: 10,
+    },
   },
   colors: {
     dashboardBg: "#2b1109",

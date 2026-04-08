@@ -7,6 +7,12 @@ export type SkinImageAsset = {
   aspectRatio: number;
 };
 
+export type SkinCursorAsset = {
+  src: string;
+  hotspotX: number;
+  hotspotY: number;
+};
+
 export type SkinAssets = {
   pageBackground: SkinImageAsset | null;
   notesPanel: SkinImageAsset | null;
@@ -24,8 +30,13 @@ export type SkinAssets = {
   soundButton: SkinImageAsset | null;
   settingsButton: SkinImageAsset | null;
   settingsIcon: SkinImageAsset | null;
+  historyIcon: SkinImageAsset | null;
   exitButton: SkinImageAsset | null;
   exitIcon: SkinImageAsset | null;
+  cursorDefault: SkinCursorAsset | null;
+  cursorPointer: SkinCursorAsset | null;
+  cursorText: SkinCursorAsset | null;
+  cursorDisabled: SkinCursorAsset | null;
 };
 
 export type SkinColors = {

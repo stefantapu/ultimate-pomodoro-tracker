@@ -116,6 +116,7 @@ function SettingsModalFallback() {
 
 export function TimerBlock() {
   const { play } = useAlarm();
+  const { play: playStoneClick } = useAlarm("/sounds/stone_click.mp3", 0.5);
   const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
     () => readTimerSettings(SETTINGS_STORAGE_KEY),
@@ -146,8 +147,14 @@ export function TimerBlock() {
   const [autoFocus, setAutoFocus] = useState<boolean>(
     () => initialSettings.autoFocus,
   );
+  const [autoFocusDraft, setAutoFocusDraft] = useState<boolean>(
+    () => initialSettings.autoFocus,
+  );
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() =>
     readSoundEnabled(),
+  );
+  const [autoBreakDraft, setAutoBreakDraft] = useState<boolean>(
+    () => initialSettings.autoBreak,
   );
   const hasLoadedFromServer = useRef(false);
 
@@ -175,7 +182,9 @@ export function TimerBlock() {
       setBreakDraftMinutes(nextBreakMinutes.toString());
       setActiveEditedField(null);
       setAutoBreak(cloudSettings.autoBreak);
+      setAutoBreakDraft(cloudSettings.autoBreak);
       setAutoFocus(cloudSettings.autoFocus);
+      setAutoFocusDraft(cloudSettings.autoFocus);
       hasLoadedFromServer.current = true;
     },
   );
@@ -195,139 +204,182 @@ export function TimerBlock() {
     stateStorageKey: STATE_STORAGE_KEY,
     onSessionComplete: soundEnabled ? play : undefined,
   });
-  const [pendingDurationResetCount, setPendingDurationResetCount] = useState(0);
-  const lastHandledDurationResetRef = useRef(0);
-
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
 
-  const handleToggleAutoFocus = useCallback(() => {
-    hasLoadedFromServer.current = true;
-    setAutoFocus((previous) => !previous);
-  }, []);
+  const focusDraftError = useMemo(() => {
+    return parseValidMinutes("focus", focusDraftMinutes) === null
+      ? `Enter ${FOCUS_MIN_DURATION_MINUTES}-${FOCUS_MAX_DURATION_MINUTES} minutes.`
+      : null;
+  }, [focusDraftMinutes]);
 
-  const handleToggleAutoBreak = useCallback(() => {
-    hasLoadedFromServer.current = true;
-    setAutoBreak((previous) => !previous);
-  }, []);
+  const breakDraftError = useMemo(() => {
+    return parseValidMinutes("break", breakDraftMinutes) === null
+      ? `Enter ${BREAK_MIN_DURATION_MINUTES}-${BREAK_MAX_DURATION_MINUTES} minutes.`
+      : null;
+  }, [breakDraftMinutes]);
+
+  const draftFocusDurationSeconds = useMemo(() => {
+    const parsedMinutes = parseValidMinutes("focus", focusDraftMinutes);
+    return parsedMinutes === null ? null : minutesToSeconds(parsedMinutes);
+  }, [focusDraftMinutes]);
+
+  const draftBreakDurationSeconds = useMemo(() => {
+    const parsedMinutes = parseValidMinutes("break", breakDraftMinutes);
+    return parsedMinutes === null ? null : minutesToSeconds(parsedMinutes);
+  }, [breakDraftMinutes]);
+
+  const hasDurationDraftErrors =
+    focusDraftError !== null || breakDraftError !== null;
+  const hasTimerSettingsDraftChanges =
+    draftFocusDurationSeconds !== focusDurationSeconds ||
+    draftBreakDurationSeconds !== breakDurationSeconds ||
+    autoFocusDraft !== autoFocus ||
+    autoBreakDraft !== autoBreak;
+  const isTimerSettingsLocked = status === "running";
+  const willResetCurrentTimer =
+    !isTimerSettingsLocked &&
+    !hasDurationDraftErrors &&
+    ((mode === "focus" && draftFocusDurationSeconds !== focusDurationSeconds) ||
+      (mode === "break" && draftBreakDurationSeconds !== breakDurationSeconds));
+  const canSaveTimerSettings =
+    !isTimerSettingsLocked &&
+    hasTimerSettingsDraftChanges &&
+    !hasDurationDraftErrors;
+
+  const handleToggleAutoFocusDraft = useCallback(() => {
+    if (isTimerSettingsLocked) {
+      return;
+    }
+
+    setAutoFocusDraft((previous) => !previous);
+  }, [isTimerSettingsLocked]);
+
+  const handleToggleAutoBreakDraft = useCallback(() => {
+    if (isTimerSettingsLocked) {
+      return;
+    }
+
+    setAutoBreakDraft((previous) => !previous);
+  }, [isTimerSettingsLocked]);
 
   const handleToggleSound = useCallback(() => {
     setSoundEnabled((previous) => !previous);
   }, []);
 
-  const restoreFieldDraftToLastValid = useCallback(
-    (field: Mode) => {
-      if (field === "focus") {
-        setFocusDraftMinutes(focusLastValidMinutes.toString());
-        return;
-      }
+  const playButtonClick = useCallback(() => {
+    if (soundEnabled) {
+      playStoneClick();
+    }
+  }, [playStoneClick, soundEnabled]);
 
-      setBreakDraftMinutes(breakLastValidMinutes.toString());
+  const handlePrimaryAction = useCallback(() => {
+    playButtonClick();
+
+    if (status === "running") {
+      pause();
+      return;
+    }
+
+    start();
+  }, [pause, playButtonClick, start, status]);
+
+  const handleResetTimer = useCallback(() => {
+    playButtonClick();
+    reset();
+  }, [playButtonClick, reset]);
+
+  const handleSelectMode = useCallback(
+    (nextMode: Mode) => {
+      playButtonClick();
+      switchMode(nextMode);
     },
-    [breakLastValidMinutes, focusLastValidMinutes],
+    [playButtonClick, switchMode],
   );
+
+  const restoreTimerSettingsDrafts = useCallback(() => {
+    setFocusDraftMinutes(focusLastValidMinutes.toString());
+    setBreakDraftMinutes(breakLastValidMinutes.toString());
+    setAutoFocusDraft(autoFocus);
+    setAutoBreakDraft(autoBreak);
+    setActiveEditedField(null);
+  }, [autoBreak, autoFocus, breakLastValidMinutes, focusLastValidMinutes]);
 
   const handleStartEditField = useCallback(
     (field: Mode) => {
-      if (activeEditedField && activeEditedField !== field) {
-        restoreFieldDraftToLastValid(activeEditedField);
-      }
-
-      if (field === "focus") {
-        setFocusDraftMinutes(focusLastValidMinutes.toString());
-      } else {
-        setBreakDraftMinutes(breakLastValidMinutes.toString());
+      if (isTimerSettingsLocked) {
+        return;
       }
 
       setActiveEditedField(field);
     },
-    [
-      activeEditedField,
-      breakLastValidMinutes,
-      focusLastValidMinutes,
-      restoreFieldDraftToLastValid,
-    ],
+    [isTimerSettingsLocked],
   );
 
-  const handleDraftChange = useCallback((field: Mode, nextDraft: string) => {
-    if (field === "focus") {
-      setFocusDraftMinutes(nextDraft);
-      return;
-    }
+  const handleDraftChange = useCallback(
+    (field: Mode, nextDraft: string) => {
+      if (isTimerSettingsLocked) {
+        return;
+      }
 
-    setBreakDraftMinutes(nextDraft);
-  }, []);
+      if (field === "focus") {
+        setFocusDraftMinutes(nextDraft);
+        return;
+      }
+
+      setBreakDraftMinutes(nextDraft);
+    },
+    [isTimerSettingsLocked],
+  );
 
   const handleCancelEdit = useCallback(
     (field: Mode) => {
-      restoreFieldDraftToLastValid(field);
-
       if (activeEditedField === field) {
         setActiveEditedField(null);
       }
     },
-    [activeEditedField, restoreFieldDraftToLastValid],
+    [activeEditedField],
   );
 
-  const handleResetDurationDrafts = useCallback(() => {
-    setFocusDraftMinutes(focusLastValidMinutes.toString());
-    setBreakDraftMinutes(breakLastValidMinutes.toString());
+  const handleCancelTimerSettings = useCallback(() => {
+    restoreTimerSettingsDrafts();
+  }, [restoreTimerSettingsDrafts]);
+
+  const handleSaveTimerSettings = useCallback(() => {
+    if (!canSaveTimerSettings) {
+      return;
+    }
+
+    const nextFocusDurationSeconds = draftFocusDurationSeconds;
+    const nextBreakDurationSeconds = draftBreakDurationSeconds;
+
+    if (
+      nextFocusDurationSeconds === null ||
+      nextBreakDurationSeconds === null
+    ) {
+      return;
+    }
+
+    const nextFocusMinutes = secondsToMinutes(nextFocusDurationSeconds);
+    const nextBreakMinutes = secondsToMinutes(nextBreakDurationSeconds);
+
+    hasLoadedFromServer.current = true;
+
+    setFocusDurationSeconds(nextFocusDurationSeconds);
+    setBreakDurationSeconds(nextBreakDurationSeconds);
+    setFocusLastValidMinutes(nextFocusMinutes);
+    setBreakLastValidMinutes(nextBreakMinutes);
+    setFocusDraftMinutes(nextFocusMinutes.toString());
+    setBreakDraftMinutes(nextBreakMinutes.toString());
+    setAutoFocus(autoFocusDraft);
+    setAutoBreak(autoBreakDraft);
     setActiveEditedField(null);
-  }, [breakLastValidMinutes, focusLastValidMinutes]);
-
-  const handleApplyDuration = useCallback(
-    (field: Mode) => {
-      if (activeEditedField !== field) {
-        return;
-      }
-
-      const draftMinutes =
-        field === "focus" ? focusDraftMinutes : breakDraftMinutes;
-      const parsedMinutes = parseValidMinutes(field, draftMinutes);
-
-      if (parsedMinutes === null) {
-        handleCancelEdit(field);
-        return;
-      }
-
-      const nextDurationSeconds = minutesToSeconds(parsedMinutes);
-      const currentDurationSeconds =
-        field === "focus" ? focusDurationSeconds : breakDurationSeconds;
-
-      if (nextDurationSeconds === currentDurationSeconds) {
-        if (field === "focus") {
-          setFocusDraftMinutes(parsedMinutes.toString());
-        } else {
-          setBreakDraftMinutes(parsedMinutes.toString());
-        }
-
-        setActiveEditedField(null);
-        return;
-      }
-
-      hasLoadedFromServer.current = true;
-
-      if (field === "focus") {
-        setFocusDurationSeconds(nextDurationSeconds);
-        setFocusLastValidMinutes(parsedMinutes);
-        setFocusDraftMinutes(parsedMinutes.toString());
-      } else {
-        setBreakDurationSeconds(nextDurationSeconds);
-        setBreakLastValidMinutes(parsedMinutes);
-        setBreakDraftMinutes(parsedMinutes.toString());
-      }
-
-      setActiveEditedField(null);
-      setPendingDurationResetCount((previous) => previous + 1);
-    },
-    [
-      activeEditedField,
-      breakDraftMinutes,
-      breakDurationSeconds,
-      focusDraftMinutes,
-      focusDurationSeconds,
-      handleCancelEdit,
-    ],
-  );
+  }, [
+    autoBreakDraft,
+    autoFocusDraft,
+    canSaveTimerSettings,
+    draftBreakDurationSeconds,
+    draftFocusDurationSeconds,
+  ]);
 
   useEffect(() => {
     if (resetTimerTrigger > 0) {
@@ -369,18 +421,6 @@ export function TimerBlock() {
       window.clearInterval(intervalId);
     };
   }, [status, targetTimestamp, timeLeft]);
-
-  useEffect(() => {
-    if (
-      pendingDurationResetCount === 0 ||
-      pendingDurationResetCount === lastHandledDurationResetRef.current
-    ) {
-      return;
-    }
-
-    lastHandledDurationResetRef.current = pendingDurationResetCount;
-    reset();
-  }, [pendingDurationResetCount, reset]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -426,21 +466,27 @@ export function TimerBlock() {
             focusDraftMinutes={focusDraftMinutes}
             breakDraftMinutes={breakDraftMinutes}
             activeEditedField={activeEditedField}
-            autoFocus={autoFocus}
-            autoBreak={autoBreak}
+            autoFocusDraft={autoFocusDraft}
+            autoBreakDraft={autoBreakDraft}
             soundEnabled={soundEnabled}
+            isTimerSettingsLocked={isTimerSettingsLocked}
+            focusDraftError={focusDraftError}
+            breakDraftError={breakDraftError}
+            isTimerSettingsDirty={hasTimerSettingsDraftChanges}
+            canSaveTimerSettings={canSaveTimerSettings}
+            willResetCurrentTimer={willResetCurrentTimer}
             onStartEditField={handleStartEditField}
             onDraftChange={handleDraftChange}
-            onApplyDuration={handleApplyDuration}
             onCancelEdit={handleCancelEdit}
-            onResetDurationDrafts={handleResetDurationDrafts}
-            onToggleAutoFocus={handleToggleAutoFocus}
-            onToggleAutoBreak={handleToggleAutoBreak}
+            onCancelTimerSettings={handleCancelTimerSettings}
+            onSaveTimerSettings={handleSaveTimerSettings}
+            onToggleAutoFocus={handleToggleAutoFocusDraft}
+            onToggleAutoBreak={handleToggleAutoBreakDraft}
             onToggleSound={handleToggleSound}
           />
         </Suspense>
       ) : null}
-      <TopControls mode={mode} onSelectMode={switchMode} />
+      <TopControls mode={mode} onSelectMode={handleSelectMode} />
       <TimerCard
         mode={mode}
         status={status}
@@ -449,8 +495,8 @@ export function TimerBlock() {
       />
       <ActionButtons
         status={status}
-        onPrimaryAction={status === "running" ? pause : start}
-        onReset={reset}
+        onPrimaryAction={handlePrimaryAction}
+        onReset={handleResetTimer}
       />
     </div>
   );
