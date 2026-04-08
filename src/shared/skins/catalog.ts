@@ -79,22 +79,22 @@ const warmSkin: SkinProfile = {
       { width: 15, height: 15 },
     ),
     cursorDefault: {
-      src: "/assets/red_lava_theme/cursors/cursor_default.png",
+      src: "/assets/red_lava_theme/cursors/diablo/DII.cur",
       hotspotX: 0,
       hotspotY: 5,
     },
     cursorPointer: {
-      src: "/assets/red_lava_theme/cursors/cursor_pointer.png",
+      src: "/assets/red_lava_theme/cursors/diablo/DII-Link.cur",
       hotspotX: 0,
-      hotspotY: 7,
+      hotspotY: 5,
     },
     cursorText: {
-      src: "/assets/red_lava_theme/cursors/cursor_text.png",
+      src: "/assets/red_lava_theme/cursors/diablo/DII-Beam.cur",
       hotspotX: 0,
       hotspotY: 9,
     },
     cursorDisabled: {
-      src: "/assets/red_lava_theme/cursors/cursor_disabled.png",
+      src: "/assets/red_lava_theme/cursors/diablo/DII-No.cur",
       hotspotX: 0,
       hotspotY: 10,
     },
