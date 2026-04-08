@@ -116,6 +116,7 @@ function SettingsModalFallback() {
 
 export function TimerBlock() {
   const { play } = useAlarm();
+  const { play: playStoneClick } = useAlarm("/sounds/stone_click.mp3", 0.5);
   const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
     () => readTimerSettings(SETTINGS_STORAGE_KEY),
@@ -213,6 +214,28 @@ export function TimerBlock() {
   const handleToggleSound = useCallback(() => {
     setSoundEnabled((previous) => !previous);
   }, []);
+
+  const playButtonClick = useCallback(() => {
+    if (soundEnabled) {
+      playStoneClick();
+    }
+  }, [playStoneClick, soundEnabled]);
+
+  const handlePrimaryAction = useCallback(() => {
+    playButtonClick();
+
+    if (status === "running") {
+      pause();
+      return;
+    }
+
+    start();
+  }, [pause, playButtonClick, start, status]);
+
+  const handleResetTimer = useCallback(() => {
+    playButtonClick();
+    reset();
+  }, [playButtonClick, reset]);
 
   const restoreFieldDraftToLastValid = useCallback(
     (field: Mode) => {
@@ -449,8 +472,8 @@ export function TimerBlock() {
       />
       <ActionButtons
         status={status}
-        onPrimaryAction={status === "running" ? pause : start}
-        onReset={reset}
+        onPrimaryAction={handlePrimaryAction}
+        onReset={handleResetTimer}
       />
     </div>
   );

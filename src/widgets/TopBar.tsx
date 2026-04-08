@@ -131,11 +131,8 @@ export const TopBar = () => {
                 fontWeight: "bold",
                 cursor: "pointer",
                 fontSize: "0.875rem",
-                transition: "transform 0.2s",
                 boxShadow: "0 4px 12px rgba(167, 119, 227, 0.3)",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-              onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
             >
               Login
             </button>

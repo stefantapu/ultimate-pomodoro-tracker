@@ -110,7 +110,6 @@ export const TimerCard = memo(function TimerCard({
             alt=""
             className="timer-card__panel-image"
             decoding="async"
-            fetchPriority="high"
             height={timerPanel.height}
             loading="eager"
             src={timerPanel.src}
