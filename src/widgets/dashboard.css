@@ -2616,3 +2616,465 @@
 .settings-modal__toggle:not(.is-disabled) * {
   cursor: var(--skin-cursor-pointer, pointer);
 }
+
+.toolbar-icon-button--history {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-history-button__text {
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dashboard-shell--warm .toolbar-icon-button--history {
+  background-image: var(--skin-settings-button-image);
+  color: #f3cca0;
+  text-shadow:
+    0 1px 1px rgba(10, 3, 1, 0.9),
+    0 0 0.36rem rgba(255, 161, 74, 0.16);
+}
+
+.dashboard-shell--warm .toolbar-icon-button--history:hover,
+.dashboard-shell--warm .toolbar-icon-button--history:focus-visible {
+  color: #ffe6c3;
+  filter: drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.76))
+    drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.42));
+}
+
+.history-dashboard__overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  z-index: 60;
+  background:
+    linear-gradient(180deg, rgba(18, 6, 3, 0.34), rgba(9, 3, 2, 0.72)),
+    radial-gradient(circle at 50% 18%, rgba(255, 145, 58, 0.12), transparent 34%);
+  backdrop-filter: blur(6px);
+  cursor: var(--skin-cursor-default, auto);
+  font-family: var(--dashboard-button-font-family);
+}
+
+.history-dashboard__overlay button {
+  cursor: var(--skin-cursor-pointer, pointer);
+}
+
+.history-dashboard__overlay button:disabled {
+  cursor: var(--skin-cursor-disabled, not-allowed);
+}
+
+.history-dashboard {
+  position: relative;
+  width: min(72rem, 100%);
+  max-height: calc(100dvh - 2.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(255, 184, 108, 0.34);
+  border-radius: 0;
+  background: rgba(22, 7, 3, 0.46);
+  color: #fff0d9;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 219, 172, 0.05),
+    0 0 1.25rem rgba(255, 116, 34, 0.18),
+    0 1.2rem 2.6rem rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.history-dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.3rem 0.95rem;
+  border-bottom: 1px solid rgba(255, 184, 108, 0.16);
+}
+
+.history-dashboard__eyebrow {
+  margin: 0 0 0.28rem;
+  color: #d59a63;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.history-dashboard__header h2,
+.history-dashboard__panel h3 {
+  margin: 0;
+  color: #ffe4bc;
+  font-family: var(--dashboard-button-font-family);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.45rem rgba(255, 161, 74, 0.14);
+}
+
+.history-dashboard__header h2 {
+  font-size: 1.18rem;
+  letter-spacing: 0.14em;
+}
+
+.history-dashboard__close,
+.history-dashboard__week-actions button {
+  border: 1px solid rgba(255, 182, 104, 0.3);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.02);
+  color: #f2caa0;
+  font-family: var(--dashboard-button-font-family);
+  font-weight: 700;
+  box-shadow: 0 0 0.8rem rgba(255, 120, 39, 0.08);
+}
+
+.history-dashboard__close {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.history-dashboard__close:hover,
+.history-dashboard__close:focus-visible,
+.history-dashboard__week-actions button:not(:disabled):hover,
+.history-dashboard__week-actions button:not(:disabled):focus-visible {
+  color: #ffe6c3;
+  filter: brightness(1.08);
+  box-shadow:
+    0 0 1rem rgba(255, 120, 39, 0.16),
+    0 0 0.2rem rgba(255, 205, 142, 0.1);
+}
+
+.history-dashboard__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.85fr);
+  gap: 0.9rem;
+  padding: 1rem 1.3rem 1.3rem;
+}
+
+.history-dashboard__summary-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.4rem, 1fr));
+  gap: 0.75rem;
+}
+
+.history-dashboard__summary-card,
+.history-dashboard__panel {
+  border: 1px solid rgba(255, 180, 101, 0.24);
+  background:
+    linear-gradient(180deg, rgba(70, 24, 9, 0.28), rgba(18, 6, 3, 0.18)),
+    rgba(10, 3, 1, 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 224, 185, 0.04),
+    0 0 1rem rgba(255, 120, 39, 0.06);
+}
+
+.history-dashboard__summary-card {
+  display: grid;
+  gap: 0.42rem;
+  min-width: 0;
+  padding: 0.78rem 0.8rem;
+}
+
+.history-dashboard__summary-label,
+.history-dashboard__panel-header p,
+.history-dashboard__session-date,
+.history-dashboard__week-date,
+.history-dashboard__empty,
+.history-dashboard__auth-state {
+  color: #d9a873;
+}
+
+.history-dashboard__summary-label,
+.history-dashboard__week-label,
+.history-dashboard__week-date,
+.history-dashboard__rhythm-label,
+.history-dashboard__rhythm-value,
+.history-dashboard__session-date,
+.history-dashboard__session-duration,
+.history-dashboard__pill,
+.history-dashboard__week-actions button {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.history-dashboard__summary-value {
+  color: #fff0d9;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.history-dashboard__panel {
+  min-width: 0;
+  padding: 0.95rem;
+}
+
+.history-dashboard__panel--wide {
+  grid-column: 1 / -1;
+}
+
+.history-dashboard__panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.history-dashboard__panel h3 {
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+}
+
+.history-dashboard__panel-header p {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.history-dashboard__week-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.history-dashboard__period-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.history-dashboard__week-actions button {
+  min-height: 2rem;
+  padding: 0 0.65rem;
+}
+
+.history-dashboard__period-tabs button.is-active {
+  color: #fff0d4;
+  border-color: rgba(255, 207, 145, 0.52);
+  background: rgba(255, 143, 45, 0.1);
+}
+
+.history-dashboard__week-actions button:disabled {
+  opacity: 0.45;
+}
+
+.history-dashboard__week-chart {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.1rem, 1fr));
+  gap: 0.65rem;
+  min-height: 15rem;
+  align-items: end;
+}
+
+.history-dashboard__week-day {
+  display: grid;
+  grid-template-rows: minmax(9rem, 1fr) auto auto auto;
+  gap: 0.35rem;
+  min-width: 0;
+  text-align: center;
+}
+
+.history-dashboard__week-bar-frame {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 100%;
+  border: 1px solid rgba(255, 184, 108, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 173, 84, 0.04), rgba(10, 3, 1, 0.28)),
+    rgba(9, 2, 1, 0.2);
+}
+
+.history-dashboard__week-bar {
+  width: min(2.2rem, 72%);
+  background: linear-gradient(180deg, #ffd08e, #ff812c 54%, #7d2d10);
+  box-shadow:
+    0 0 0.45rem rgba(255, 168, 77, 0.36),
+    inset 0 0 0 1px rgba(255, 232, 196, 0.14);
+}
+
+.history-dashboard__week-value {
+  color: #ffe4bc;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.history-dashboard__week-label {
+  color: #f0c394;
+}
+
+.history-dashboard__rhythm-list,
+.history-dashboard__session-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.history-dashboard__rhythm-row {
+  display: grid;
+  grid-template-columns: 5.8rem minmax(0, 1fr) 3rem;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.history-dashboard__rhythm-track {
+  height: 0.62rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 184, 108, 0.18);
+  background: rgba(8, 2, 1, 0.28);
+}
+
+.history-dashboard__rhythm-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9f3b13, #ff8a34, #ffd08e);
+  box-shadow: 0 0 0.5rem rgba(255, 135, 41, 0.26);
+}
+
+.history-dashboard__rhythm-value {
+  color: #ffe1bf;
+  text-align: right;
+}
+
+.history-dashboard__session-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1.4fr) auto auto auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(255, 184, 108, 0.14);
+  background: rgba(12, 4, 2, 0.16);
+}
+
+.history-dashboard__session-time {
+  display: block;
+  color: #fff0d9;
+  font-weight: 700;
+}
+
+.history-dashboard__pill {
+  border: 1px solid rgba(255, 184, 108, 0.24);
+  padding: 0.24rem 0.42rem;
+  color: #f1c99b;
+  text-align: center;
+}
+
+.history-dashboard__pill--completed {
+  color: #ffe6bf;
+  border-color: rgba(255, 204, 139, 0.42);
+}
+
+.history-dashboard__pill--interrupted {
+  color: #ffb28c;
+  border-color: rgba(255, 127, 84, 0.42);
+}
+
+.history-dashboard__session-duration {
+  color: #ffe1bf;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.history-dashboard__empty,
+.history-dashboard__auth-state {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.history-dashboard__auth-state {
+  padding: 2rem 1.3rem;
+}
+
+@media (max-width: 949px) {
+  .history-dashboard__body {
+    grid-template-columns: 1fr;
+  }
+
+  .history-dashboard__summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  }
+
+  .history-dashboard__week-chart {
+    min-height: 12rem;
+    gap: 0.45rem;
+  }
+
+  .history-dashboard__session-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .history-dashboard__session-duration {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .history-dashboard__overlay {
+    padding: 0.75rem;
+  }
+
+  .history-dashboard {
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .history-dashboard__header,
+  .history-dashboard__body {
+    padding-inline: 0.95rem;
+  }
+
+  .history-dashboard__panel-header {
+    display: grid;
+  }
+
+  .history-dashboard__week-actions {
+    justify-content: flex-start;
+  }
+
+  .history-dashboard__week-chart {
+    grid-template-columns: repeat(auto-fit, minmax(3.7rem, 1fr));
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .history-dashboard__summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .history-dashboard__summary-card {
+    padding: 0.62rem 0.65rem;
+  }
+
+  .history-dashboard__summary-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .history-dashboard__summary-value {
+    font-size: 1.05rem;
+  }
+
+  .history-dashboard__rhythm-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .history-dashboard__rhythm-value {
+    text-align: left;
+  }
+
+  .toolbar-history-button__text {
+    font-size: 0.62rem;
+  }
+}

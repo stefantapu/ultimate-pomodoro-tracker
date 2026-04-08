@@ -6,6 +6,8 @@ type UIState = {
   setAuthModalOpen: (isOpen: boolean) => void;
   isSettingsModalOpen: boolean;
   setSettingsModalOpen: (isOpen: boolean) => void;
+  isInfographicsModalOpen: boolean;
+  setInfographicsModalOpen: (isOpen: boolean) => void;
   isToastHostEnabled: boolean;
   enableToastHost: () => void;
   analyticsCounter: number;
@@ -19,6 +21,8 @@ export const useUIStore = create<UIState>((set) => ({
   setAuthModalOpen: (isOpen) => set({ isAuthModalOpen: isOpen }),
   isSettingsModalOpen: false,
   setSettingsModalOpen: (isOpen) => set({ isSettingsModalOpen: isOpen }),
+  isInfographicsModalOpen: false,
+  setInfographicsModalOpen: (isOpen) => set({ isInfographicsModalOpen: isOpen }),
   isToastHostEnabled: false,
   enableToastHost: () => set({ isToastHostEnabled: true }),
   analyticsCounter: 0,

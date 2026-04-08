@@ -7,6 +7,7 @@ import { BackgroundEmbers } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
+import { InfographicsButton } from "./InfographicsButton";
 import { TimerBlock } from "./TimerBlock";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
@@ -169,6 +170,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       {activeSkin.id === "warm" ? <BackgroundEmbers /> : null}
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
+          <InfographicsButton />
           <SettingsButton />
           <LogoutButton />
         </div>
