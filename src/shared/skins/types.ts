@@ -30,6 +30,7 @@ export type SkinAssets = {
   soundButton: SkinImageAsset | null;
   settingsButton: SkinImageAsset | null;
   settingsIcon: SkinImageAsset | null;
+  historyIcon: SkinImageAsset | null;
   exitButton: SkinImageAsset | null;
   exitIcon: SkinImageAsset | null;
   cursorDefault: SkinCursorAsset | null;

@@ -70,6 +70,10 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/settings_button/settings_icon_100x100.webp",
       { width: 100, height: 100 },
     ),
+    historyIcon: buildImageAsset(
+      "/assets/red_lava_theme/history_icon.webp",
+      { width: 100, height: 100 },
+    ),
     exitButton: buildImageAsset(
       "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
       { width: 150, height: 150 },

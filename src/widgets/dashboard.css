@@ -2390,6 +2390,7 @@
 .dashboard-shell {
   --skin-settings-button-image: none;
   --skin-settings-icon-image: none;
+  --skin-history-icon-image: none;
   --skin-exit-button-image: none;
   --skin-exit-icon-image: none;
 }
@@ -2477,6 +2478,10 @@
   background-image: var(--skin-settings-button-image);
 }
 
+.dashboard-shell--warm .toolbar-icon-button--history {
+  background-image: var(--skin-settings-button-image);
+}
+
 .dashboard-shell--warm .toolbar-icon-button--exit {
   background-image: var(--skin-exit-button-image);
 }
@@ -2489,6 +2494,9 @@
   pointer-events: none;
 }
 
+.dashboard-shell--warm
+  .toolbar-icon-button--history
+  .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--settings
   .toolbar-icon-button__icon::before,
@@ -2512,9 +2520,18 @@
 }
 
 .dashboard-shell--warm
+  .toolbar-icon-button--history
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
   .toolbar-icon-button--settings
   .toolbar-icon-button__icon::before {
   left: 50%;
+}
+
+.dashboard-shell--warm
+  .toolbar-icon-button--history
+  .toolbar-icon-button__icon::before {
+  background-image: var(--skin-history-icon-image);
 }
 
 .dashboard-shell--warm
@@ -2529,6 +2546,12 @@
   background-image: var(--skin-exit-icon-image);
 }
 
+.dashboard-shell--warm
+  .toolbar-icon-button--history:hover
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--history:focus-visible
+  .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--settings:hover
   .toolbar-icon-button__icon::before,
@@ -2615,34 +2638,6 @@
 .settings-modal__toggle:not(.is-disabled),
 .settings-modal__toggle:not(.is-disabled) * {
   cursor: var(--skin-cursor-pointer, pointer);
-}
-
-.toolbar-icon-button--history {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toolbar-history-button__text {
-  font-size: 0.72rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.dashboard-shell--warm .toolbar-icon-button--history {
-  background-image: var(--skin-settings-button-image);
-  color: #f3cca0;
-  text-shadow:
-    0 1px 1px rgba(10, 3, 1, 0.9),
-    0 0 0.36rem rgba(255, 161, 74, 0.16);
-}
-
-.dashboard-shell--warm .toolbar-icon-button--history:hover,
-.dashboard-shell--warm .toolbar-icon-button--history:focus-visible {
-  color: #ffe6c3;
-  filter: drop-shadow(0 0 0.22rem rgba(255, 194, 120, 0.76))
-    drop-shadow(0 0 0.55rem rgba(255, 135, 41, 0.42));
 }
 
 .history-dashboard__overlay {

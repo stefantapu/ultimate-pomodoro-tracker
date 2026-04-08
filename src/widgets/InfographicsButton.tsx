@@ -15,7 +15,10 @@ export const InfographicsButton = memo(function InfographicsButton() {
       aria-label="Open history dashboard"
       title="Open history dashboard"
     >
-      <span className="toolbar-history-button__text">History</span>
+      <>
+        <span className="toolbar-icon-button__label">Open history dashboard</span>
+        <span className="toolbar-icon-button__icon" aria-hidden="true" />
+      </>
     </ThemedButton>
   );
 });
