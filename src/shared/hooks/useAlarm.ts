@@ -4,7 +4,7 @@ export const useAlarm = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   if (audioRef.current == null) {
-    audioRef.current = new Audio("/sounds/alarm.wav"); // or import the asset
+    audioRef.current = new Audio("/sounds/alarm.mp3");
   }
 
   const play = useCallback(() => {
