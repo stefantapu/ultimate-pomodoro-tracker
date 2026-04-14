@@ -18,6 +18,17 @@ export type TimerSettings = {
   autoFocus: boolean;
 };
 
+export type AudioSettings = {
+  alarmEnabled: boolean;
+  alarmVolume: number;
+  uiSoundsEnabled: boolean;
+  uiVolume: number;
+  focusAmbienceEnabled: boolean;
+  focusAmbienceVolume: number;
+};
+
+export type UserSettings = TimerSettings & AudioSettings;
+
 export type TimerAction =
   | { type: "START"; targetTimestamp: number; timeLeft?: number }
   | { type: "PAUSE"; timeLeft?: number; checkpoint?: boolean }

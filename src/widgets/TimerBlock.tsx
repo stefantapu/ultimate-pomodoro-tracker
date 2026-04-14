@@ -1,11 +1,14 @@
-﻿import { useAlarm } from "@shared/hooks/useAlarm";
+import { useAlarm } from "@shared/hooks/useAlarm";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
 import {
-  readTimerSettings,
-  writeTimerSettings,
+  extractTimerSettings,
+  readUserSettings,
+  USER_SETTINGS_STORAGE_KEY,
+  writeUserSettings,
 } from "@shared/lib/timerStorage";
-import type { Mode, TimerSettings } from "@shared/lib/timerTypes";
+import type { Mode, TimerSettings, UserSettings } from "@shared/lib/timerTypes";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import {
   Suspense,
@@ -27,13 +30,12 @@ const LazySettingsModal = lazy(() =>
 );
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
-const SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
-const SOUND_ENABLED_STORAGE_KEY = "pomodoro-sound-enabled";
 const FOCUS_MIN_DURATION_MINUTES = 15;
 const FOCUS_MAX_DURATION_MINUTES = 90;
 const BREAK_MIN_DURATION_MINUTES = 5;
 const BREAK_MAX_DURATION_MINUTES = 30;
 const DEFAULT_PAGE_TITLE = "Forge Timer - Pomodoro";
+const FOCUS_AMBIENCE_SOUND_SRC = "/sounds/focus_embers_loop.mp3";
 
 function minutesToSeconds(minutes: number) {
   return minutes * 60;
@@ -41,6 +43,24 @@ function minutesToSeconds(minutes: number) {
 
 function secondsToMinutes(seconds: number) {
   return Math.floor(seconds / 60);
+}
+
+function clampVolume(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function percentToVolume(nextValue: string) {
+  const parsedValue = Number(nextValue);
+
+  if (Number.isNaN(parsedValue)) {
+    return 0;
+  }
+
+  return clampVolume(parsedValue / 100);
+}
+
+function formatVolumeLabel(value: number) {
+  return `${Math.round(clampVolume(value) * 100)}%`;
 }
 
 function formatTitleTime(seconds: number) {
@@ -81,24 +101,6 @@ function parseValidMinutes(field: Mode, value: string) {
   return parsed;
 }
 
-function readSoundEnabled() {
-  if (typeof window === "undefined") {
-    return true;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(SOUND_ENABLED_STORAGE_KEY);
-
-    if (raw === null) {
-      return true;
-    }
-
-    return raw === "true";
-  } catch {
-    return true;
-  }
-}
-
 function SettingsModalFallback() {
   return (
     <div className="settings-modal__overlay">
@@ -115,11 +117,10 @@ function SettingsModalFallback() {
 }
 
 export function TimerBlock() {
-  const { play } = useAlarm();
-  const { play: playStoneClick } = useAlarm("/sounds/stone_click.mp3", 0.5);
+  const activeSkin = useSkinStore((state) => state.activeSkin);
   const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
-    () => readTimerSettings(SETTINGS_STORAGE_KEY),
+    () => readUserSettings(USER_SETTINGS_STORAGE_KEY),
     [],
   );
   const [breakDurationSeconds, setBreakDurationSeconds] = useState<number>(
@@ -150,27 +151,93 @@ export function TimerBlock() {
   const [autoFocusDraft, setAutoFocusDraft] = useState<boolean>(
     () => initialSettings.autoFocus,
   );
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(() =>
-    readSoundEnabled(),
-  );
   const [autoBreakDraft, setAutoBreakDraft] = useState<boolean>(
     () => initialSettings.autoBreak,
   );
+  const [alarmEnabled, setAlarmEnabled] = useState<boolean>(
+    () => initialSettings.alarmEnabled,
+  );
+  const [alarmEnabledDraft, setAlarmEnabledDraft] = useState<boolean>(
+    () => initialSettings.alarmEnabled,
+  );
+  const [alarmVolume, setAlarmVolume] = useState<number>(
+    () => initialSettings.alarmVolume,
+  );
+  const [alarmVolumeDraft, setAlarmVolumeDraft] = useState<number>(
+    () => initialSettings.alarmVolume,
+  );
+  const [uiSoundsEnabled, setUiSoundsEnabled] = useState<boolean>(
+    () => initialSettings.uiSoundsEnabled,
+  );
+  const [uiSoundsEnabledDraft, setUiSoundsEnabledDraft] = useState<boolean>(
+    () => initialSettings.uiSoundsEnabled,
+  );
+  const [uiVolume, setUiVolume] = useState<number>(() => initialSettings.uiVolume);
+  const [uiVolumeDraft, setUiVolumeDraft] = useState<number>(
+    () => initialSettings.uiVolume,
+  );
+  const [focusAmbienceEnabled, setFocusAmbienceEnabled] = useState<boolean>(
+    () => initialSettings.focusAmbienceEnabled,
+  );
+  const [focusAmbienceEnabledDraft, setFocusAmbienceEnabledDraft] =
+    useState<boolean>(() => initialSettings.focusAmbienceEnabled);
+  const [focusAmbienceVolume, setFocusAmbienceVolume] = useState<number>(
+    () => initialSettings.focusAmbienceVolume,
+  );
+  const [focusAmbienceVolumeDraft, setFocusAmbienceVolumeDraft] =
+    useState<number>(() => initialSettings.focusAmbienceVolume);
+  const [isFocusAmbienceAvailable, setIsFocusAmbienceAvailable] =
+    useState<boolean>(false);
   const hasLoadedFromServer = useRef(false);
 
-  const settings = useMemo<TimerSettings>(
+  const currentSettings = useMemo<UserSettings>(
     () => ({
       focusDuration: focusDurationSeconds,
       breakDuration: breakDurationSeconds,
       autoBreak,
       autoFocus,
+      alarmEnabled,
+      alarmVolume,
+      uiSoundsEnabled,
+      uiVolume,
+      focusAmbienceEnabled,
+      focusAmbienceVolume,
     }),
-    [autoBreak, autoFocus, breakDurationSeconds, focusDurationSeconds],
+    [
+      alarmEnabled,
+      alarmVolume,
+      autoBreak,
+      autoFocus,
+      breakDurationSeconds,
+      focusAmbienceEnabled,
+      focusAmbienceVolume,
+      focusDurationSeconds,
+      uiSoundsEnabled,
+      uiVolume,
+    ],
+  );
+
+  const timerSettings = useMemo<TimerSettings>(
+    () => extractTimerSettings(currentSettings),
+    [currentSettings],
+  );
+
+  const { play: playAlarm } = useAlarm("/sounds/alarm.mp3", alarmVolume);
+  const { play: previewAlarm } = useAlarm("/sounds/alarm.mp3", alarmVolumeDraft);
+  const { play: playStoneClick } = useAlarm("/sounds/stone_click.mp3", uiVolume);
+  const { play: previewUiClick } = useAlarm(
+    "/sounds/click_on_elements.mp3",
+    uiVolumeDraft,
+  );
+  const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
+    FOCUS_AMBIENCE_SOUND_SRC,
+    focusAmbienceVolume,
+    { loop: true },
   );
 
   const { pushSettingsToCloud } = useSettingsSync(
-    settings,
-    (cloudSettings: TimerSettings) => {
+    currentSettings,
+    (cloudSettings: UserSettings) => {
       const nextFocusMinutes = secondsToMinutes(cloudSettings.focusDuration);
       const nextBreakMinutes = secondsToMinutes(cloudSettings.breakDuration);
 
@@ -185,6 +252,18 @@ export function TimerBlock() {
       setAutoBreakDraft(cloudSettings.autoBreak);
       setAutoFocus(cloudSettings.autoFocus);
       setAutoFocusDraft(cloudSettings.autoFocus);
+      setAlarmEnabled(cloudSettings.alarmEnabled);
+      setAlarmEnabledDraft(cloudSettings.alarmEnabled);
+      setAlarmVolume(clampVolume(cloudSettings.alarmVolume));
+      setAlarmVolumeDraft(clampVolume(cloudSettings.alarmVolume));
+      setUiSoundsEnabled(cloudSettings.uiSoundsEnabled);
+      setUiSoundsEnabledDraft(cloudSettings.uiSoundsEnabled);
+      setUiVolume(clampVolume(cloudSettings.uiVolume));
+      setUiVolumeDraft(clampVolume(cloudSettings.uiVolume));
+      setFocusAmbienceEnabled(cloudSettings.focusAmbienceEnabled);
+      setFocusAmbienceEnabledDraft(cloudSettings.focusAmbienceEnabled);
+      setFocusAmbienceVolume(clampVolume(cloudSettings.focusAmbienceVolume));
+      setFocusAmbienceVolumeDraft(clampVolume(cloudSettings.focusAmbienceVolume));
       hasLoadedFromServer.current = true;
     },
   );
@@ -200,9 +279,10 @@ export function TimerBlock() {
     hardReset,
     switchMode,
   } = usePomodoroTimer({
-    settings,
+    settings: timerSettings,
     stateStorageKey: STATE_STORAGE_KEY,
-    onSessionComplete: soundEnabled ? play : undefined,
+    onSessionComplete:
+      alarmEnabled && alarmVolume > 0 ? playAlarm : undefined,
   });
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
 
@@ -235,16 +315,44 @@ export function TimerBlock() {
     draftBreakDurationSeconds !== breakDurationSeconds ||
     autoFocusDraft !== autoFocus ||
     autoBreakDraft !== autoBreak;
+  const hasAudioDraftChanges =
+    alarmEnabledDraft !== alarmEnabled ||
+    alarmVolumeDraft !== alarmVolume ||
+    uiSoundsEnabledDraft !== uiSoundsEnabled ||
+    uiVolumeDraft !== uiVolume ||
+    focusAmbienceEnabledDraft !== focusAmbienceEnabled ||
+    focusAmbienceVolumeDraft !== focusAmbienceVolume;
+  const isSettingsDirty = hasTimerSettingsDraftChanges || hasAudioDraftChanges;
   const isTimerSettingsLocked = status === "running";
   const willResetCurrentTimer =
     !isTimerSettingsLocked &&
     !hasDurationDraftErrors &&
     ((mode === "focus" && draftFocusDurationSeconds !== focusDurationSeconds) ||
       (mode === "break" && draftBreakDurationSeconds !== breakDurationSeconds));
-  const canSaveTimerSettings =
-    !isTimerSettingsLocked &&
-    hasTimerSettingsDraftChanges &&
-    !hasDurationDraftErrors;
+  const canSaveSettings =
+    !hasDurationDraftErrors &&
+    (hasAudioDraftChanges ||
+      (!isTimerSettingsLocked && hasTimerSettingsDraftChanges));
+
+  const shouldPlayFocusAmbience =
+    isFocusAmbienceAvailable &&
+    activeSkin.id === "warm" &&
+    focusAmbienceEnabled &&
+    focusAmbienceVolume > 0 &&
+    mode === "focus" &&
+    status === "running";
+
+  const focusAmbienceHint = useMemo(() => {
+    if (!isFocusAmbienceAvailable) {
+      return "Add /sounds/focus_embers_loop.mp3 to enable this ambience.";
+    }
+
+    if (activeSkin.id !== "warm") {
+      return "This ambience plays only on the warm skin during focus sessions.";
+    }
+
+    return "Loops only while a focus timer is running on the warm skin.";
+  }, [activeSkin.id, isFocusAmbienceAvailable]);
 
   const handleToggleAutoFocusDraft = useCallback(() => {
     if (isTimerSettingsLocked) {
@@ -262,15 +370,64 @@ export function TimerBlock() {
     setAutoBreakDraft((previous) => !previous);
   }, [isTimerSettingsLocked]);
 
-  const handleToggleSound = useCallback(() => {
-    setSoundEnabled((previous) => !previous);
+  const handleToggleAlarmEnabledDraft = useCallback(() => {
+    setAlarmEnabledDraft((previous) => !previous);
   }, []);
 
-  const playButtonClick = useCallback(() => {
-    if (soundEnabled) {
-      playStoneClick();
+  const handleAlarmVolumeChange = useCallback((nextValue: string) => {
+    setAlarmVolumeDraft(percentToVolume(nextValue));
+  }, []);
+
+  const handleUiVolumeChange = useCallback((nextValue: string) => {
+    setUiVolumeDraft(percentToVolume(nextValue));
+  }, []);
+
+  const handleToggleUiSoundsEnabledDraft = useCallback(() => {
+    setUiSoundsEnabledDraft((previous) => !previous);
+  }, []);
+
+  const handleToggleFocusAmbienceDraft = useCallback(() => {
+    if (!isFocusAmbienceAvailable) {
+      return;
     }
-  }, [playStoneClick, soundEnabled]);
+
+    setFocusAmbienceEnabledDraft((previous) => !previous);
+  }, [isFocusAmbienceAvailable]);
+
+  const handleFocusAmbienceVolumeChange = useCallback(
+    (nextValue: string) => {
+      if (!isFocusAmbienceAvailable) {
+        return;
+      }
+
+      setFocusAmbienceVolumeDraft(percentToVolume(nextValue));
+    },
+    [isFocusAmbienceAvailable],
+  );
+
+  const handlePreviewAlarm = useCallback(() => {
+    if (alarmVolumeDraft <= 0) {
+      return;
+    }
+
+    previewAlarm();
+  }, [alarmVolumeDraft, previewAlarm]);
+
+  const handlePreviewUiSounds = useCallback(() => {
+    if (uiVolumeDraft <= 0) {
+      return;
+    }
+
+    previewUiClick();
+  }, [previewUiClick, uiVolumeDraft]);
+
+  const playButtonClick = useCallback(() => {
+    if (!uiSoundsEnabled || uiVolume <= 0) {
+      return;
+    }
+
+    playStoneClick();
+  }, [playStoneClick, uiSoundsEnabled, uiVolume]);
 
   const handlePrimaryAction = useCallback(() => {
     playButtonClick();
@@ -296,13 +453,30 @@ export function TimerBlock() {
     [playButtonClick, switchMode],
   );
 
-  const restoreTimerSettingsDrafts = useCallback(() => {
+  const restoreSettingsDrafts = useCallback(() => {
     setFocusDraftMinutes(focusLastValidMinutes.toString());
     setBreakDraftMinutes(breakLastValidMinutes.toString());
     setAutoFocusDraft(autoFocus);
     setAutoBreakDraft(autoBreak);
+    setAlarmEnabledDraft(alarmEnabled);
+    setAlarmVolumeDraft(alarmVolume);
+    setUiSoundsEnabledDraft(uiSoundsEnabled);
+    setUiVolumeDraft(uiVolume);
+    setFocusAmbienceEnabledDraft(focusAmbienceEnabled);
+    setFocusAmbienceVolumeDraft(focusAmbienceVolume);
     setActiveEditedField(null);
-  }, [autoBreak, autoFocus, breakLastValidMinutes, focusLastValidMinutes]);
+  }, [
+    alarmEnabled,
+    alarmVolume,
+    autoBreak,
+    autoFocus,
+    breakLastValidMinutes,
+    focusAmbienceEnabled,
+    focusAmbienceVolume,
+    focusLastValidMinutes,
+    uiSoundsEnabled,
+    uiVolume,
+  ]);
 
   const handleStartEditField = useCallback(
     (field: Mode) => {
@@ -340,12 +514,12 @@ export function TimerBlock() {
     [activeEditedField],
   );
 
-  const handleCancelTimerSettings = useCallback(() => {
-    restoreTimerSettingsDrafts();
-  }, [restoreTimerSettingsDrafts]);
+  const handleCancelSettings = useCallback(() => {
+    restoreSettingsDrafts();
+  }, [restoreSettingsDrafts]);
 
-  const handleSaveTimerSettings = useCallback(() => {
-    if (!canSaveTimerSettings) {
+  const handleSaveSettings = useCallback(() => {
+    if (!canSaveSettings) {
       return;
     }
 
@@ -361,6 +535,9 @@ export function TimerBlock() {
 
     const nextFocusMinutes = secondsToMinutes(nextFocusDurationSeconds);
     const nextBreakMinutes = secondsToMinutes(nextBreakDurationSeconds);
+    const nextAlarmVolume = clampVolume(alarmVolumeDraft);
+    const nextUiVolume = clampVolume(uiVolumeDraft);
+    const nextFocusAmbienceVolume = clampVolume(focusAmbienceVolumeDraft);
 
     hasLoadedFromServer.current = true;
 
@@ -372,20 +549,77 @@ export function TimerBlock() {
     setBreakDraftMinutes(nextBreakMinutes.toString());
     setAutoFocus(autoFocusDraft);
     setAutoBreak(autoBreakDraft);
+    setAlarmEnabled(alarmEnabledDraft);
+    setAlarmEnabledDraft(alarmEnabledDraft);
+    setAlarmVolume(nextAlarmVolume);
+    setAlarmVolumeDraft(nextAlarmVolume);
+    setUiSoundsEnabled(uiSoundsEnabledDraft);
+    setUiSoundsEnabledDraft(uiSoundsEnabledDraft);
+    setUiVolume(nextUiVolume);
+    setUiVolumeDraft(nextUiVolume);
+    setFocusAmbienceEnabled(focusAmbienceEnabledDraft);
+    setFocusAmbienceEnabledDraft(focusAmbienceEnabledDraft);
+    setFocusAmbienceVolume(nextFocusAmbienceVolume);
+    setFocusAmbienceVolumeDraft(nextFocusAmbienceVolume);
     setActiveEditedField(null);
   }, [
+    alarmEnabledDraft,
+    alarmVolumeDraft,
     autoBreakDraft,
     autoFocusDraft,
-    canSaveTimerSettings,
+    canSaveSettings,
     draftBreakDurationSeconds,
     draftFocusDurationSeconds,
+    focusAmbienceEnabledDraft,
+    focusAmbienceVolumeDraft,
+    uiSoundsEnabledDraft,
+    uiVolumeDraft,
   ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    let isMounted = true;
+
+    const checkAvailability = async () => {
+      try {
+        const response = await window.fetch(FOCUS_AMBIENCE_SOUND_SRC, {
+          method: "HEAD",
+        });
+
+        if (isMounted) {
+          setIsFocusAmbienceAvailable(response.ok);
+        }
+      } catch {
+        if (isMounted) {
+          setIsFocusAmbienceAvailable(false);
+        }
+      }
+    };
+
+    void checkAvailability();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (resetTimerTrigger > 0) {
       hardReset();
     }
   }, [hardReset, resetTimerTrigger]);
+
+  useEffect(() => {
+    if (!shouldPlayFocusAmbience) {
+      stopFocusAmbience();
+      return;
+    }
+
+    playFocusAmbience(false);
+  }, [playFocusAmbience, shouldPlayFocusAmbience, stopFocusAmbience]);
 
   useEffect(() => {
     if (typeof document === "undefined") {
@@ -423,40 +657,12 @@ export function TimerBlock() {
   }, [status, targetTimestamp, timeLeft]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    try {
-      window.localStorage.setItem(
-        SOUND_ENABLED_STORAGE_KEY,
-        String(soundEnabled),
-      );
-    } catch {
-      // No-op: localStorage can fail in strict browser modes.
-    }
-  }, [soundEnabled]);
-
-  useEffect(() => {
-    const updatedSettings: TimerSettings = {
-      focusDuration: focusDurationSeconds,
-      breakDuration: breakDurationSeconds,
-      autoBreak,
-      autoFocus,
-    };
-
-    writeTimerSettings(SETTINGS_STORAGE_KEY, updatedSettings);
+    writeUserSettings(USER_SETTINGS_STORAGE_KEY, currentSettings);
 
     if (hasLoadedFromServer.current) {
-      pushSettingsToCloud(updatedSettings);
+      pushSettingsToCloud(currentSettings);
     }
-  }, [
-    autoBreak,
-    autoFocus,
-    breakDurationSeconds,
-    focusDurationSeconds,
-    pushSettingsToCloud,
-  ]);
+  }, [currentSettings, pushSettingsToCloud]);
 
   return (
     <div className="timer-block">
@@ -468,21 +674,38 @@ export function TimerBlock() {
             activeEditedField={activeEditedField}
             autoFocusDraft={autoFocusDraft}
             autoBreakDraft={autoBreakDraft}
-            soundEnabled={soundEnabled}
+            alarmEnabledDraft={alarmEnabledDraft}
+            alarmVolumeDraft={alarmVolumeDraft}
+            uiSoundsEnabledDraft={uiSoundsEnabledDraft}
+            uiVolumeDraft={uiVolumeDraft}
+            focusAmbienceEnabledDraft={focusAmbienceEnabledDraft}
+            focusAmbienceVolumeDraft={focusAmbienceVolumeDraft}
+            isFocusAmbienceAvailable={isFocusAmbienceAvailable}
+            focusAmbienceHint={focusAmbienceHint}
             isTimerSettingsLocked={isTimerSettingsLocked}
             focusDraftError={focusDraftError}
             breakDraftError={breakDraftError}
-            isTimerSettingsDirty={hasTimerSettingsDraftChanges}
-            canSaveTimerSettings={canSaveTimerSettings}
+            isSettingsDirty={isSettingsDirty}
+            canSaveSettings={canSaveSettings}
             willResetCurrentTimer={willResetCurrentTimer}
+            alarmVolumeLabel={formatVolumeLabel(alarmVolumeDraft)}
+            uiVolumeLabel={formatVolumeLabel(uiVolumeDraft)}
+            focusAmbienceVolumeLabel={formatVolumeLabel(focusAmbienceVolumeDraft)}
             onStartEditField={handleStartEditField}
             onDraftChange={handleDraftChange}
             onCancelEdit={handleCancelEdit}
-            onCancelTimerSettings={handleCancelTimerSettings}
-            onSaveTimerSettings={handleSaveTimerSettings}
+            onCancelSettings={handleCancelSettings}
+            onSaveSettings={handleSaveSettings}
             onToggleAutoFocus={handleToggleAutoFocusDraft}
             onToggleAutoBreak={handleToggleAutoBreakDraft}
-            onToggleSound={handleToggleSound}
+            onToggleAlarmEnabled={handleToggleAlarmEnabledDraft}
+            onAlarmVolumeChange={handleAlarmVolumeChange}
+            onPreviewAlarm={handlePreviewAlarm}
+            onToggleUiSoundsEnabled={handleToggleUiSoundsEnabledDraft}
+            onUiVolumeChange={handleUiVolumeChange}
+            onPreviewUiSounds={handlePreviewUiSounds}
+            onToggleFocusAmbience={handleToggleFocusAmbienceDraft}
+            onFocusAmbienceVolumeChange={handleFocusAmbienceVolumeChange}
           />
         </Suspense>
       ) : null}

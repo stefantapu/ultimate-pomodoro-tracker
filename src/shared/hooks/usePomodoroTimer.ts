@@ -80,18 +80,14 @@ export function usePomodoroTimer({
     const currentState = stateRef.current;
     const completedMode = currentState.mode;
     const finalAccum = getFinalAccumulatedSeconds(currentState);
-    
-    const nextMode =
-      completedMode === "focus" && autoBreak
-        ? "break"
-        : completedMode === "break" && autoFocus
-          ? "focus"
-          : null;
+    const nextMode = completedMode === "focus" ? "break" : "focus";
+    const shouldAutoStartNext =
+      completedMode === "focus" ? autoBreak : autoFocus;
 
     onSessionComplete?.();
     checkAndSyncSession("completed", finalAccum);
 
-    if (nextMode) {
+    if (shouldAutoStartNext) {
       const nextDuration =
         nextMode === "focus" ? focusDuration : breakDuration;
 
@@ -107,9 +103,8 @@ export function usePomodoroTimer({
 
     dispatch({
       type: "FINISH",
-      nextMode: completedMode,
-      nextDuration:
-        completedMode === "focus" ? focusDuration : breakDuration,
+      nextMode,
+      nextDuration: nextMode === "focus" ? focusDuration : breakDuration,
     });
   }, [autoBreak, autoFocus, breakDuration, focusDuration, onSessionComplete, checkAndSyncSession, getFinalAccumulatedSeconds]);
 

@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useAuth } from "@app/providers/useAuth";
+import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { useUIStore } from "@shared/stores/uiStore";
 import { getSupabaseClient } from "../../utils/supabase";
 import { ThemedButton } from "./ThemedButton";
@@ -8,11 +9,18 @@ export const LogoutButton = memo(function LogoutButton() {
   const { user, loading } = useAuth();
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
   const triggerTimerReset = useUIStore((state) => state.triggerTimerReset);
+  const playToolbarClick = useToolbarClickSound();
 
   const handleLogout = async () => {
+    playToolbarClick();
     triggerTimerReset();
     const supabase = await getSupabaseClient();
     await supabase.auth.signOut();
+  };
+
+  const handleLogin = () => {
+    playToolbarClick();
+    setAuthModalOpen(true);
   };
 
   if (loading) {
@@ -36,7 +44,7 @@ export const LogoutButton = memo(function LogoutButton() {
     <ThemedButton
       variant="auth"
       className="toolbar-icon-button toolbar-icon-button--exit"
-      onClick={() => setAuthModalOpen(true)}
+      onClick={handleLogin}
       aria-label="Log in"
       title="Log in"
     >

@@ -1,27 +1,95 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-export const useAlarm = (src = "/sounds/alarm.mp3", volume = 1) => {
+type UseAlarmOptions = {
+  loop?: boolean;
+};
+
+export const useAlarm = (
+  src = "/sounds/alarm.mp3",
+  volume = 1,
+  options: UseAlarmOptions = {},
+) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { loop = false } = options;
 
-  const play = useCallback(() => {
+  const ensureAudio = useCallback(() => {
+    if (typeof Audio === "undefined") {
+      return null;
+    }
+
     if (audioRef.current == null) {
       audioRef.current = new Audio(src);
     }
 
     const a = audioRef.current;
-    if (!a) return;
-    a.pause();
-    a.currentTime = 0;
+
+    if (!a) {
+      return null;
+    }
+
+    a.src = src;
+    a.loop = loop;
     a.volume = volume;
+
+    return a;
+  }, [loop, src, volume]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+
+    if (!a) {
+      return;
+    }
+
+    a.src = src;
+    a.loop = loop;
+    a.volume = volume;
+  }, [loop, src, volume]);
+
+  const play = useCallback((restart = true) => {
+    const a = ensureAudio();
+
+    if (!a) return;
+
+    if (!restart && !a.paused) {
+      return;
+    }
+
+    if (restart) {
+      a.pause();
+
+      try {
+        a.currentTime = 0;
+      } catch {
+        // Some browsers can reject currentTime resets for not-yet-ready audio.
+      }
+    }
+
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
-  }, [src, volume]);
+  }, [ensureAudio]);
 
   const stop = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
     a.pause();
-    a.currentTime = 0;
+    try {
+      a.currentTime = 0;
+    } catch {
+      // No-op: currentTime reset can fail for some audio states.
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      const a = audioRef.current;
+
+      if (!a) {
+        return;
+      }
+
+      a.pause();
+    };
   }, []);
 
   return { play, stop };

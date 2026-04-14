@@ -112,27 +112,125 @@ function DurationField({
   );
 }
 
+type AudioSettingRowProps = {
+  label: string;
+  value: number;
+  valueLabel: string;
+  disabled?: boolean;
+  hint?: string;
+  checked?: boolean;
+  previewLabel?: string;
+  onToggle?: () => void;
+  onPreview?: () => void;
+  onValueChange: (nextValue: string) => void;
+};
+
+function AudioSettingRow({
+  label,
+  value,
+  valueLabel,
+  disabled = false,
+  hint,
+  checked,
+  previewLabel,
+  onToggle,
+  onPreview,
+  onValueChange,
+}: AudioSettingRowProps) {
+  const sliderId = `audio-${label.toLowerCase().replace(/\s+/g, "-")}`;
+
+  const handleSliderChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onValueChange(event.target.value);
+  };
+
+  return (
+    <div
+      className={`settings-modal__audio-row${disabled ? " is-disabled" : ""}`}
+      aria-disabled={disabled ? true : undefined}
+    >
+      <div className="settings-modal__audio-top">
+        {onToggle ? (
+          <label className="settings-modal__audio-toggle">
+            <input
+              type="checkbox"
+              checked={checked}
+              disabled={disabled}
+              onChange={onToggle}
+            />
+            <span>{label}</span>
+          </label>
+        ) : (
+          <span className="settings-modal__audio-label">{label}</span>
+        )}
+        {onPreview ? (
+          <button
+            type="button"
+            className="settings-modal__audio-preview"
+            disabled={disabled}
+            onClick={onPreview}
+          >
+            {previewLabel ?? "Preview"}
+          </button>
+        ) : null}
+      </div>
+      <div className="settings-modal__audio-slider-row">
+        <input
+          id={sliderId}
+          className="settings-modal__audio-slider"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={Math.round(value * 100)}
+          disabled={disabled}
+          aria-label={`${label} volume`}
+          onChange={handleSliderChange}
+        />
+        <span className="settings-modal__audio-value">{valueLabel}</span>
+      </div>
+      {hint ? <p className="settings-modal__audio-hint">{hint}</p> : null}
+    </div>
+  );
+}
+
 type SettingsModalProps = {
   focusDraftMinutes: string;
   breakDraftMinutes: string;
   activeEditedField: Mode | null;
   autoFocusDraft: boolean;
   autoBreakDraft: boolean;
-  soundEnabled: boolean;
+  alarmEnabledDraft: boolean;
+  alarmVolumeDraft: number;
+  uiSoundsEnabledDraft: boolean;
+  uiVolumeDraft: number;
+  focusAmbienceEnabledDraft: boolean;
+  focusAmbienceVolumeDraft: number;
+  isFocusAmbienceAvailable: boolean;
+  focusAmbienceHint: string;
   isTimerSettingsLocked: boolean;
   focusDraftError: string | null;
   breakDraftError: string | null;
-  isTimerSettingsDirty: boolean;
-  canSaveTimerSettings: boolean;
+  isSettingsDirty: boolean;
+  canSaveSettings: boolean;
   willResetCurrentTimer: boolean;
+  alarmVolumeLabel: string;
+  uiVolumeLabel: string;
+  focusAmbienceVolumeLabel: string;
   onStartEditField: (field: Mode) => void;
   onDraftChange: (field: Mode, nextDraft: string) => void;
   onCancelEdit: (field: Mode) => void;
-  onCancelTimerSettings: () => void;
-  onSaveTimerSettings: () => void;
+  onCancelSettings: () => void;
+  onSaveSettings: () => void;
   onToggleAutoFocus: () => void;
   onToggleAutoBreak: () => void;
-  onToggleSound: () => void;
+  onToggleAlarmEnabled: () => void;
+  onAlarmVolumeChange: (nextValue: string) => void;
+  onPreviewAlarm: () => void;
+  onToggleUiSoundsEnabled: () => void;
+  onUiVolumeChange: (nextValue: string) => void;
+  onPreviewUiSounds: () => void;
+  onToggleFocusAmbience: () => void;
+  onFocusAmbienceVolumeChange: (nextValue: string) => void;
 };
 
 export function SettingsModal({
@@ -141,21 +239,38 @@ export function SettingsModal({
   activeEditedField,
   autoFocusDraft,
   autoBreakDraft,
-  soundEnabled,
+  alarmEnabledDraft,
+  alarmVolumeDraft,
+  uiSoundsEnabledDraft,
+  uiVolumeDraft,
+  focusAmbienceEnabledDraft,
+  focusAmbienceVolumeDraft,
+  isFocusAmbienceAvailable,
+  focusAmbienceHint,
   isTimerSettingsLocked,
   focusDraftError,
   breakDraftError,
-  isTimerSettingsDirty,
-  canSaveTimerSettings,
+  isSettingsDirty,
+  canSaveSettings,
   willResetCurrentTimer,
+  alarmVolumeLabel,
+  uiVolumeLabel,
+  focusAmbienceVolumeLabel,
   onStartEditField,
   onDraftChange,
   onCancelEdit,
-  onCancelTimerSettings,
-  onSaveTimerSettings,
+  onCancelSettings,
+  onSaveSettings,
   onToggleAutoFocus,
   onToggleAutoBreak,
-  onToggleSound,
+  onToggleAlarmEnabled,
+  onAlarmVolumeChange,
+  onPreviewAlarm,
+  onToggleUiSoundsEnabled,
+  onUiVolumeChange,
+  onPreviewUiSounds,
+  onToggleFocusAmbience,
+  onFocusAmbienceVolumeChange,
 }: SettingsModalProps) {
   const isOpen = useUIStore((state) => state.isSettingsModalOpen);
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
@@ -170,16 +285,16 @@ export function SettingsModal({
   }
 
   const handleCancel = () => {
-    onCancelTimerSettings();
+    onCancelSettings();
     setSettingsModalOpen(false);
   };
 
   const handleSave = () => {
-    if (!canSaveTimerSettings) {
+    if (!canSaveSettings) {
       return;
     }
 
-    onSaveTimerSettings();
+    onSaveSettings();
     setSettingsModalOpen(false);
   };
 
@@ -225,11 +340,11 @@ export function SettingsModal({
               maxMinutes={90}
               error={focusDraftError}
               disabled={isTimerSettingsLocked}
-              canSave={canSaveTimerSettings}
+              canSave={canSaveSettings}
               onStartEdit={onStartEditField}
               onDraftChange={onDraftChange}
               onCancelEdit={onCancelEdit}
-              onCancelSettings={onCancelTimerSettings}
+              onCancelSettings={onCancelSettings}
               onSaveSettings={handleSave}
             />
             <DurationField
@@ -241,11 +356,11 @@ export function SettingsModal({
               maxMinutes={30}
               error={breakDraftError}
               disabled={isTimerSettingsLocked}
-              canSave={canSaveTimerSettings}
+              canSave={canSaveSettings}
               onStartEdit={onStartEditField}
               onDraftChange={onDraftChange}
               onCancelEdit={onCancelEdit}
-              onCancelSettings={onCancelTimerSettings}
+              onCancelSettings={onCancelSettings}
               onSaveSettings={handleSave}
             />
           </div>
@@ -280,14 +395,42 @@ export function SettingsModal({
               />
               <span>Auto Break</span>
             </label>
-            <label className="settings-modal__toggle">
-              <input
-                type="checkbox"
-                checked={soundEnabled}
-                onChange={onToggleSound}
-              />
-              <span>Sound</span>
-            </label>
+          </div>
+        </section>
+
+        <section className="settings-modal__section">
+          <h3 className="settings-modal__section-title">Sound</h3>
+          <div className="settings-modal__audio-grid">
+            <AudioSettingRow
+              label="Timer end sound"
+              checked={alarmEnabledDraft}
+              value={alarmVolumeDraft}
+              valueLabel={alarmVolumeLabel}
+              hint="Controls the alarm when a focus or break session ends."
+              onToggle={onToggleAlarmEnabled}
+              onPreview={onPreviewAlarm}
+              onValueChange={onAlarmVolumeChange}
+            />
+            <AudioSettingRow
+              label="UI sounds"
+              checked={uiSoundsEnabledDraft}
+              value={uiVolumeDraft}
+              valueLabel={uiVolumeLabel}
+              hint="Applies to timer controls and the top-right toolbar buttons."
+              onToggle={onToggleUiSoundsEnabled}
+              onPreview={onPreviewUiSounds}
+              onValueChange={onUiVolumeChange}
+            />
+            <AudioSettingRow
+              label="Focus ambience"
+              checked={focusAmbienceEnabledDraft}
+              value={focusAmbienceVolumeDraft}
+              valueLabel={focusAmbienceVolumeLabel}
+              disabled={!isFocusAmbienceAvailable}
+              hint={focusAmbienceHint}
+              onToggle={onToggleFocusAmbience}
+              onValueChange={onFocusAmbienceVolumeChange}
+            />
           </div>
         </section>
 
@@ -318,10 +461,10 @@ export function SettingsModal({
             <button
               type="button"
               className="settings-modal__button settings-modal__button--primary"
-              disabled={!canSaveTimerSettings}
+              disabled={!canSaveSettings}
               onClick={handleSave}
             >
-              {isTimerSettingsDirty ? "Save settings" : "No changes"}
+              {isSettingsDirty ? "Save settings" : "No changes"}
             </button>
           </div>
         </footer>
