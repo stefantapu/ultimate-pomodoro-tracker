@@ -61,7 +61,15 @@ function getPeriodShiftDate(
     return getLocalISODate(date);
   }
 
-  return shiftISODate(isoDate, periodMode === "month" ? direction * 28 : direction * 7);
+  if (periodMode === "month") {
+    const [year, month] = isoDate.split("-").map(Number);
+    const date = new Date(year, month - 1, 1);
+    date.setMonth(date.getMonth() + direction);
+
+    return getLocalISODate(date);
+  }
+
+  return shiftISODate(isoDate, direction * 7);
 }
 
 function getPeriodTitle(periodMode: InfographicsPeriodMode) {
