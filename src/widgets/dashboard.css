@@ -860,13 +860,13 @@
   background: var(--dashboard-input);
   color: var(--dashboard-text-dark);
   box-sizing: border-box;
-  padding: 5rem 3rem;
+
   resize: none;
   overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.2;
   font-family: inherit;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -940,7 +940,7 @@
   color: #342117;
   box-shadow: none;
   outline: none;
-  padding: 4.9rem 2.6rem 7.25rem 2.4rem;
+  padding: 4rem 2.6rem 3.25rem 2.4rem;
 }
 
 .dashboard-shell--warm .notes-panel__notepad::placeholder {
