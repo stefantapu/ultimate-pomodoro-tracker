@@ -7,7 +7,7 @@ import {
   getLocalISODate,
   shiftISODate,
   useInfographics,
-  type DaypartDistribution,
+  type HourlyDistribution,
   type InfographicsPeriodBucket,
   type InfographicsPeriodMode,
 } from "@shared/hooks/useInfographics";
@@ -114,26 +114,88 @@ function PeriodBarChart({
   );
 }
 
-function DaypartChart({ items }: { items: DaypartDistribution[] }) {
-  const maxFocus = Math.max(...items.map((item) => item.focus_seconds), 1);
+function HourlyHistogram({ items }: { items: HourlyDistribution[] }) {
+  const actualMaxFocus = Math.max(...items.map((item) => item.focus_seconds), 0);
+  const scaledMaxFocus = Math.max(actualMaxFocus, 1);
+  const yAxisLabels = [
+    actualMaxFocus > 0 ? formatHours(actualMaxFocus) : "0m",
+    actualMaxFocus > 0 ? formatHours(actualMaxFocus / 2) : "0m",
+    "0",
+  ];
 
   return (
-    <div className="history-dashboard__rhythm-list">
-      {items.map((item) => (
-        <div className="history-dashboard__rhythm-row" key={item.label}>
-          <span className="history-dashboard__rhythm-label">{item.label}</span>
-          <div className="history-dashboard__rhythm-track">
-            <div
-              className="history-dashboard__rhythm-fill"
-              style={{ width: `${(item.focus_seconds / maxFocus) * 100}%` }}
-            />
-          </div>
-          <span className="history-dashboard__rhythm-value">
-            {formatHours(item.focus_seconds)}
-          </span>
+    <div className="history-dashboard__hourly-scroll">
+      <div
+        className="history-dashboard__hourly-chart"
+        aria-label="Daily rhythm histogram by start hour"
+      >
+        <div className="history-dashboard__hourly-axis" aria-hidden="true">
+          {yAxisLabels.map((label, index) => (
+            <span
+              className="history-dashboard__hourly-axis-label"
+              key={`${label}-${index}`}
+            >
+              {label}
+            </span>
+          ))}
         </div>
-      ))}
+        <div className="history-dashboard__hourly-plot">
+          <div className="history-dashboard__hourly-guides" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="history-dashboard__hourly-bars">
+            {items.map((item) => {
+              const height =
+                item.focus_seconds === 0
+                  ? 0
+                  : Math.max(8, (item.focus_seconds / scaledMaxFocus) * 100);
+
+              return (
+                <div className="history-dashboard__hourly-column" key={item.hour}>
+                  <div
+                    className="history-dashboard__hourly-bar-frame"
+                    title={`${String(item.hour).padStart(2, "0")}:00 - ${formatHours(item.focus_seconds)}`}
+                    aria-label={`${String(item.hour).padStart(2, "0")}:00, ${formatHours(item.focus_seconds)} of focus`}
+                  >
+                    <div
+                      className="history-dashboard__hourly-bar"
+                      style={{ height: `${height}%` }}
+                    />
+                  </div>
+                  <span className="history-dashboard__hourly-label">{item.hour}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
+  );
+}
+
+function getRhythmDescription(periodMode: InfographicsPeriodMode) {
+  if (periodMode === "year") return "Selected year by start hour";
+  if (periodMode === "month") return "Selected month by start hour";
+
+  return "Selected week by start hour";
+}
+
+function SummaryGrid({ items }: { items: { label: string; value: string }[] }) {
+  return (
+    <section
+      className="history-dashboard__summary-grid"
+      aria-label="Focus summary"
+    >
+      {items.map((item) => (
+        <SummaryCard
+          key={item.label}
+          label={item.label}
+          value={item.value}
+        />
+      ))}
+    </section>
   );
 }
 
@@ -234,18 +296,7 @@ export function InfographicsModal() {
           </div>
         ) : data ? (
           <div className="history-dashboard__body">
-            <section
-              className="history-dashboard__summary-grid"
-              aria-label="Focus summary"
-            >
-              {summaryItems.map((item) => (
-                <SummaryCard
-                  key={item.label}
-                  label={item.label}
-                  value={item.value}
-                />
-              ))}
-            </section>
+            <SummaryGrid items={summaryItems} />
 
             <section className="history-dashboard__panel history-dashboard__panel--wide">
               <div className="history-dashboard__panel-header">
@@ -296,14 +347,17 @@ export function InfographicsModal() {
               <PeriodBarChart buckets={data.focus_period.buckets} />
             </section>
 
-            <section className="history-dashboard__panel">
+            <section className="history-dashboard__panel history-dashboard__panel--wide">
               <div className="history-dashboard__panel-header">
                 <div>
                   <h3>Daily rhythm</h3>
-                  <p>Last 90 days by start time</p>
+                  <p>
+                    {getRhythmDescription(periodMode)}{" "}
+                    {data.focus_period.start_date} - {data.focus_period.end_date}
+                  </p>
                 </div>
               </div>
-              <DaypartChart items={data.daypart_distribution} />
+              <HourlyHistogram items={data.hourly_distribution} />
             </section>
           </div>
         ) : null}
