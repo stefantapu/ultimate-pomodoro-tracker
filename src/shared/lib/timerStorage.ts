@@ -1,8 +1,9 @@
-﻿import type {
+import type {
   Mode,
   TimerSettings,
   TimerState,
   TimerStatus,
+  UserSettings,
 } from "@shared/lib/timerTypes";
 
 type StoredTimerState = {
@@ -15,12 +16,34 @@ type StoredTimerState = {
   accumulatedSeconds?: number;
 };
 
-const DEFAULT_TIMER_SETTINGS: TimerSettings = {
+export const USER_SETTINGS_STORAGE_KEY = "pomodoro-timer-settings";
+export const LEGACY_SOUND_ENABLED_STORAGE_KEY = "pomodoro-sound-enabled";
+export const USER_SETTINGS_UPDATED_EVENT = "pomodoro-user-settings-updated";
+
+export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   focusDuration: 1500,
   breakDuration: 300,
   autoBreak: false,
   autoFocus: false,
 };
+
+export const DEFAULT_AUDIO_SETTINGS = {
+  alarmEnabled: true,
+  alarmVolume: 1,
+  uiSoundsEnabled: true,
+  uiVolume: 0.5,
+  focusAmbienceEnabled: false,
+  focusAmbienceVolume: 0.2,
+} satisfies Omit<UserSettings, keyof TimerSettings>;
+
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  ...DEFAULT_TIMER_SETTINGS,
+  ...DEFAULT_AUDIO_SETTINGS,
+};
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
 
 function getModeDuration(mode: Mode, settings: TimerSettings) {
   return mode === "focus" ? settings.focusDuration : settings.breakDuration;
@@ -34,53 +57,178 @@ function isTimerStatus(value: unknown): value is TimerStatus {
   return value === "idle" || value === "running" || value === "paused";
 }
 
-export function readTimerSettings(
-  settingsStorageKey: string,
-): TimerSettings {
-  const raw = localStorage.getItem(settingsStorageKey);
+function hasStoredAudioSettings(parsed: Partial<UserSettings>) {
+  return (
+    typeof parsed.alarmEnabled === "boolean" ||
+    typeof parsed.alarmVolume === "number" ||
+    typeof parsed.uiSoundsEnabled === "boolean" ||
+    typeof parsed.uiVolume === "number" ||
+    typeof parsed.focusAmbienceEnabled === "boolean" ||
+    typeof parsed.focusAmbienceVolume === "number"
+  );
+}
 
-  if (!raw) {
-    return DEFAULT_TIMER_SETTINGS;
+function readLegacyAudioOverrides() {
+  if (typeof window === "undefined") {
+    return {};
   }
 
   try {
-    const parsed = JSON.parse(raw) as Partial<TimerSettings>;
+    const raw = window.localStorage.getItem(LEGACY_SOUND_ENABLED_STORAGE_KEY);
+
+    if (raw !== "false") {
+      return {};
+    }
 
     return {
-      focusDuration:
-        typeof parsed.focusDuration === "number"
-          ? parsed.focusDuration
-          : DEFAULT_TIMER_SETTINGS.focusDuration,
-      breakDuration:
-        typeof parsed.breakDuration === "number"
-          ? parsed.breakDuration
-          : DEFAULT_TIMER_SETTINGS.breakDuration,
-      autoBreak:
-        typeof parsed.autoBreak === "boolean"
-          ? parsed.autoBreak
-          : DEFAULT_TIMER_SETTINGS.autoBreak,
-      autoFocus:
-        typeof parsed.autoFocus === "boolean"
-          ? parsed.autoFocus
-          : DEFAULT_TIMER_SETTINGS.autoFocus,
+      alarmEnabled: false,
+      uiSoundsEnabled: false,
+      uiVolume: 0,
+      focusAmbienceEnabled: false,
     };
   } catch {
-    return DEFAULT_TIMER_SETTINGS;
+    return {};
   }
+}
+
+function normalizeUserSettings(
+  parsed?: Partial<UserSettings>,
+): UserSettings {
+  const legacyAudioOverrides =
+    parsed && hasStoredAudioSettings(parsed) ? {} : readLegacyAudioOverrides();
+
+  return {
+    focusDuration:
+      typeof parsed?.focusDuration === "number"
+        ? parsed.focusDuration
+        : DEFAULT_TIMER_SETTINGS.focusDuration,
+    breakDuration:
+      typeof parsed?.breakDuration === "number"
+        ? parsed.breakDuration
+        : DEFAULT_TIMER_SETTINGS.breakDuration,
+    autoBreak:
+      typeof parsed?.autoBreak === "boolean"
+        ? parsed.autoBreak
+        : DEFAULT_TIMER_SETTINGS.autoBreak,
+    autoFocus:
+      typeof parsed?.autoFocus === "boolean"
+        ? parsed.autoFocus
+        : DEFAULT_TIMER_SETTINGS.autoFocus,
+    alarmEnabled:
+      typeof parsed?.alarmEnabled === "boolean"
+        ? parsed.alarmEnabled
+        : legacyAudioOverrides.alarmEnabled ?? DEFAULT_AUDIO_SETTINGS.alarmEnabled,
+    alarmVolume:
+      typeof parsed?.alarmVolume === "number"
+        ? clamp(parsed.alarmVolume, 0, 1)
+        : DEFAULT_AUDIO_SETTINGS.alarmVolume,
+    uiSoundsEnabled:
+      typeof parsed?.uiSoundsEnabled === "boolean"
+        ? parsed.uiSoundsEnabled
+        : legacyAudioOverrides.uiSoundsEnabled ??
+          DEFAULT_AUDIO_SETTINGS.uiSoundsEnabled,
+    uiVolume:
+      typeof parsed?.uiVolume === "number"
+        ? clamp(parsed.uiVolume, 0, 1)
+        : legacyAudioOverrides.uiVolume ?? DEFAULT_AUDIO_SETTINGS.uiVolume,
+    focusAmbienceEnabled:
+      typeof parsed?.focusAmbienceEnabled === "boolean"
+        ? parsed.focusAmbienceEnabled
+        : legacyAudioOverrides.focusAmbienceEnabled ??
+          DEFAULT_AUDIO_SETTINGS.focusAmbienceEnabled,
+    focusAmbienceVolume:
+      typeof parsed?.focusAmbienceVolume === "number"
+        ? clamp(parsed.focusAmbienceVolume, 0, 1)
+        : DEFAULT_AUDIO_SETTINGS.focusAmbienceVolume,
+  };
+}
+
+export function extractTimerSettings(settings: UserSettings): TimerSettings {
+  return {
+    focusDuration: settings.focusDuration,
+    breakDuration: settings.breakDuration,
+    autoBreak: settings.autoBreak,
+    autoFocus: settings.autoFocus,
+  };
+}
+
+export function readUserSettings(
+  settingsStorageKey = USER_SETTINGS_STORAGE_KEY,
+): UserSettings {
+  if (typeof window === "undefined") {
+    return DEFAULT_USER_SETTINGS;
+  }
+
+  const raw = window.localStorage.getItem(settingsStorageKey);
+
+  if (!raw) {
+    return normalizeUserSettings();
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<UserSettings>;
+    return normalizeUserSettings(parsed);
+  } catch {
+    return normalizeUserSettings();
+  }
+}
+
+export function writeUserSettings(
+  settingsStorageKey: string,
+  settings: UserSettings,
+) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const normalized = normalizeUserSettings(settings);
+
+  try {
+    window.localStorage.setItem(settingsStorageKey, JSON.stringify(normalized));
+    window.localStorage.removeItem(LEGACY_SOUND_ENABLED_STORAGE_KEY);
+    window.dispatchEvent(
+      new CustomEvent<UserSettings>(USER_SETTINGS_UPDATED_EVENT, {
+        detail: normalized,
+      }),
+    );
+  } catch {
+    // No-op: localStorage can fail in strict browser modes.
+  }
+}
+
+export function readTimerSettings(
+  settingsStorageKey = USER_SETTINGS_STORAGE_KEY,
+): TimerSettings {
+  return extractTimerSettings(readUserSettings(settingsStorageKey));
 }
 
 export function writeTimerSettings(
   settingsStorageKey: string,
   settings: TimerSettings,
 ) {
-  localStorage.setItem(settingsStorageKey, JSON.stringify(settings));
+  const currentSettings = readUserSettings(settingsStorageKey);
+  writeUserSettings(settingsStorageKey, {
+    ...currentSettings,
+    ...settings,
+  });
 }
 
 export function readTimerState(
   stateStorageKey: string,
   fallbackSettings: TimerSettings,
 ): TimerState {
-  const raw = localStorage.getItem(stateStorageKey);
+  if (typeof window === "undefined") {
+    return {
+      mode: "focus",
+      status: "idle",
+      timeLeft: getModeDuration("focus", fallbackSettings),
+      targetTimestamp: null,
+      sessionStartedAt: null,
+      accumulatedSeconds: 0,
+    };
+  }
+
+  const raw = window.localStorage.getItem(stateStorageKey);
   const defaultMode: Mode = "focus";
 
   if (!raw) {
@@ -110,7 +258,9 @@ export function readTimerState(
     const sessionStartedAt =
       typeof parsed.sessionStartedAt === "string" ? parsed.sessionStartedAt : null;
     const accumulatedSeconds =
-      typeof parsed.accumulatedSeconds === "number" ? parsed.accumulatedSeconds : 0;
+      typeof parsed.accumulatedSeconds === "number"
+        ? parsed.accumulatedSeconds
+        : 0;
 
     if (status === "running" && targetTimestamp) {
       const remaining = Math.max(
@@ -124,7 +274,8 @@ export function readTimerState(
         timeLeft: remaining,
         targetTimestamp,
         sessionStartedAt,
-        accumulatedSeconds: accumulatedSeconds + Math.max(0, storedTimeLeft - remaining),
+        accumulatedSeconds:
+          accumulatedSeconds + Math.max(0, storedTimeLeft - remaining),
       };
     }
 
@@ -152,6 +303,9 @@ export function writeTimerState(
   stateStorageKey: string,
   timerState: TimerState,
 ) {
-  localStorage.setItem(stateStorageKey, JSON.stringify(timerState));
-}
+  if (typeof window === "undefined") {
+    return;
+  }
 
+  window.localStorage.setItem(stateStorageKey, JSON.stringify(timerState));
+}

@@ -1,6 +1,6 @@
 import { memo, useMemo, type CSSProperties } from "react";
 
-const EMBER_COUNT = 48;
+const EMBER_COUNT = 188;
 
 function createSeededRandom(seed: number) {
   let value = seed >>> 0;
