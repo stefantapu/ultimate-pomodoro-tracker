@@ -1,6 +1,6 @@
 import { memo, useMemo, type CSSProperties } from "react";
 
-const EMBER_COUNT = 188;
+const EMBER_COUNT = 64;
 
 function createSeededRandom(seed: number) {
   let value = seed >>> 0;
@@ -18,7 +18,7 @@ export const BackgroundEmbers = memo(function BackgroundEmbers() {
       "rgba(255, 119, 49, 0.92)",
       "rgba(255, 157, 72, 0.88)",
       "rgba(255, 205, 126, 0.82)",
-      "rgba(255, 94, 28, 0.84)",
+      "rgba(252, 252, 252, 0.84)",
     ];
 
     return Array.from({ length: EMBER_COUNT }, (_, index) => {
