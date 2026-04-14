@@ -22,7 +22,7 @@ export const BackgroundEmbers = memo(function BackgroundEmbers() {
     ];
 
     return Array.from({ length: EMBER_COUNT }, (_, index) => {
-      const size = 1 + random() * 4;
+      const size = 3 + random() * 4;
       const left = random() * 100;
       const duration = 9 + random() * 8;
       const delay = -random() * duration;
