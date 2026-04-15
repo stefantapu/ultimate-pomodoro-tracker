@@ -1,6 +1,7 @@
 import { memo, Suspense, lazy, useMemo, type ComponentType } from "react";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
+import { useUIStore } from "@shared/stores/uiStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
 import { BackgroundEmbers } from "./BackgroundEmbers";
@@ -157,6 +158,9 @@ export const DashboardLayout = memo(function DashboardLayout({
   LockedOverlayComponent,
 }: DashboardLayoutProps) {
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const isOverlayOpen = useUIStore(
+    (state) => state.isSettingsModalOpen || state.isInfographicsModalOpen,
+  );
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -167,7 +171,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
-      {activeSkin.id === "warm" ? <BackgroundEmbers /> : null}
+      {activeSkin.id === "warm" && !isOverlayOpen ? <BackgroundEmbers /> : null}
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <InfographicsButton />
