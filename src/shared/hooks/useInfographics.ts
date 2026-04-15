@@ -31,15 +31,15 @@ export type InfographicsFocusPeriod = {
   buckets: InfographicsPeriodBucket[];
 };
 
-export type DaypartDistribution = {
-  label: string;
+export type HourlyDistribution = {
+  hour: number;
   focus_seconds: number;
 };
 
 export type InfographicsData = {
   summary: InfographicsSummary;
   focus_period: InfographicsFocusPeriod;
-  daypart_distribution: DaypartDistribution[];
+  hourly_distribution: HourlyDistribution[];
 };
 
 function getLocalTimezone() {
