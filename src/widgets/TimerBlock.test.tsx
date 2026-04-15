@@ -1,0 +1,145 @@
+import { act, fireEvent, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
+import { useUIStore } from "@shared/stores/uiStore";
+import { renderWithProviders } from "../test/testUtils";
+import { TimerBlock } from "./TimerBlock";
+
+const syncSessionMock = vi.fn();
+const pushSettingsToCloudMock = vi.fn();
+
+vi.mock("@shared/hooks/useSyncSession", () => ({
+  useSyncSession: () => ({
+    syncSession: syncSessionMock,
+  }),
+}));
+
+vi.mock("@shared/hooks/useSettingsSync", () => ({
+  useSettingsSync: (_settings: unknown, _onSettingsFetched: unknown) => ({
+    pushSettingsToCloud: pushSettingsToCloudMock,
+  }),
+}));
+
+vi.mock("@shared/hooks/useAlarm", () => ({
+  useAlarm: () => ({
+    play: vi.fn(),
+    stop: vi.fn(),
+  }),
+}));
+
+describe("TimerBlock", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    syncSessionMock.mockReset();
+    pushSettingsToCloudMock.mockReset();
+
+    localStorage.setItem(
+      USER_SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        focusDuration: 1500,
+        breakDuration: 300,
+        autoBreak: false,
+        autoFocus: false,
+        alarmEnabled: true,
+        alarmVolume: 1,
+        uiSoundsEnabled: true,
+        uiVolume: 0.5,
+        focusAmbienceEnabled: false,
+        focusAmbienceVolume: 0.2,
+      }),
+    );
+  });
+
+  it("renders stored timer state and toggles start/pause", async () => {
+    localStorage.setItem(
+      "pomodoro-timer-state",
+      JSON.stringify({
+        mode: "focus",
+        status: "paused",
+        timeLeft: 120,
+        targetTimestamp: null,
+        sessionStartedAt: null,
+        accumulatedSeconds: 0,
+      }),
+    );
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(screen.getByText("02:00")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
+  });
+
+  it("shows validation errors and disables saving invalid durations", async () => {
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    const input = await screen.findByLabelText("Focus duration in minutes");
+    fireEvent.change(input, { target: { value: "10" } });
+
+    expect(screen.getByText("Enter 15-90 minutes.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Save settings" }),
+    ).toBeDisabled();
+  });
+
+  it("locks timer settings while the timer is running", async () => {
+    renderWithProviders(<TimerBlock />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    expect(
+      await screen.findByText(
+        "Timer is running. Pause or reset before changing timer settings.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Focus duration in minutes")).toBeDisabled();
+    expect(screen.getByLabelText("Break duration in minutes")).toBeDisabled();
+  });
+
+  it("saves duration changes and resets the displayed timer for the active mode", async () => {
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    const input = await screen.findByLabelText("Focus duration in minutes");
+    fireEvent.change(input, { target: { value: "30" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save settings" }));
+
+    expect(await screen.findByText("30:00")).toBeInTheDocument();
+  });
+
+  it("updates the document title while a timer is running", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-15T12:00:00.000Z"));
+
+    renderWithProviders(<TimerBlock />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+
+    expect(document.title).toBe("25:00 - Forge Timer");
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(document.title).toBe("24:58 - Forge Timer");
+
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+
+    expect(document.title).toBe("Forge Timer - Pomodoro");
+  });
+});

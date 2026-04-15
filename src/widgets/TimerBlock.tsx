@@ -22,6 +22,20 @@ import {
 import { ActionButtons } from "./ActionButtons";
 import { TimerCard } from "./TimerCard";
 import { TopControls } from "./TopControls";
+import {
+  BREAK_MAX_DURATION_MINUTES,
+  BREAK_MIN_DURATION_MINUTES,
+  clampVolume,
+  DEFAULT_PAGE_TITLE,
+  FOCUS_MAX_DURATION_MINUTES,
+  FOCUS_MIN_DURATION_MINUTES,
+  formatTitleTime,
+  formatVolumeLabel,
+  minutesToSeconds,
+  parseValidMinutes,
+  percentToVolume,
+  secondsToMinutes,
+} from "./timerBlockUtils";
 
 const LazySettingsModal = lazy(() =>
   import("./SettingsModal").then((module) => ({
@@ -30,76 +44,7 @@ const LazySettingsModal = lazy(() =>
 );
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
-const FOCUS_MIN_DURATION_MINUTES = 15;
-const FOCUS_MAX_DURATION_MINUTES = 90;
-const BREAK_MIN_DURATION_MINUTES = 5;
-const BREAK_MAX_DURATION_MINUTES = 30;
-const DEFAULT_PAGE_TITLE = "Forge Timer - Pomodoro";
 const FOCUS_AMBIENCE_SOUND_SRC = "/sounds/focus_embers_loop.mp3";
-
-function minutesToSeconds(minutes: number) {
-  return minutes * 60;
-}
-
-function secondsToMinutes(seconds: number) {
-  return Math.floor(seconds / 60);
-}
-
-function clampVolume(value: number) {
-  return Math.min(1, Math.max(0, value));
-}
-
-function percentToVolume(nextValue: string) {
-  const parsedValue = Number(nextValue);
-
-  if (Number.isNaN(parsedValue)) {
-    return 0;
-  }
-
-  return clampVolume(parsedValue / 100);
-}
-
-function formatVolumeLabel(value: number) {
-  return `${Math.round(clampVolume(value) * 100)}%`;
-}
-
-function formatTitleTime(seconds: number) {
-  const normalized = Math.max(0, seconds);
-  const minutes = Math.floor(normalized / 60)
-    .toString()
-    .padStart(2, "0");
-  const secondsDisplay = (normalized % 60).toString().padStart(2, "0");
-  return `${minutes}:${secondsDisplay}`;
-}
-
-function getDurationLimits(field: Mode) {
-  if (field === "focus") {
-    return {
-      min: FOCUS_MIN_DURATION_MINUTES,
-      max: FOCUS_MAX_DURATION_MINUTES,
-    };
-  }
-
-  return {
-    min: BREAK_MIN_DURATION_MINUTES,
-    max: BREAK_MAX_DURATION_MINUTES,
-  };
-}
-
-function parseValidMinutes(field: Mode, value: string) {
-  if (!/^\d+$/.test(value)) {
-    return null;
-  }
-
-  const parsed = Number(value);
-  const { min, max } = getDurationLimits(field);
-
-  if (Number.isNaN(parsed) || parsed < min || parsed > max) {
-    return null;
-  }
-
-  return parsed;
-}
 
 function SettingsModalFallback() {
   return (
