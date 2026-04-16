@@ -1,6 +1,6 @@
 import { memo, useMemo, type CSSProperties } from "react";
 
-const EMBER_COUNT = 64;
+const EMBER_COUNT = 100;
 
 function createSeededRandom(seed: number) {
   let value = seed >>> 0;
@@ -22,15 +22,13 @@ export const BackgroundEmbers = memo(function BackgroundEmbers() {
     ];
 
     return Array.from({ length: EMBER_COUNT }, (_, index) => {
-      const size = 3 + random() * 4;
+      const size = 2.8 + random() * 3.4;
       const left = random() * 100;
-      const duration = 9 + random() * 8;
+      const duration = 10 + random() * 7;
       const delay = -random() * duration;
       const drift = (random() - 0.5) * 18;
-      const sway = 0.65 + random() * 0.9;
+      const travel = 108 + random() * 20;
       const opacity = 0.34 + random() * 0.48;
-      const blur = 0.15 + random() * 0.55;
-      const glow = size * (1.8 + random() * 1.6);
       const color = colors[Math.floor(random() * colors.length)];
 
       return {
@@ -41,10 +39,8 @@ export const BackgroundEmbers = memo(function BackgroundEmbers() {
           "--ember-duration": `${duration.toFixed(2)}s`,
           "--ember-delay": `${delay.toFixed(2)}s`,
           "--ember-drift": `${drift.toFixed(2)}vw`,
-          "--ember-sway": `${sway.toFixed(2)}s`,
+          "--ember-travel": `${travel.toFixed(2)}svh`,
           "--ember-opacity": opacity.toFixed(2),
-          "--ember-blur": `${blur.toFixed(2)}px`,
-          "--ember-glow": `${glow.toFixed(2)}px`,
           "--ember-color": color,
         } as CSSProperties,
       };
