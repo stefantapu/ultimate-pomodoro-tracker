@@ -3604,7 +3604,6 @@
 }
 
 .dashboard-shell--soft-form .heatmap-card .panel-shell__body {
-  padding: 0.5rem 0.55rem;
   overflow: hidden;
 }
 
@@ -3656,7 +3655,6 @@
 }
 
 .dashboard-shell--soft-form .heatmap-card__content {
-  padding: 0.1rem 0.3rem;
 }
 
 .dashboard-shell--soft-form .heatmap-card__calendar {
