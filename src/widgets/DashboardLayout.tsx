@@ -41,10 +41,8 @@ type PanelFallbackProps = {
 
 function PlaceholderHeatmapCard({ message }: PanelFallbackProps) {
   return (
-    <PanelShell className="heatmap-card">
-      <div className="heatmap-card__content">
-        <div className="heatmap-card__status">{message}</div>
-      </div>
+    <PanelShell className="heatmap-card" bodyClassName="heatmap-card__content">
+      <div className="heatmap-card__status">{message}</div>
     </PanelShell>
   );
 }
@@ -103,7 +101,7 @@ function GuestAnalyticsPanels({
 }) {
   return (
     <>
-      <div className="dashboard-lock-wrap">
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
         <PlaceholderHeatmapCard message="Sign in to view focus history." />
         <LockedOverlayComponent />
       </div>

@@ -57,52 +57,50 @@ export const HeatmapCard = memo(function HeatmapCard({
   };
 
   return (
-    <PanelShell className="heatmap-card">
-      <div className="heatmap-card__content">
-        {loading && heatmapData.length === 0 ? (
-          <div className="heatmap-card__status">Loading heat map...</div>
-        ) : (
-          <div className="heatmap-card__calendar">
-            <ActivityCalendar
-              data={getCalendarData(heatmapData)}
-              theme={calendarTheme}
-              colorScheme="dark"
-              maxLevel={4}
-              blockSize={12}
-              blockMargin={4}
-              fontSize={12}
-              showWeekdayLabels
-              tooltips={{
-                activity: {
-                  text: (activity) =>
-                    `${formatHours(activity.count)} - ${formatDayMonth(activity.date)}`,
-                },
-              }}
-              labels={{
-                legend: {
-                  less: "Less",
-                  more: "More",
-                },
-                months: [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ],
-                totalCount: `${totalFocusedHours}h focused in last 6 months`,
-              }}
-            />
-          </div>
-        )}
-      </div>
+    <PanelShell className="heatmap-card" bodyClassName="heatmap-card__content">
+      {loading && heatmapData.length === 0 ? (
+        <div className="heatmap-card__status">Loading heat map...</div>
+      ) : (
+        <div className="heatmap-card__calendar">
+          <ActivityCalendar
+            data={getCalendarData(heatmapData)}
+            theme={calendarTheme}
+            colorScheme="dark"
+            maxLevel={4}
+            blockSize={12}
+            blockMargin={4}
+            fontSize={12}
+            showWeekdayLabels
+            tooltips={{
+              activity: {
+                text: (activity) =>
+                  `${formatHours(activity.count)} - ${formatDayMonth(activity.date)}`,
+              },
+            }}
+            labels={{
+              legend: {
+                less: "Less",
+                more: "More",
+              },
+              months: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ],
+              totalCount: `${totalFocusedHours}h focused in last 6 months`,
+            }}
+          />
+        </div>
+      )}
     </PanelShell>
   );
 });
