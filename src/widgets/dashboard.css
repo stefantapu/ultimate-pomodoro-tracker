@@ -3621,14 +3621,17 @@
 }
 
 .dashboard-shell--soft-form .dragon-card .panel-shell__body {
-  padding: 0.35rem 0.9rem 0.55rem;
+  padding: 0;
   gap: 0.35rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: calc(var(--dashboard-panel-radius) - 0.2rem);
+  background: var(--dashboard-surface-raised);
+  box-shadow: var(--dashboard-shadow-inset);
 }
 
 .dashboard-shell--soft-form .notes-panel__notepad,
-.dashboard-shell--soft-form .heatmap-card__content,
-.dashboard-shell--soft-form .dragon-card__display,
-.dashboard-shell--soft-form .dragon-card__progress {
+.dashboard-shell--soft-form .heatmap-card__content {
   border-radius: calc(var(--dashboard-panel-radius) - 0.35rem);
   background: var(--dashboard-surface-raised);
   box-shadow: var(--dashboard-shadow-inset);
@@ -3718,13 +3721,16 @@
 }
 
 .dashboard-shell--soft-form .dragon-card__display {
-  width: min(100%, 70%);
+  width: 100%;
   min-height: 4.2rem;
   margin: 0;
   padding: 0.55rem 0.9rem;
   box-sizing: border-box;
   font-size: 1.7rem;
   line-height: 1;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .dashboard-shell--soft-form .dragon-card__level-row {
@@ -3737,6 +3743,9 @@
 .dashboard-shell--soft-form .dragon-card__progress {
   width: min(100%, 90%);
   margin-top: 0;
+  background: var(--dashboard-track);
+  box-shadow: none;
+  border-radius: 999px;
 }
 
 .dashboard-shell--soft-form .dragon-card__progress-fill {
