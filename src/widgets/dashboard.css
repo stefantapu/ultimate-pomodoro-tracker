@@ -207,20 +207,38 @@
 .dashboard-main {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.85fr);
+  grid-template-areas:
+    "primary secondary"
+    "bottom bottom";
   gap: var(--dashboard-gap);
   align-items: stretch;
 }
 
-.dashboard-column {
+.dashboard-section {
   display: flex;
   flex-direction: column;
   gap: var(--dashboard-gap);
   min-width: 0;
 }
 
+.dashboard-section--primary {
+  grid-area: primary;
+}
+
+.dashboard-section--secondary {
+  grid-area: secondary;
+}
+
+.dashboard-section--bottom {
+  grid-area: bottom;
+}
+
 .dashboard-bottom-row {
   display: grid;
-  grid-template-columns: minmax(0, 2.4fr) minmax(180px, 0.9fr);
+  grid-template-columns:
+    minmax(0, 2.35fr)
+    minmax(180px, 0.95fr)
+    minmax(220px, 1.1fr);
   gap: var(--dashboard-gap);
   align-items: stretch;
   transform: translateY(6px);
@@ -2315,7 +2333,14 @@
     padding: 1rem;
   }
 
-  .dashboard-main,
+  .dashboard-main {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "primary"
+      "secondary"
+      "bottom";
+  }
+
   .dashboard-bottom-row {
     grid-template-columns: 1fr;
   }

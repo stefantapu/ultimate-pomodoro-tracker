@@ -116,41 +116,49 @@ function GuestAnalyticsPanels({
   );
 }
 
-function GuestSidePanels({
+function GuestNotesPanel({
   LockedOverlayComponent,
 }: {
   LockedOverlayComponent: ComponentType;
 }) {
   return (
-    <>
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
-        <PlaceholderNotesPanel message="Sign in to save notes." />
-        <LockedOverlayComponent />
-      </div>
-
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-        <PlaceholderDragonCard message="Sign in to track your level." />
-        <LockedOverlayComponent />
-      </div>
-    </>
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+      <PlaceholderNotesPanel message="Sign in to save notes." />
+      <LockedOverlayComponent />
+    </div>
   );
 }
 
-function AuthenticatedSidePanels() {
+function GuestDragonPanel({
+  LockedOverlayComponent,
+}: {
+  LockedOverlayComponent: ComponentType;
+}) {
   return (
-    <>
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
-        <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
-          <LazyNotesPanel />
-        </Suspense>
-      </div>
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+      <PlaceholderDragonCard message="Sign in to track your level." />
+      <LockedOverlayComponent />
+    </div>
+  );
+}
 
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-        <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
-          <LazyDragonCard />
-        </Suspense>
-      </div>
-    </>
+function AuthenticatedNotesPanel() {
+  return (
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+      <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
+        <LazyNotesPanel />
+      </Suspense>
+    </div>
+  );
+}
+
+function AuthenticatedDragonPanel() {
+  return (
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+      <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
+        <LazyDragonCard />
+      </Suspense>
+    </div>
   );
 }
 
@@ -205,39 +213,49 @@ export const DashboardLayout = memo(function DashboardLayout({
         </section>
 
         <main className="dashboard-main">
-          <section className="dashboard-column dashboard-column--left">
+          <section className="dashboard-section dashboard-section--primary">
             <TimerBlock />
-
-            <div className="dashboard-bottom-row">
-              {user ? (
-                <Suspense
-                  fallback={
-                    <>
-                      <div className="dashboard-lock-wrap">
-                        <PlaceholderHeatmapCard message="Loading heat map..." />
-                      </div>
-                      <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
-                        <PlaceholderStatsCard message="..." />
-                      </div>
-                    </>
-                  }
-                >
-                  <LazyAuthenticatedAnalyticsPanels />
-                </Suspense>
-              ) : (
-                <GuestAnalyticsPanels
-                  LockedOverlayComponent={LockedOverlayComponent}
-                />
-              )}
-            </div>
           </section>
 
-          <section className="dashboard-column dashboard-column--right">
+          <section className="dashboard-section dashboard-section--secondary">
             {user ? (
-              <AuthenticatedSidePanels />
+              <AuthenticatedNotesPanel />
             ) : (
-              <GuestSidePanels LockedOverlayComponent={LockedOverlayComponent} />
+              <GuestNotesPanel LockedOverlayComponent={LockedOverlayComponent} />
             )}
+          </section>
+
+          <section className="dashboard-section dashboard-section--bottom">
+            <div className="dashboard-bottom-row">
+              {user ? (
+                <>
+                  <Suspense
+                    fallback={
+                      <>
+                        <div className="dashboard-lock-wrap">
+                          <PlaceholderHeatmapCard message="Loading heat map..." />
+                        </div>
+                        <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
+                          <PlaceholderStatsCard message="..." />
+                        </div>
+                      </>
+                    }
+                  >
+                    <LazyAuthenticatedAnalyticsPanels />
+                  </Suspense>
+                  <AuthenticatedDragonPanel />
+                </>
+              ) : (
+                <>
+                  <GuestAnalyticsPanels
+                    LockedOverlayComponent={LockedOverlayComponent}
+                  />
+                  <GuestDragonPanel
+                    LockedOverlayComponent={LockedOverlayComponent}
+                  />
+                </>
+              )}
+            </div>
           </section>
         </main>
       </div>
