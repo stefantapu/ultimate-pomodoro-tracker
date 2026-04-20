@@ -264,7 +264,7 @@ export function InfographicsModal() {
 
   const modal = (
     <div
-      className="history-dashboard__overlay"
+      className={`history-dashboard__overlay history-dashboard__overlay--${activeSkin.id}`}
       style={skinCssVariables}
       onClick={closeModal}
     >

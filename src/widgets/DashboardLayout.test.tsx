@@ -27,6 +27,10 @@ vi.mock("./InfographicsButton", () => ({
   InfographicsButton: () => <button type="button">Open infographics</button>,
 }));
 
+vi.mock("./ThemePickerButton", () => ({
+  ThemePickerButton: () => <button type="button">Open theme picker</button>,
+}));
+
 vi.mock("./LogoutButton", () => ({
   LogoutButton: () => <button type="button">Logout</button>,
 }));
@@ -39,6 +43,7 @@ describe("DashboardLayout", () => {
       <DashboardLayout user={null} LockedOverlayComponent={LockedOverlayComponent} />,
     );
 
+    expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();
     expect(screen.getByText("Sign in to view focus history.")).toBeInTheDocument();
     expect(screen.getAllByText("LOCKED")).toHaveLength(4);
   });

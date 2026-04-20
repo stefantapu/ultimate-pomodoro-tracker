@@ -44,7 +44,6 @@ const LazySettingsModal = lazy(() =>
 );
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
-const FOCUS_AMBIENCE_SOUND_SRC = "/sounds/focus_embers_loop.mp3";
 
 function SettingsModalFallback() {
   return (
@@ -63,6 +62,10 @@ function SettingsModalFallback() {
 
 export function TimerBlock() {
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const alarmSoundSrc = activeSkin.audio.alarm;
+  const timerControlSoundSrc = activeSkin.audio.timerControl;
+  const uiPreviewSoundSrc = activeSkin.audio.toolbarClick ?? activeSkin.audio.timerControl;
+  const focusAmbienceSoundSrc = activeSkin.audio.focusAmbience;
   const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
     () => readUserSettings(USER_SETTINGS_STORAGE_KEY),
@@ -132,7 +135,7 @@ export function TimerBlock() {
   const [focusAmbienceVolumeDraft, setFocusAmbienceVolumeDraft] =
     useState<number>(() => initialSettings.focusAmbienceVolume);
   const [isFocusAmbienceAvailable, setIsFocusAmbienceAvailable] =
-    useState<boolean>(false);
+    useState<boolean>(Boolean(focusAmbienceSoundSrc));
   const hasLoadedFromServer = useRef(false);
 
   const currentSettings = useMemo<UserSettings>(
@@ -167,15 +170,12 @@ export function TimerBlock() {
     [currentSettings],
   );
 
-  const { play: playAlarm } = useAlarm("/sounds/alarm.mp3", alarmVolume);
-  const { play: previewAlarm } = useAlarm("/sounds/alarm.mp3", alarmVolumeDraft);
-  const { play: playStoneClick } = useAlarm("/sounds/stone_click.mp3", uiVolume);
-  const { play: previewUiClick } = useAlarm(
-    "/sounds/click_on_elements.mp3",
-    uiVolumeDraft,
-  );
+  const { play: playAlarm } = useAlarm(alarmSoundSrc, alarmVolume);
+  const { play: previewAlarm } = useAlarm(alarmSoundSrc, alarmVolumeDraft);
+  const { play: playStoneClick } = useAlarm(timerControlSoundSrc, uiVolume);
+  const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiVolumeDraft);
   const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
-    FOCUS_AMBIENCE_SOUND_SRC,
+    focusAmbienceSoundSrc,
     focusAmbienceVolume,
     { loop: true },
   );
@@ -281,23 +281,36 @@ export function TimerBlock() {
 
   const shouldPlayFocusAmbience =
     isFocusAmbienceAvailable &&
-    activeSkin.id === "warm" &&
+    Boolean(focusAmbienceSoundSrc) &&
     focusAmbienceEnabled &&
     focusAmbienceVolume > 0 &&
     mode === "focus" &&
     status === "running";
 
+  const themeAudioHint = useMemo(() => {
+    if (
+      activeSkin.audio.alarm ||
+      activeSkin.audio.timerControl ||
+      activeSkin.audio.toolbarClick ||
+      activeSkin.audio.focusAmbience
+    ) {
+      return null;
+    }
+
+    return `${activeSkin.label} keeps your global audio preferences, but this theme has no sound assets yet. Previews and playback stay silent for now.`;
+  }, [activeSkin.audio, activeSkin.label]);
+
   const focusAmbienceHint = useMemo(() => {
+    if (!focusAmbienceSoundSrc) {
+      return `${activeSkin.label} has no focus ambience yet.`;
+    }
+
     if (!isFocusAmbienceAvailable) {
-      return "Add /sounds/focus_embers_loop.mp3 to enable this ambience.";
+      return `Add ${focusAmbienceSoundSrc} to enable this ambience.`;
     }
 
-    if (activeSkin.id !== "warm") {
-      return "This ambience plays only on the warm skin during focus sessions.";
-    }
-
-    return "Loops only while a focus timer is running on the warm skin.";
-  }, [activeSkin.id, isFocusAmbienceAvailable]);
+    return `Loops only while a focus timer is running on ${activeSkin.label}.`;
+  }, [activeSkin.label, focusAmbienceSoundSrc, isFocusAmbienceAvailable]);
 
   const handleToggleAutoFocusDraft = useCallback(() => {
     if (isTimerSettingsLocked) {
@@ -332,47 +345,39 @@ export function TimerBlock() {
   }, []);
 
   const handleToggleFocusAmbienceDraft = useCallback(() => {
-    if (!isFocusAmbienceAvailable) {
-      return;
-    }
-
     setFocusAmbienceEnabledDraft((previous) => !previous);
-  }, [isFocusAmbienceAvailable]);
+  }, []);
 
   const handleFocusAmbienceVolumeChange = useCallback(
     (nextValue: string) => {
-      if (!isFocusAmbienceAvailable) {
-        return;
-      }
-
       setFocusAmbienceVolumeDraft(percentToVolume(nextValue));
     },
-    [isFocusAmbienceAvailable],
+    [],
   );
 
   const handlePreviewAlarm = useCallback(() => {
-    if (alarmVolumeDraft <= 0) {
+    if (alarmVolumeDraft <= 0 || !alarmSoundSrc) {
       return;
     }
 
     previewAlarm();
-  }, [alarmVolumeDraft, previewAlarm]);
+  }, [alarmSoundSrc, alarmVolumeDraft, previewAlarm]);
 
   const handlePreviewUiSounds = useCallback(() => {
-    if (uiVolumeDraft <= 0) {
+    if (uiVolumeDraft <= 0 || !uiPreviewSoundSrc) {
       return;
     }
 
     previewUiClick();
-  }, [previewUiClick, uiVolumeDraft]);
+  }, [previewUiClick, uiPreviewSoundSrc, uiVolumeDraft]);
 
   const playButtonClick = useCallback(() => {
-    if (!uiSoundsEnabled || uiVolume <= 0) {
+    if (!uiSoundsEnabled || uiVolume <= 0 || !timerControlSoundSrc) {
       return;
     }
 
     playStoneClick();
-  }, [playStoneClick, uiSoundsEnabled, uiVolume]);
+  }, [playStoneClick, timerControlSoundSrc, uiSoundsEnabled, uiVolume]);
 
   const handlePrimaryAction = useCallback(() => {
     playButtonClick();
@@ -529,8 +534,15 @@ export function TimerBlock() {
     let isMounted = true;
 
     const checkAvailability = async () => {
+      if (!focusAmbienceSoundSrc) {
+        if (isMounted) {
+          setIsFocusAmbienceAvailable(false);
+        }
+        return;
+      }
+
       try {
-        const response = await window.fetch(FOCUS_AMBIENCE_SOUND_SRC, {
+        const response = await window.fetch(focusAmbienceSoundSrc, {
           method: "HEAD",
         });
 
@@ -549,7 +561,7 @@ export function TimerBlock() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [focusAmbienceSoundSrc]);
 
   useEffect(() => {
     if (resetTimerTrigger > 0) {
@@ -625,7 +637,7 @@ export function TimerBlock() {
             uiVolumeDraft={uiVolumeDraft}
             focusAmbienceEnabledDraft={focusAmbienceEnabledDraft}
             focusAmbienceVolumeDraft={focusAmbienceVolumeDraft}
-            isFocusAmbienceAvailable={isFocusAmbienceAvailable}
+            themeAudioHint={themeAudioHint}
             focusAmbienceHint={focusAmbienceHint}
             isTimerSettingsLocked={isTimerSettingsLocked}
             focusDraftError={focusDraftError}

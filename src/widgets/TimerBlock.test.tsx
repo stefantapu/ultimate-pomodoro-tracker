@@ -1,12 +1,15 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
+import { getSkinById } from "@shared/skins/catalog";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import { renderWithProviders } from "../test/testUtils";
 import { TimerBlock } from "./TimerBlock";
 
 const syncSessionMock = vi.fn();
 const pushSettingsToCloudMock = vi.fn();
+const useAlarmMock = vi.fn();
 
 vi.mock("@shared/hooks/useSyncSession", () => ({
   useSyncSession: () => ({
@@ -21,10 +24,7 @@ vi.mock("@shared/hooks/useSettingsSync", () => ({
 }));
 
 vi.mock("@shared/hooks/useAlarm", () => ({
-  useAlarm: () => ({
-    play: vi.fn(),
-    stop: vi.fn(),
-  }),
+  useAlarm: (...args: unknown[]) => useAlarmMock(...args),
 }));
 
 describe("TimerBlock", () => {
@@ -32,6 +32,16 @@ describe("TimerBlock", () => {
     localStorage.clear();
     syncSessionMock.mockReset();
     pushSettingsToCloudMock.mockReset();
+    useAlarmMock.mockReset();
+    useAlarmMock.mockReturnValue({
+      play: vi.fn(),
+      stop: vi.fn(),
+    });
+    useSkinStore.setState({
+      activeSkinId: "warm",
+      activeSkin: getSkinById("warm"),
+      setActiveSkinId: useSkinStore.getState().setActiveSkinId,
+    });
 
     localStorage.setItem(
       USER_SETTINGS_STORAGE_KEY,
@@ -141,5 +151,17 @@ describe("TimerBlock", () => {
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));
 
     expect(document.title).toBe("Forge Timer - Pomodoro");
+  });
+
+  it("uses silent audio placeholders on the soft-form skin", () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("soft-form");
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 1);
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.5);
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, { loop: true });
   });
 });

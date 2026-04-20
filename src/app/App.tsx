@@ -42,6 +42,12 @@ const LazyInfographicsModal = lazy(() =>
   })),
 );
 
+const LazyThemePickerModal = lazy(() =>
+  import("../widgets/ThemePickerModal").then((module) => ({
+    default: module.ThemePickerModal,
+  })),
+);
+
 function AuthModalFallback() {
   return (
     <div className="auth-block">
@@ -57,6 +63,9 @@ function App() {
   const isAuthModalOpen = useUIStore((state) => state.isAuthModalOpen);
   const isInfographicsModalOpen = useUIStore(
     (state) => state.isInfographicsModalOpen,
+  );
+  const isThemePickerModalOpen = useUIStore(
+    (state) => state.isThemePickerModalOpen,
   );
   const isToastHostEnabled = useUIStore((state) => state.isToastHostEnabled);
 
@@ -85,6 +94,12 @@ function App() {
       {isInfographicsModalOpen ? (
         <Suspense fallback={null}>
           <LazyInfographicsModal />
+        </Suspense>
+      ) : null}
+
+      {isThemePickerModalOpen ? (
+        <Suspense fallback={null}>
+          <LazyThemePickerModal />
         </Suspense>
       ) : null}
 

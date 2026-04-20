@@ -9,6 +9,7 @@ import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
 import { InfographicsButton } from "./InfographicsButton";
+import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
@@ -159,7 +160,10 @@ export const DashboardLayout = memo(function DashboardLayout({
 }: DashboardLayoutProps) {
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const isOverlayOpen = useUIStore(
-    (state) => state.isSettingsModalOpen || state.isInfographicsModalOpen,
+    (state) =>
+      state.isSettingsModalOpen ||
+      state.isInfographicsModalOpen ||
+      state.isThemePickerModalOpen,
   );
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
@@ -175,6 +179,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <InfographicsButton />
+          <ThemePickerButton />
           <SettingsButton />
           <LogoutButton />
         </div>

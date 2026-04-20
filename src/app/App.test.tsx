@@ -24,6 +24,10 @@ vi.mock("../widgets/InfographicsModal", () => ({
   InfographicsModal: () => <div>Infographics modal</div>,
 }));
 
+vi.mock("../widgets/ThemePickerModal", () => ({
+  ThemePickerModal: () => <div>Theme picker modal</div>,
+}));
+
 vi.mock("sonner", () => ({
   Toaster: () => <div>Toast host</div>,
 }));
@@ -32,11 +36,12 @@ describe("App", () => {
   beforeEach(() => {
     useAuthMock.mockReset();
     useUIStore.setState((state) => ({
-      ...state,
-      isAuthModalOpen: false,
-      isInfographicsModalOpen: false,
-      isToastHostEnabled: false,
-    }));
+        ...state,
+        isAuthModalOpen: false,
+        isInfographicsModalOpen: false,
+        isThemePickerModalOpen: false,
+        isToastHostEnabled: false,
+      }));
   });
 
   it("renders the loading screen while auth is bootstrapping", () => {
@@ -61,6 +66,7 @@ describe("App", () => {
         ...state,
         isAuthModalOpen: true,
         isInfographicsModalOpen: true,
+        isThemePickerModalOpen: true,
         isToastHostEnabled: true,
       }));
     });
@@ -70,6 +76,7 @@ describe("App", () => {
     expect(screen.getByText("Dashboard for user-1")).toBeInTheDocument();
     expect(await screen.findByText("Auth modal")).toBeInTheDocument();
     expect(await screen.findByText("Infographics modal")).toBeInTheDocument();
+    expect(await screen.findByText("Theme picker modal")).toBeInTheDocument();
     expect(await screen.findByText("Toast host")).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-export type SkinId = "warm";
+export type SkinId = "warm" | "soft-form";
 
 export type SkinImageAsset = {
   src: string;
@@ -41,12 +41,16 @@ export type SkinAssets = {
 
 export type SkinColors = {
   dashboardBg: string;
+  surface: string;
+  surfaceRaised: string;
+  surfaceInset: string;
   panel: string;
   panelBorder: string;
   panelInner: string;
   text: string;
   textDark: string;
   textMuted: string;
+  strokeSoft: string;
   button: string;
   buttonActive: string;
   buttonText: string;
@@ -59,6 +63,9 @@ export type SkinColors = {
   modalOverlay: string;
   modalSurface: string;
   modalBorder: string;
+  shadowRaised: string;
+  shadowInset: string;
+  shadowGlow: string;
 };
 
 export type SkinTypography = {
@@ -76,6 +83,16 @@ export type SkinLayout = {
   timerPanelOverlayOpacity: number;
   actionButtonMinHeight: string;
   squareButtonMinHeight: string;
+  panelRadius: string;
+  buttonRadius: string;
+  modalRadius: string;
+};
+
+export type SkinAudio = {
+  alarm: string | null;
+  timerControl: string | null;
+  toolbarClick: string | null;
+  focusAmbience: string | null;
 };
 
 export type SkinProfile = {
@@ -83,6 +100,7 @@ export type SkinProfile = {
   label: string;
   description: string;
   assets: SkinAssets;
+  audio: SkinAudio;
   colors: SkinColors;
   typography: SkinTypography;
   layout: SkinLayout;

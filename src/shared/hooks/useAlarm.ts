@@ -5,7 +5,7 @@ type UseAlarmOptions = {
 };
 
 export const useAlarm = (
-  src = "/sounds/alarm.mp3",
+  src: string | null = "/sounds/alarm.mp3",
   volume = 1,
   options: UseAlarmOptions = {},
 ) => {
@@ -13,7 +13,7 @@ export const useAlarm = (
   const { loop = false } = options;
 
   const ensureAudio = useCallback(() => {
-    if (typeof Audio === "undefined") {
+    if (typeof Audio === "undefined" || !src) {
       return null;
     }
 
@@ -38,6 +38,11 @@ export const useAlarm = (
     const a = audioRef.current;
 
     if (!a) {
+      return;
+    }
+
+    if (!src) {
+      a.pause();
       return;
     }
 

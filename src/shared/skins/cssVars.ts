@@ -18,12 +18,16 @@ function toCursorVariable(asset: SkinCursorAsset | null, fallback: string) {
 export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
   return {
     "--dashboard-bg": skin.colors.dashboardBg,
+    "--dashboard-surface": skin.colors.surface,
+    "--dashboard-surface-raised": skin.colors.surfaceRaised,
+    "--dashboard-surface-inset": skin.colors.surfaceInset,
     "--dashboard-panel": skin.colors.panel,
     "--dashboard-panel-border": skin.colors.panelBorder,
     "--dashboard-panel-inner": skin.colors.panelInner,
     "--dashboard-text": skin.colors.text,
     "--dashboard-text-dark": skin.colors.textDark,
     "--dashboard-text-muted": skin.colors.textMuted,
+    "--dashboard-stroke-soft": skin.colors.strokeSoft,
     "--dashboard-button": skin.colors.button,
     "--dashboard-button-active": skin.colors.buttonActive,
     "--dashboard-button-text": skin.colors.buttonText,
@@ -36,6 +40,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--dashboard-modal-overlay": skin.colors.modalOverlay,
     "--dashboard-modal-surface": skin.colors.modalSurface,
     "--dashboard-modal-border": skin.colors.modalBorder,
+    "--dashboard-shadow-raised": skin.colors.shadowRaised,
+    "--dashboard-shadow-inset": skin.colors.shadowInset,
+    "--dashboard-shadow-glow": skin.colors.shadowGlow,
     "--dashboard-font-family": skin.typography.baseFamily,
     "--dashboard-display-font-family": skin.typography.displayFamily,
     "--dashboard-button-font-family": skin.typography.buttonFamily,
@@ -110,6 +117,9 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     ),
     "--skin-action-button-min-height": skin.layout.actionButtonMinHeight,
     "--skin-square-button-min-height": skin.layout.squareButtonMinHeight,
+    "--dashboard-panel-radius": skin.layout.panelRadius,
+    "--dashboard-button-radius": skin.layout.buttonRadius,
+    "--dashboard-modal-radius": skin.layout.modalRadius,
   };
 }
 
