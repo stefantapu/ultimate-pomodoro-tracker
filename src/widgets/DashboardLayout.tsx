@@ -230,7 +230,7 @@ export const DashboardLayout = memo(function DashboardLayout({
                   <Suspense
                     fallback={
                       <>
-                        <div className="dashboard-lock-wrap">
+                        <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
                           <PlaceholderHeatmapCard message="Loading heat map..." />
                         </div>
                         <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
