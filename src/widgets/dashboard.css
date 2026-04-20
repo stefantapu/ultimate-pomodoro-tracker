@@ -3610,11 +3610,14 @@
 
 .dashboard-shell--soft-form .stats-card .panel-shell__body {
   min-height: 0;
-  padding: 0;
+  padding: 0.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border-radius: calc(var(--dashboard-panel-radius) - 0.2rem);
+  background: var(--dashboard-surface-raised);
+  box-shadow: var(--dashboard-shadow-inset);
 }
 
 .dashboard-shell--soft-form .dragon-card .panel-shell__body {
@@ -3624,7 +3627,6 @@
 
 .dashboard-shell--soft-form .notes-panel__notepad,
 .dashboard-shell--soft-form .heatmap-card__content,
-.dashboard-shell--soft-form .stats-card__grid,
 .dashboard-shell--soft-form .dragon-card__display,
 .dashboard-shell--soft-form .dragon-card__progress {
   border-radius: calc(var(--dashboard-panel-radius) - 0.35rem);
@@ -3660,13 +3662,16 @@
 
 .dashboard-shell--soft-form .stats-card__grid {
   position: relative;
-  width: 147px;
-  height: 157px;
-  min-height: 157px;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
   margin: 0;
   align-content: center;
   justify-content: center;
   border: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: inherit;
 }
 
 .dashboard-shell--soft-form .stats-card__item {
