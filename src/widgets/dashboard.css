@@ -3483,6 +3483,26 @@
   padding: 1rem;
 }
 
+.dashboard-shell--soft-form .notes-panel {
+  min-height: 340px;
+  height: auto;
+}
+
+.dashboard-shell--soft-form .stats-card {
+  min-height: 0;
+  height: auto;
+  align-self: start;
+}
+
+.dashboard-shell--soft-form .notes-panel .panel-shell__body {
+  min-height: 340px;
+  overflow: hidden;
+}
+
+.dashboard-shell--soft-form .stats-card .panel-shell__body {
+  min-height: 0;
+}
+
 .dashboard-shell--soft-form .notes-panel__notepad,
 .dashboard-shell--soft-form .heatmap-card__content,
 .dashboard-shell--soft-form .stats-card__grid,
@@ -3494,8 +3514,12 @@
 }
 
 .dashboard-shell--soft-form .notes-panel__notepad {
+  min-height: 0;
+  height: auto;
+  padding: 1.05rem 1.15rem 1rem;
   border: none;
   color: var(--dashboard-text-dark);
+  background-clip: padding-box;
 }
 
 .dashboard-shell--soft-form .notes-panel__notepad::placeholder {
@@ -3507,11 +3531,29 @@
   color: var(--dashboard-text-dark);
 }
 
+.dashboard-shell--soft-form .stats-card__grid {
+  min-height: 0;
+}
+
+.dashboard-shell--soft-form .stats-card__item {
+  gap: 0.2rem;
+  padding: 0.8rem 0.6rem;
+}
+
+.dashboard-shell--soft-form .stats-card__label {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
 .dashboard-shell--soft-form .stats-card__value,
 .dashboard-shell--soft-form .dragon-card__display,
 .dashboard-shell--soft-form .heatmap-card__calendar text,
 .dashboard-shell--soft-form .heatmap-card__calendar span {
   color: var(--dashboard-text-dark);
+}
+
+.dashboard-shell--soft-form .stats-card__value {
+  font-size: 1.05rem;
 }
 
 .dashboard-shell--soft-form .dragon-card__progress-fill {
