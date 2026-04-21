@@ -9,6 +9,7 @@ import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
 import { InfographicsButton } from "./InfographicsButton";
+import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
@@ -40,10 +41,8 @@ type PanelFallbackProps = {
 
 function PlaceholderHeatmapCard({ message }: PanelFallbackProps) {
   return (
-    <PanelShell className="heatmap-card">
-      <div className="heatmap-card__content">
-        <div className="heatmap-card__status">{message}</div>
-      </div>
+    <PanelShell className="heatmap-card" bodyClassName="heatmap-card__content">
+      <div className="heatmap-card__status">{message}</div>
     </PanelShell>
   );
 }
@@ -102,7 +101,7 @@ function GuestAnalyticsPanels({
 }) {
   return (
     <>
-      <div className="dashboard-lock-wrap">
+      <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
         <PlaceholderHeatmapCard message="Sign in to view focus history." />
         <LockedOverlayComponent />
       </div>
@@ -115,41 +114,49 @@ function GuestAnalyticsPanels({
   );
 }
 
-function GuestSidePanels({
+function GuestNotesPanel({
   LockedOverlayComponent,
 }: {
   LockedOverlayComponent: ComponentType;
 }) {
   return (
-    <>
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
-        <PlaceholderNotesPanel message="Sign in to save notes." />
-        <LockedOverlayComponent />
-      </div>
-
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-        <PlaceholderDragonCard message="Sign in to track your level." />
-        <LockedOverlayComponent />
-      </div>
-    </>
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+      <PlaceholderNotesPanel message="Sign in to save notes." />
+      <LockedOverlayComponent />
+    </div>
   );
 }
 
-function AuthenticatedSidePanels() {
+function GuestDragonPanel({
+  LockedOverlayComponent,
+}: {
+  LockedOverlayComponent: ComponentType;
+}) {
   return (
-    <>
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
-        <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
-          <LazyNotesPanel />
-        </Suspense>
-      </div>
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+      <PlaceholderDragonCard message="Sign in to track your level." />
+      <LockedOverlayComponent />
+    </div>
+  );
+}
 
-      <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-        <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
-          <LazyDragonCard />
-        </Suspense>
-      </div>
-    </>
+function AuthenticatedNotesPanel() {
+  return (
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+      <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
+        <LazyNotesPanel />
+      </Suspense>
+    </div>
+  );
+}
+
+function AuthenticatedDragonPanel() {
+  return (
+    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
+      <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
+        <LazyDragonCard />
+      </Suspense>
+    </div>
   );
 }
 
@@ -159,7 +166,10 @@ export const DashboardLayout = memo(function DashboardLayout({
 }: DashboardLayoutProps) {
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const isOverlayOpen = useUIStore(
-    (state) => state.isSettingsModalOpen || state.isInfographicsModalOpen,
+    (state) =>
+      state.isSettingsModalOpen ||
+      state.isInfographicsModalOpen ||
+      state.isThemePickerModalOpen,
   );
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
@@ -175,6 +185,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <InfographicsButton />
+          <ThemePickerButton />
           <SettingsButton />
           <LogoutButton />
         </div>
@@ -200,39 +211,49 @@ export const DashboardLayout = memo(function DashboardLayout({
         </section>
 
         <main className="dashboard-main">
-          <section className="dashboard-column dashboard-column--left">
+          <section className="dashboard-section dashboard-section--primary">
             <TimerBlock />
-
-            <div className="dashboard-bottom-row">
-              {user ? (
-                <Suspense
-                  fallback={
-                    <>
-                      <div className="dashboard-lock-wrap">
-                        <PlaceholderHeatmapCard message="Loading heat map..." />
-                      </div>
-                      <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
-                        <PlaceholderStatsCard message="..." />
-                      </div>
-                    </>
-                  }
-                >
-                  <LazyAuthenticatedAnalyticsPanels />
-                </Suspense>
-              ) : (
-                <GuestAnalyticsPanels
-                  LockedOverlayComponent={LockedOverlayComponent}
-                />
-              )}
-            </div>
           </section>
 
-          <section className="dashboard-column dashboard-column--right">
+          <section className="dashboard-section dashboard-section--secondary">
             {user ? (
-              <AuthenticatedSidePanels />
+              <AuthenticatedNotesPanel />
             ) : (
-              <GuestSidePanels LockedOverlayComponent={LockedOverlayComponent} />
+              <GuestNotesPanel LockedOverlayComponent={LockedOverlayComponent} />
             )}
+          </section>
+
+          <section className="dashboard-section dashboard-section--bottom">
+            <div className="dashboard-bottom-row">
+              {user ? (
+                <>
+                  <Suspense
+                    fallback={
+                      <>
+                        <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
+                          <PlaceholderHeatmapCard message="Loading heat map..." />
+                        </div>
+                        <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
+                          <PlaceholderStatsCard message="..." />
+                        </div>
+                      </>
+                    }
+                  >
+                    <LazyAuthenticatedAnalyticsPanels />
+                  </Suspense>
+                  <AuthenticatedDragonPanel />
+                </>
+              ) : (
+                <>
+                  <GuestAnalyticsPanels
+                    LockedOverlayComponent={LockedOverlayComponent}
+                  />
+                  <GuestDragonPanel
+                    LockedOverlayComponent={LockedOverlayComponent}
+                  />
+                </>
+              )}
+            </div>
           </section>
         </main>
       </div>

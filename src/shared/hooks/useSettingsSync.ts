@@ -119,8 +119,9 @@ export function useSettingsSync(
             typeof data.focus_ambience_volume === "number"
               ? data.focus_ambience_volume
               : currentSettingsRef.current.focusAmbienceVolume,
-        });
+          });
       } else {
+        loadingRef.current = false;
         pushSettingsToCloud(currentSettingsRef.current, true);
       }
 

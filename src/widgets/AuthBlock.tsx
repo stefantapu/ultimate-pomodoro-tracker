@@ -58,7 +58,10 @@ export const AuthBlock = () => {
   };
 
   return (
-    <div className="auth-block" style={skinCssVariables}>
+    <div
+      className={`auth-block auth-block--${activeSkin.id}`}
+      style={skinCssVariables}
+    >
       <div className="auth-block__panel">
         <button
           type="button"

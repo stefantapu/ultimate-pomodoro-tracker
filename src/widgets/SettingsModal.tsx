@@ -205,7 +205,7 @@ type SettingsModalProps = {
   uiVolumeDraft: number;
   focusAmbienceEnabledDraft: boolean;
   focusAmbienceVolumeDraft: number;
-  isFocusAmbienceAvailable: boolean;
+  themeAudioHint: string | null;
   focusAmbienceHint: string;
   isTimerSettingsLocked: boolean;
   focusDraftError: string | null;
@@ -245,7 +245,7 @@ export function SettingsModal({
   uiVolumeDraft,
   focusAmbienceEnabledDraft,
   focusAmbienceVolumeDraft,
-  isFocusAmbienceAvailable,
+  themeAudioHint,
   focusAmbienceHint,
   isTimerSettingsLocked,
   focusDraftError,
@@ -300,7 +300,7 @@ export function SettingsModal({
 
   const modal = (
     <div
-      className="settings-modal__overlay"
+      className={`settings-modal__overlay settings-modal__overlay--${activeSkin.id}`}
       style={skinCssVariables}
       onClick={handleCancel}
     >
@@ -400,6 +400,11 @@ export function SettingsModal({
 
         <section className="settings-modal__section">
           <h3 className="settings-modal__section-title">Sound</h3>
+          {themeAudioHint ? (
+            <p className="settings-modal__notice" role="status">
+              {themeAudioHint}
+            </p>
+          ) : null}
           <div className="settings-modal__audio-grid">
             <AudioSettingRow
               label="Timer end sound"
@@ -426,7 +431,6 @@ export function SettingsModal({
               checked={focusAmbienceEnabledDraft}
               value={focusAmbienceVolumeDraft}
               valueLabel={focusAmbienceVolumeLabel}
-              disabled={!isFocusAmbienceAvailable}
               hint={focusAmbienceHint}
               onToggle={onToggleFocusAmbience}
               onValueChange={onFocusAmbienceVolumeChange}

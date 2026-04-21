@@ -8,6 +8,8 @@ type UIState = {
   setSettingsModalOpen: (isOpen: boolean) => void;
   isInfographicsModalOpen: boolean;
   setInfographicsModalOpen: (isOpen: boolean) => void;
+  isThemePickerModalOpen: boolean;
+  setThemePickerModalOpen: (isOpen: boolean) => void;
   isToastHostEnabled: boolean;
   enableToastHost: () => void;
   analyticsCounter: number;
@@ -23,6 +25,8 @@ export const useUIStore = create<UIState>((set) => ({
   setSettingsModalOpen: (isOpen) => set({ isSettingsModalOpen: isOpen }),
   isInfographicsModalOpen: false,
   setInfographicsModalOpen: (isOpen) => set({ isInfographicsModalOpen: isOpen }),
+  isThemePickerModalOpen: false,
+  setThemePickerModalOpen: (isOpen) => set({ isThemePickerModalOpen: isOpen }),
   isToastHostEnabled: false,
   enableToastHost: () => set({ isToastHostEnabled: true }),
   analyticsCounter: 0,

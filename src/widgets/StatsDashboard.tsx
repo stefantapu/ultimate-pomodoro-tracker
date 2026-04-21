@@ -9,7 +9,7 @@ export const AuthenticatedAnalyticsPanels = memo(
 
     return (
       <>
-        <div className="dashboard-lock-wrap">
+        <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
           <HeatmapCard
             heatmapData={analytics.data?.heatmap_data ?? []}
             loading={analytics.loading}
