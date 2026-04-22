@@ -1,4 +1,5 @@
 import { memo, type ReactNode } from "react";
+import styles from "./PanelShell.module.css";
 
 type PanelShellProps = {
   title?: string;
@@ -18,9 +19,21 @@ export const PanelShell = memo(function PanelShell({
   bodyClassName,
 }: PanelShellProps) {
   return (
-    <section className={joinClassNames("panel-shell", className)}>
-      {title ? <div className="panel-shell__title">{title}</div> : null}
-      <div className={joinClassNames("panel-shell__body", bodyClassName)}>
+    <section
+      className={joinClassNames(styles["panel-shell"], "panel-shell", className)}
+    >
+      {title ? (
+        <div className={joinClassNames(styles["panel-shell__title"], "panel-shell__title")}>
+          {title}
+        </div>
+      ) : null}
+      <div
+        className={joinClassNames(
+          styles["panel-shell__body"],
+          "panel-shell__body",
+          bodyClassName,
+        )}
+      >
         {children}
       </div>
     </section>

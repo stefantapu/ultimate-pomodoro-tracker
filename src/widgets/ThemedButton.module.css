@@ -1,0 +1,18 @@
+.themed-button {
+  border: 1px solid var(--dashboard-panel-border);
+  border-radius: var(--dashboard-radius);
+  background: var(--dashboard-button);
+  color: var(--dashboard-button-text);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+  font-family: var(--dashboard-button-font-family);
+  font-weight: var(--dashboard-button-font-weight);
+  letter-spacing: var(--dashboard-button-letter-spacing);
+  text-transform: var(--dashboard-button-text-transform);
+}
+
+.is-active {
+  background: var(--dashboard-button-active);
+}
