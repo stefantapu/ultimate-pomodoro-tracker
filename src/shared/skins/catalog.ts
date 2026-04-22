@@ -5,6 +5,22 @@ const warmSkin: SkinProfile = {
   id: "warm",
   label: "Warm",
   description: "Primary warm palette with themed timer controls.",
+  capabilities: {
+    effects: {
+      embers: true,
+    },
+    audio: {
+      alarm: true,
+      timerControl: true,
+      toolbarClick: true,
+      focusAmbience: true,
+    },
+    visual: {
+      timerPanelArt: true,
+      toolbarIconArt: true,
+      customCursors: true,
+    },
+  },
   assets: {
     pageBackground: buildImageAsset("/assets/red_lava_theme/background.webp", {
       width: 1920,
@@ -164,6 +180,22 @@ const softFormSkin: SkinProfile = {
   label: "Soft-Form Studio",
   description:
     "Ultra-light monochrome neumorphic skin with soft depth and calm contrast.",
+  capabilities: {
+    effects: {
+      embers: false,
+    },
+    audio: {
+      alarm: false,
+      timerControl: false,
+      toolbarClick: false,
+      focusAmbience: false,
+    },
+    visual: {
+      timerPanelArt: false,
+      toolbarIconArt: false,
+      customCursors: false,
+    },
+  },
   assets: {
     pageBackground: null,
     notesPanel: null,
@@ -245,15 +277,21 @@ const softFormSkin: SkinProfile = {
   },
 };
 
-const skins: SkinProfile[] = [warmSkin, softFormSkin];
+const skinCatalog = {
+  warm: warmSkin,
+  "soft-form": softFormSkin,
+} satisfies Record<SkinId, SkinProfile>;
 
-const skinById = new Map<SkinId, SkinProfile>(
-  skins.map((skin) => [skin.id, skin]),
-);
+const skins: readonly SkinProfile[] = [skinCatalog.warm, skinCatalog["soft-form"]];
+
+const skinById = new Map<SkinId, SkinProfile>([
+  ["warm", skinCatalog.warm],
+  ["soft-form", skinCatalog["soft-form"]],
+]);
 
 export const DEFAULT_SKIN_ID: SkinId = "warm";
 
-export function listSkins(): SkinProfile[] {
+export function listSkins(): readonly SkinProfile[] {
   return skins;
 }
 
