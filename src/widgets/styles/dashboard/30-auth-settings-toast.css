@@ -1,10 +1,37 @@
-.auth-block {
+.auth-block,
+.settings-modal__overlay,
+.history-dashboard__overlay,
+.theme-picker-modal__overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
   display: grid;
   place-items: center;
   padding: 1.25rem;
+}
+
+.settings-modal__overlay,
+.theme-picker-modal__overlay {
+  background:
+    linear-gradient(180deg, rgba(18, 6, 3, 0.64), rgba(9, 3, 2, 0.82)),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(255, 149, 58, 0.08),
+      transparent 32%
+    );
+}
+
+.auth-block__panel,
+.settings-modal,
+.history-dashboard {
+  max-height: calc(100dvh - 2.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.auth-block {
+  z-index: 50;
   background:
     linear-gradient(180deg, rgba(18, 6, 3, 0.34), rgba(9, 3, 2, 0.68)),
     radial-gradient(circle at 50% 20%, rgba(255, 149, 58, 0.1), transparent 32%);
@@ -16,13 +43,8 @@
   position: relative;
   width: min(25rem, 100%);
   max-width: 100%;
-  max-height: calc(100dvh - 2.5rem);
   padding: 2rem 1.5rem 1.4rem;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
   border: 1px solid rgba(255, 184, 108, 0.34);
   border-radius: 0;
   background: rgba(24, 8, 4, 0.34);
@@ -245,65 +267,14 @@
 }
 
 .settings-modal__overlay {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
   z-index: 60;
-  background:
-    linear-gradient(180deg, rgba(18, 6, 3, 0.64), rgba(9, 3, 2, 0.82)),
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(255, 149, 58, 0.08),
-      transparent 32%
-    );
-  cursor: var(--skin-cursor-default, auto);
   font-family: var(--dashboard-button-font-family);
-}
-
-.settings-modal__overlay button,
-.settings-modal__overlay a,
-.settings-modal__overlay [role="button"],
-.settings-modal__overlay input[type="button"],
-.settings-modal__overlay input[type="checkbox"],
-.settings-modal__overlay input[type="radio"],
-.settings-modal__overlay input[type="submit"],
-.settings-modal__overlay input[type="reset"],
-.settings-modal__overlay select,
-.settings-modal__overlay summary {
-  cursor: var(--skin-cursor-pointer, pointer);
-}
-
-.settings-modal__overlay
-  input:not([type="button"]):not([type="checkbox"]):not([type="radio"]):not(
-    [type="range"]
-  )
-  :not([type="submit"]):not([type="reset"]),
-.settings-modal__overlay textarea,
-.settings-modal__overlay [contenteditable="true"] {
-  cursor: var(--skin-cursor-text, text);
-}
-
-.settings-modal__overlay button:disabled,
-.settings-modal__overlay input:disabled,
-.settings-modal__overlay textarea:disabled,
-.settings-modal__overlay select:disabled,
-.settings-modal__overlay .is-disabled,
-.settings-modal__overlay .is-disabled *,
-.settings-modal__overlay [aria-disabled="true"] {
-  cursor: var(--skin-cursor-disabled, not-allowed);
 }
 
 .settings-modal {
   position: relative;
   width: min(30rem, 100%);
-  max-height: calc(100dvh - 2.5rem);
   padding: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
   border: 1px solid rgba(255, 184, 108, 0.34);
   border-radius: 0;
   background:

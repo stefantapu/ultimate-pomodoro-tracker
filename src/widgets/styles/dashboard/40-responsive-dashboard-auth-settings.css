@@ -99,13 +99,21 @@
   }
 
   .auth-block,
-  .settings-modal__overlay {
+  .settings-modal__overlay,
+  .history-dashboard__overlay,
+  .theme-picker-modal__overlay {
     padding: 0.75rem;
+  }
+
+  .auth-block__panel,
+  .settings-modal,
+  .history-dashboard,
+  .theme-picker-modal {
+    max-height: calc(100dvh - 1.5rem);
   }
 
   .settings-modal {
     width: min(100%, 22rem);
-    max-height: calc(100dvh - 1.5rem);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -187,7 +195,6 @@
 
   .auth-block__panel {
     width: min(100%, 22rem);
-    max-height: calc(100dvh - 1.5rem);
     padding: 1.35rem 0.95rem 1rem;
     box-sizing: border-box;
     overflow-y: auto;

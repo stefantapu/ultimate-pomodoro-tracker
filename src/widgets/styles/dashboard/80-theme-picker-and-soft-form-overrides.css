@@ -1,17 +1,5 @@
 .theme-picker-modal__overlay {
-  position: fixed;
-  inset: 0;
   z-index: 65;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
-  background:
-    linear-gradient(180deg, rgba(18, 6, 3, 0.64), rgba(9, 3, 2, 0.82)),
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(255, 149, 58, 0.08),
-      transparent 32%
-    );
 }
 
 .theme-picker-modal {
@@ -292,12 +280,7 @@
 }
 
 @media (max-width: 640px) {
-  .theme-picker-modal__overlay {
-    padding: 0.75rem;
-  }
-
   .theme-picker-modal {
-    max-height: calc(100dvh - 1.5rem);
     overflow-y: auto;
   }
 
