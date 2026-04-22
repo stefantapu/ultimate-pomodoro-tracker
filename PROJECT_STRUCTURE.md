@@ -141,3 +141,7 @@ This file is a quick map of the repository so navigation is faster.
 - `src/widgets/HeatmapCard.tsx` heatmap rendering
 - `src/widgets/StatsCard.tsx` daily stats rendering
 - `src/widgets/DragonCard.tsx` level/xp card rendering
+
+Related docs:
+
+- docs/STYLING_REFACTOR_PLAN.md — styling/theming migration plan and rules

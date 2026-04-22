@@ -1,0 +1,317 @@
+.heatmap-card__content {
+  background: var(--dashboard-panel-inner);
+  border-radius: calc(var(--dashboard-radius) - 0.1rem);
+  padding: 0rem;
+  color: var(--dashboard-text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heatmap-card__calendar text,
+.heatmap-card__calendar span {
+  fill: var(--dashboard-text-dark);
+  color: var(--dashboard-text-dark);
+}
+
+.heatmap-card__calendar {
+  --heatmap-weekday-gutter: 34px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.heatmap-card__status {
+  position: relative;
+  z-index: 1;
+}
+
+.heatmap-card__calendar .react-activity-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  padding: 10px;
+  overflow: visible;
+}
+
+.heatmap-card__calendar .react-activity-calendar__scroll-container {
+  width: 100%;
+  padding-left: var(--heatmap-weekday-gutter);
+  box-sizing: border-box;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+}
+
+.heatmap-card__calendar .react-activity-calendar__calendar {
+  margin-left: 0 !important;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-weekday {
+  transform: translateX(calc(var(--heatmap-weekday-gutter) * -1 + 6px));
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-weekday text {
+  text-anchor: start;
+}
+
+.heatmap-card__calendar .react-activity-calendar__footer {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-left: 0 !important;
+  color: var(--dashboard-text-dark);
+}
+
+.heatmap-card__calendar .react-activity-calendar__count {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-colors,
+.heatmap-card__calendar .react-activity-calendar__legend-colors span {
+  color: inherit;
+}
+
+.heatmap-card__calendar .react-activity-calendar__legend-colors {
+  margin-left: 0 !important;
+  flex-shrink: 0;
+}
+
+.dashboard-shell--warm .heatmap-card__calendar .react-activity-calendar__footer,
+.dashboard-shell--warm .heatmap-card__calendar .react-activity-calendar__count,
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__legend-colors,
+.dashboard-shell--warm
+  .heatmap-card__calendar
+  .react-activity-calendar__legend-colors
+  span {
+  color: #ffe1bf;
+}
+
+.react-activity-calendar__tooltip {
+  padding: 0px 4px;
+  z-index: 80 !important;
+  border: 1px solid #4a4a4a;
+  border-radius: 2px;
+  background: var(--dashboard-panel-inner) !important;
+  color: var(--dashboard-text-dark) !important;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.react-activity-calendar__tooltip .react-activity-calendar__tooltip-arrow {
+  fill: var(--dashboard-panel-inner) !important;
+}
+
+.react-activity-calendar__tooltip[data-color-scheme="dark"] {
+  border-color: rgba(255, 170, 95, 0.45);
+  background: rgba(33, 13, 6, 0.95) !important;
+  color: #ffe1bf !important;
+}
+
+.react-activity-calendar__tooltip[data-color-scheme="dark"]
+  .react-activity-calendar__tooltip-arrow {
+  fill: rgba(33, 13, 6, 0.95) !important;
+}
+
+.heatmap-card__status {
+  color: var(--dashboard-text-dark);
+}
+
+.heatmap-card {
+  width: min(100%, 400px);
+  min-width: min(100%, 400px);
+  max-width: 400px;
+  height: 167px;
+  min-height: 167px;
+  max-height: 167px;
+}
+
+.heatmap-card .panel-shell__body,
+.heatmap-card__content {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.stats-card {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  height: 167px;
+  min-height: 167px;
+  max-height: 167px;
+  margin-inline: auto;
+}
+
+.stats-card .panel-shell__body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.stats-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border: 1px solid #4a4a4a;
+}
+
+.stats-card__item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 0.75rem;
+  border-right: 1px solid #4a4a4a;
+  border-bottom: 1px solid #4a4a4a;
+  text-align: center;
+}
+
+.stats-card__item:nth-child(2n) {
+  border-right: none;
+}
+
+.stats-card__item:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.stats-card__label {
+  color: var(--dashboard-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.stats-card__value {
+  font-size: 1.35rem;
+}
+
+.dragon-card__display {
+  min-height: 7rem;
+  display: grid;
+  place-items: center;
+  background: var(--dashboard-panel-inner);
+  color: var(--dashboard-text-dark);
+  font-family: var(--dashboard-display-font-family);
+}
+
+.dragon-card__level-row {
+  display: flex;
+  justify-content: center;
+  max-width: 70%;
+}
+
+.dragon-card {
+  width: 283px;
+  min-width: 283px;
+  max-width: 283px;
+  height: 167px;
+  min-height: 167px;
+  max-height: 167px;
+  margin-inline: auto;
+}
+
+.dragon-card .panel-shell__body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dragon-card__progress {
+  height: 0.2rem;
+  background: var(--dashboard-track);
+  overflow: hidden;
+  max-width: 70%;
+}
+
+.dragon-card__progress-fill {
+  height: 100%;
+}
+
+.locked-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 0.7rem;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(24, 8, 4, 0.1), rgba(13, 4, 2, 0.74)),
+    radial-gradient(
+      circle at 50% 28%,
+      rgba(255, 170, 90, 0.12),
+      transparent 42%
+    );
+  backdrop-filter: blur(1.5px);
+}
+
+.locked-overlay__content {
+  display: grid;
+  place-items: center;
+  width: min(calc(100% - 0.2rem), 9rem);
+}
+
+.locked-overlay__copy {
+  min-width: min(100%, 6.5rem);
+  padding: 0.45rem 0.55rem 0.5rem;
+  border: 1px solid rgba(255, 181, 101, 0.44);
+  background: transparent;
+  box-shadow: none;
+  color: #fff0d5;
+  font-family: var(--dashboard-button-font-family);
+  font-size: clamp(0.5rem, 0.46rem + 0.18vw, 0.63rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.35rem rgba(255, 161, 74, 0.18);
+}
+
+.locked-overlay:hover .locked-overlay__copy,
+.locked-overlay:focus-visible .locked-overlay__copy {
+  border-color: rgba(255, 202, 132, 0.68);
+  box-shadow: 0 0 0.7rem rgba(255, 120, 39, 0.18);
+  filter: brightness(1.06);
+}
+
+.locked-overlay:focus-visible {
+  outline: none;
+}
+
+.locked-overlay:active .locked-overlay__copy {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
