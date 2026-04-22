@@ -285,13 +285,6 @@
   gap: var(--dashboard-gap);
 }
 
-.top-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
 .timer-card {
   width: 100%;
   max-width: min(100%, 612px);
@@ -369,15 +362,6 @@
   border: 0;
 }
 
-.action-buttons {
-  position: relative;
-  z-index: 3;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  align-items: stretch;
-}
-
 .themed-button--tab {
   min-height: 3rem;
 }
@@ -393,14 +377,6 @@
 .themed-button--action {
   min-height: var(--skin-action-button-min-height);
   font-size: 1.1rem;
-}
-
-.action-buttons__button--start,
-.action-buttons__button--reset {
-  height: 57px;
-  min-height: 57px;
-  min-width: 180px;
-  max-width: 180px;
 }
 
 .themed-button--square {
