@@ -1,8 +1,5 @@
 .dashboard-shell--warm .timer-card {
-  width: 100%;
   min-width: 0;
-  max-width: min(100%, 612px);
-  margin-inline: auto;
   position: relative;
   isolation: isolate;
   container-type: inline-size;
@@ -134,9 +131,6 @@
 
 .dashboard-shell--warm .top-controls {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .dashboard-shell--warm .top-controls .themed-button--tab {

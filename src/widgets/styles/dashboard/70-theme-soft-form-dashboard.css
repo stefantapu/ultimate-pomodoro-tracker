@@ -64,10 +64,7 @@
 }
 
 .dashboard-shell--soft-form .timer-card {
-  width: 100%;
   min-width: 0;
-  max-width: min(100%, 612px);
-  margin-inline: auto;
   border-radius: calc(var(--dashboard-panel-radius) + 0.4rem);
   background: var(--dashboard-surface);
   box-shadow: var(--dashboard-shadow-raised);
@@ -112,8 +109,6 @@
 }
 
 .dashboard-shell--soft-form .action-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
 }
 

@@ -285,19 +285,6 @@
   gap: var(--dashboard-gap);
 }
 
-.timer-card__meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  color: var(--dashboard-text-muted);
-}
-
-.timer-card__label {
-  font-size: 1rem;
-  letter-spacing: 0.24em;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;

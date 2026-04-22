@@ -492,9 +492,6 @@
     gap: 0.28rem;
   }
 
-  .toolbar-history-button__text {
-    font-size: 0.62rem;
-  }
 }
 
 .dashboard-shell--warm .toolbar-icon-button--theme {
