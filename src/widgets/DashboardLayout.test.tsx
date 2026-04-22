@@ -1,5 +1,6 @@
 import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
+import { useUIStore } from "@shared/stores/uiStore";
 import { renderWithProviders } from "../test/testUtils";
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -42,6 +43,12 @@ afterEach(() => {
     activeSkinId: "warm",
     activeSkin: getSkinById("warm"),
   });
+  useUIStore.setState((state) => ({
+    ...state,
+    isSettingsModalOpen: false,
+    isInfographicsModalOpen: false,
+    isThemePickerModalOpen: false,
+  }));
   window.localStorage.clear();
 });
 
@@ -103,5 +110,57 @@ describe("DashboardLayout", () => {
 
     expect(renderBottomRowClasses("warm")).toEqual(expectedClasses);
     expect(renderBottomRowClasses("soft-form")).toEqual(expectedClasses);
+  });
+
+  it("renders embers from skin capability, not just skin id", () => {
+    const warmSkin = getSkinById("warm");
+    useSkinStore.setState({
+      activeSkinId: "warm",
+      activeSkin: {
+        ...warmSkin,
+        capabilities: {
+          ...warmSkin.capabilities,
+          effects: {
+            ...warmSkin.capabilities.effects,
+            embers: false,
+          },
+        },
+      },
+    });
+
+    const { container, unmount } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(container.querySelector(".dashboard-shell")).toHaveClass(
+      "dashboard-shell--warm",
+    );
+    expect(container.querySelector(".dashboard-embers")).toBeNull();
+
+    unmount();
+
+    const softSkin = getSkinById("soft-form");
+    useSkinStore.setState({
+      activeSkinId: "soft-form",
+      activeSkin: {
+        ...softSkin,
+        capabilities: {
+          ...softSkin.capabilities,
+          effects: {
+            ...softSkin.capabilities.effects,
+            embers: true,
+          },
+        },
+      },
+    });
+
+    const { container: secondContainer } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(secondContainer.querySelector(".dashboard-shell")).toHaveClass(
+      "dashboard-shell--soft-form",
+    );
+    expect(secondContainer.querySelector(".dashboard-embers")).not.toBeNull();
   });
 });

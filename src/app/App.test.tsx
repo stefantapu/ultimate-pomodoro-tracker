@@ -1,10 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getSkinById } from "@shared/skins/catalog";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import App from "./App";
 
 const useAuthMock = vi.fn();
+let shouldSuspendAuthBlock = false;
 
 vi.mock("./providers/useAuth", () => ({
   useAuth: () => useAuthMock(),
@@ -17,7 +20,13 @@ vi.mock("../widgets/DashboardLayout", () => ({
 }));
 
 vi.mock("../widgets/AuthBlock", () => ({
-  AuthBlock: () => <div>Auth modal</div>,
+  AuthBlock: () => {
+    if (shouldSuspendAuthBlock) {
+      throw new Promise(() => {});
+    }
+
+    return <div>Auth modal</div>;
+  },
 }));
 
 vi.mock("../widgets/InfographicsModal", () => ({
@@ -35,6 +44,12 @@ vi.mock("sonner", () => ({
 describe("App", () => {
   beforeEach(() => {
     useAuthMock.mockReset();
+    shouldSuspendAuthBlock = false;
+    useSkinStore.setState({
+      activeSkinId: "warm",
+      activeSkin: getSkinById("warm"),
+      setActiveSkinId: useSkinStore.getState().setActiveSkinId,
+    });
     useUIStore.setState((state) => ({
         ...state,
         isAuthModalOpen: false,
@@ -52,7 +67,10 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(screen.getByText("Loading Realm...")).toBeInTheDocument();
+    const loadingState = screen.getByText("Loading Realm...");
+    expect(loadingState).toBeInTheDocument();
+    expect(loadingState).toHaveClass("app-loading-state");
+    expect(loadingState.getAttribute("style")).toContain("--dashboard-bg");
   });
 
   it("renders the dashboard and lazy modals based on store state", async () => {
@@ -78,5 +96,28 @@ describe("App", () => {
     expect(await screen.findByText("Infographics modal")).toBeInTheDocument();
     expect(await screen.findByText("Theme picker modal")).toBeInTheDocument();
     expect(await screen.findByText("Toast host")).toBeInTheDocument();
+  });
+
+  it("keeps auth fallback rendering with theme variables while auth modal chunk is pending", () => {
+    shouldSuspendAuthBlock = true;
+    useAuthMock.mockReturnValue({
+      user: { id: "user-1" },
+      loading: false,
+    });
+
+    act(() => {
+      useUIStore.setState((state) => ({
+        ...state,
+        isAuthModalOpen: true,
+      }));
+    });
+
+    render(<App />);
+
+    const fallbackCopy = screen.getByText("Loading sign in...");
+    const fallbackRoot = fallbackCopy.closest(".app-auth-fallback");
+
+    expect(fallbackRoot).not.toBeNull();
+    expect(fallbackRoot?.getAttribute("style")).toContain("--dashboard-bg");
   });
 });

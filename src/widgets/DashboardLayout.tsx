@@ -181,7 +181,9 @@ export const DashboardLayout = memo(function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
-      {activeSkin.id === "warm" && !isOverlayOpen ? <BackgroundEmbers /> : null}
+      {activeSkin.capabilities.effects.embers && !isOverlayOpen ? (
+        <BackgroundEmbers />
+      ) : null}
       <div className="dashboard-content">
         <div className="dashboard-toolbar">
           <InfographicsButton />
