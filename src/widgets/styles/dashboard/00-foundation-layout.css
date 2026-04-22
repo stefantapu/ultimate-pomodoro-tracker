@@ -285,28 +285,6 @@
   gap: var(--dashboard-gap);
 }
 
-.timer-card {
-  width: 100%;
-  max-width: min(100%, 612px);
-  margin-inline: auto;
-}
-
-.timer-card .panel-shell__body {
-  min-height: max(220px, var(--skin-timer-panel-min-height));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.timer-card .panel-shell__body > * {
-  position: relative;
-  z-index: 1;
-}
-
 .timer-card__meta {
   display: flex;
   gap: 1rem;
@@ -318,36 +296,6 @@
 .timer-card__label {
   font-size: 1rem;
   letter-spacing: 0.24em;
-}
-
-.timer-card__time {
-  font-family: var(--dashboard-display-font-family);
-  font-size: 5rem;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings:
-    "tnum" 1,
-    "lnum" 1;
-}
-
-.timer-card__digit,
-.timer-card__separator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-}
-
-.timer-card__digit {
-  width: 1ch;
-}
-
-.timer-card__separator {
-  width: 0.6ch;
 }
 
 .visually-hidden {

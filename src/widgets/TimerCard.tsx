@@ -2,6 +2,7 @@ import type { Mode, TimerStatus } from "@shared/lib/timerTypes";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { memo, useEffect, useState } from "react";
 import { PanelShell } from "./PanelShell";
+import styles from "./TimerCard.module.css";
 
 type TimerCardProps = {
   mode: Mode;
@@ -9,6 +10,10 @@ type TimerCardProps = {
   timeLeft: number;
   targetTimestamp: number | null;
 };
+
+function joinClassNames(...classNames: Array<string | false | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
 
 function formatTime(seconds: number) {
   const normalized = Math.max(0, seconds);
@@ -67,15 +72,21 @@ const TimerCardTime = memo(function TimerCardTime({
   }, [status, targetTimestamp, timeLeft]);
 
   return (
-    <time className="timer-card__time" dateTime={formatDuration(remainingSeconds)}>
+    <time
+      className={joinClassNames(styles["timer-card__time"], "timer-card__time")}
+      dateTime={formatDuration(remainingSeconds)}
+    >
       <span className="visually-hidden">{timeLabel}</span>
       {timeLabel.split("").map((character, index) => (
         <span
           key={`${character}-${index}`}
           aria-hidden="true"
-          className={
-            character === ":" ? "timer-card__separator" : "timer-card__digit"
-          }
+          className={joinClassNames(
+            character === ":"
+              ? styles["timer-card__separator"]
+              : styles["timer-card__digit"],
+            character === ":" ? "timer-card__separator" : "timer-card__digit",
+          )}
         >
           {character}
         </span>
@@ -95,7 +106,14 @@ export const TimerCard = memo(function TimerCard({
   );
 
   return (
-    <PanelShell className={`timer-card${status === "running" ? " is-running" : ""}`}>
+    <PanelShell
+      className={joinClassNames(
+        styles["timer-card"],
+        "timer-card",
+        status === "running" && "is-running",
+      )}
+      bodyClassName={styles["timer-card__body"]}
+    >
       {timerPanel ? (
         <picture className="timer-card__panel-art" aria-hidden="true">
           {timerPanelMobile ? (
