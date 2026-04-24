@@ -1,4 +1,4 @@
-import { memo, Suspense, lazy, useMemo, type ComponentType } from "react";
+import { memo, Suspense, lazy, useEffect, useMemo, type ComponentType } from "react";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
@@ -190,6 +190,16 @@ export const DashboardLayout = memo(function DashboardLayout({
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
+
+  useEffect(() => {
+    document.body.dataset.dashboardSkin = activeSkin.id;
+
+    return () => {
+      if (document.body.dataset.dashboardSkin === activeSkin.id) {
+        delete document.body.dataset.dashboardSkin;
+      }
+    };
+  }, [activeSkin.id]);
 
   return (
     <div

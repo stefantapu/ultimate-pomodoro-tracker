@@ -2,7 +2,7 @@ import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import { renderWithProviders } from "../test/testUtils";
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardLayout } from "./DashboardLayout";
 
@@ -50,6 +50,7 @@ afterEach(() => {
     isThemePickerModalOpen: false,
   }));
   window.localStorage.clear();
+  delete document.body.dataset.dashboardSkin;
 });
 
 describe("DashboardLayout", () => {
@@ -80,6 +81,26 @@ describe("DashboardLayout", () => {
 
     expect(screen.getByText("Notes panel")).toBeInTheDocument();
     expect(screen.getByText("Dragon card")).toBeInTheDocument();
+  });
+
+  it("syncs body dashboard skin data attribute for portal-rendered UI", async () => {
+    const { unmount } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(document.body.dataset.dashboardSkin).toBe("warm");
+
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("neumorphism");
+    });
+
+    await waitFor(() => {
+      expect(document.body.dataset.dashboardSkin).toBe("neumorphism");
+    });
+
+    unmount();
+
+    expect(document.body.dataset.dashboardSkin).toBeUndefined();
   });
 
   it("keeps the same bottom-row wrapper structure across themes", () => {

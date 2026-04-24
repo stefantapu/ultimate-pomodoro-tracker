@@ -105,40 +105,81 @@
   color: #ffe1bf;
 }
 
+body {
+  --heatmap-tooltip-default-bg: hsl(0 0% 10%);
+  --heatmap-tooltip-default-fg: hsl(0 0% 94%);
+  --heatmap-tooltip-default-border: rgba(255, 255, 255, 0.16);
+  --heatmap-tooltip-default-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+  --heatmap-tooltip-bg: var(--heatmap-tooltip-default-bg);
+  --heatmap-tooltip-fg: var(--heatmap-tooltip-default-fg);
+  --heatmap-tooltip-border: var(--heatmap-tooltip-default-border);
+  --heatmap-tooltip-shadow: var(--heatmap-tooltip-default-shadow);
+  --heatmap-tooltip-radius: 0.3rem;
+  --heatmap-tooltip-font-size: 0.82rem;
+  --heatmap-tooltip-font-weight: 600;
+  --heatmap-tooltip-letter-spacing: 0.01em;
+  --heatmap-tooltip-backdrop-filter: none;
+}
+
+body[data-dashboard-skin="warm"] {
+  --heatmap-tooltip-bg: rgba(33, 13, 6, 0.95);
+  --heatmap-tooltip-fg: #ffe1bf;
+  --heatmap-tooltip-border: rgba(255, 170, 95, 0.48);
+  --heatmap-tooltip-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.42),
+    0 0 0.45rem rgba(255, 133, 46, 0.16);
+  --heatmap-tooltip-radius: 0.25rem;
+  --heatmap-tooltip-font-size: 0.83rem;
+  --heatmap-tooltip-font-weight: 700;
+  --heatmap-tooltip-letter-spacing: 0.02em;
+}
+
+body[data-dashboard-skin="neumorphism"] {
+  --heatmap-tooltip-bg: rgba(244, 247, 251, 0.96);
+  --heatmap-tooltip-fg: #1f2731;
+  --heatmap-tooltip-border: rgba(140, 151, 165, 0.42);
+  --heatmap-tooltip-shadow: 0 8px 18px rgba(123, 136, 152, 0.28);
+  --heatmap-tooltip-radius: 0.4rem;
+  --heatmap-tooltip-font-size: 0.8rem;
+  --heatmap-tooltip-font-weight: 600;
+  --heatmap-tooltip-letter-spacing: 0.01em;
+  --heatmap-tooltip-backdrop-filter: blur(0.6px);
+}
+
+.react-activity-calendar__tooltip[data-color-scheme="dark"] {
+  --heatmap-tooltip-default-bg: hsl(0 0% 94%);
+  --heatmap-tooltip-default-fg: hsl(0 0% 8%);
+  --heatmap-tooltip-default-border: rgba(0, 0, 0, 0.18);
+}
+
+.react-activity-calendar__tooltip[data-color-scheme="light"] {
+  --heatmap-tooltip-default-bg: hsl(0 0% 10%);
+  --heatmap-tooltip-default-fg: hsl(0 0% 94%);
+  --heatmap-tooltip-default-border: rgba(255, 255, 255, 0.16);
+}
+
 .react-activity-calendar__tooltip {
-  padding: 0px 4px;
-  z-index: 80 !important;
-  border: 1px solid var(--dashboard-panel-border);
-  border-radius: 2px;
-  background: var(--dashboard-panel-inner) !important;
-  color: var(--dashboard-text-dark) !important;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 1.25rem));
+  padding: 0.18rem 0.45rem 0.22rem;
+  border: 1px solid var(--heatmap-tooltip-border);
+  border-radius: var(--heatmap-tooltip-radius);
+  background: var(--heatmap-tooltip-bg);
+  color: var(--heatmap-tooltip-fg);
+  font-family: var(--dashboard-font-family);
+  font-size: var(--heatmap-tooltip-font-size);
+  font-weight: var(--heatmap-tooltip-font-weight);
+  line-height: 1.15;
+  letter-spacing: var(--heatmap-tooltip-letter-spacing);
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: var(--heatmap-tooltip-shadow);
+  backdrop-filter: var(--heatmap-tooltip-backdrop-filter);
+  z-index: 80;
 }
 
-.react-activity-calendar__tooltip .react-activity-calendar__tooltip-arrow {
-  fill: var(--dashboard-panel-inner) !important;
-}
-
-.dashboard-shell--warm
-  .react-activity-calendar__tooltip[data-color-scheme="dark"] {
-  border-color: rgba(255, 170, 95, 0.45);
-  background: rgba(33, 13, 6, 0.95) !important;
-  color: #ffe1bf !important;
-}
-
-.dashboard-shell--warm
-  .react-activity-calendar__tooltip[data-color-scheme="dark"]
-  .react-activity-calendar__tooltip-arrow {
-  fill: rgba(33, 13, 6, 0.95) !important;
-}
-
-.dashboard-shell--neumorphism
-  .react-activity-calendar__tooltip[data-color-scheme="light"] {
-  box-shadow: var(--dashboard-shadow-raised);
-  filter: none;
+.react-activity-calendar__tooltip-arrow {
+  fill: var(--heatmap-tooltip-bg);
 }
 
 .heatmap-card__status {
