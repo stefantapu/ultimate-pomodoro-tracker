@@ -356,6 +356,45 @@
   box-shadow: var(--dashboard-shadow-inset);
 }
 
+/* Soft-form parity overrides: keep these late for deterministic cascade precedence. */
+.auth-block--soft-form .auth-block__input::placeholder {
+  color: var(--dashboard-text-muted);
+  opacity: 1;
+}
+
+.history-dashboard__overlay--soft-form
+  .history-dashboard__week-actions
+  button:not(:disabled):hover,
+.history-dashboard__overlay--soft-form
+  .history-dashboard__week-actions
+  button:not(:disabled):focus-visible {
+  color: var(--dashboard-text-dark);
+  border-color: rgba(136, 147, 160, 0.6);
+  background: var(--dashboard-surface-raised);
+  box-shadow: var(--dashboard-shadow-inset);
+  filter: none;
+}
+
+.history-dashboard__overlay--soft-form .history-dashboard__week-bar-frame,
+.history-dashboard__overlay--soft-form .history-dashboard__hourly-bar-frame {
+  border-radius: calc(var(--dashboard-modal-radius) - 0.65rem);
+  overflow: hidden;
+}
+
+.history-dashboard__overlay--soft-form .history-dashboard__week-bar,
+.history-dashboard__overlay--soft-form .history-dashboard__hourly-bar {
+  border-radius: calc(var(--dashboard-modal-radius) - 1.1rem)
+    calc(var(--dashboard-modal-radius) - 1.1rem) 0 0;
+}
+
+.theme-picker-modal__overlay--soft-form .theme-picker-modal__header h2,
+.theme-picker-modal__overlay--soft-form .theme-picker-modal__option-title,
+.theme-picker-modal__overlay--soft-form .theme-picker-modal__option-state {
+  font-family: var(--dashboard-font-family);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
 @media (max-width: 640px) {
   .theme-picker-modal {
     overflow-y: auto;

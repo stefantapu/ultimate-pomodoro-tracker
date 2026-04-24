@@ -56,7 +56,7 @@ function PlaceholderStatsCard({ message }: PanelFallbackProps) {
   const items = [
     { label: "Focus", value: message },
     { label: "Break", value: message },
-    { label: "Cycles", value: message },
+    { label: "Today", value: message },
     { label: "Streak", value: message },
   ];
 

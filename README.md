@@ -108,7 +108,7 @@ Completed sessions are stored in `focus_sessions`. Authenticated dashboards then
 
 - focus time for today
 - break time for today
-- completed focus cycle count
+- today completed focus cycle count
 - current streak
 - heatmap data
 

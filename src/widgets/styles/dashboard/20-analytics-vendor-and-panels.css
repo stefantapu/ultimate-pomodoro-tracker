@@ -135,16 +135,24 @@
 }
 
 .dashboard-shell--soft-form .react-activity-calendar__tooltip[data-color-scheme="light"] {
-  border-color: var(--dashboard-stroke-soft);
-  background: var(--dashboard-surface-raised) !important;
+  border-color: rgba(126, 137, 151, 0.58);
+  background: var(--dashboard-surface) !important;
   color: var(--dashboard-text-dark) !important;
   box-shadow: var(--dashboard-shadow-raised);
+  opacity: 1 !important;
+  filter: none;
+}
+
+.dashboard-shell--soft-form
+  .react-activity-calendar__tooltip[data-color-scheme="light"]
+  * {
+  opacity: 1 !important;
 }
 
 .dashboard-shell--soft-form
   .react-activity-calendar__tooltip[data-color-scheme="light"]
   .react-activity-calendar__tooltip-arrow {
-  fill: var(--dashboard-surface-raised) !important;
+  fill: var(--dashboard-surface) !important;
 }
 
 .heatmap-card__status {

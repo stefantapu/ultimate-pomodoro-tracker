@@ -78,7 +78,7 @@
   content: "";
   position: absolute;
   inset: 1rem;
-  border-radius: calc(var(--dashboard-panel-radius) + 0.25rem);
+  border-radius: calc(var(--dashboard-panel-radius) - 0.2rem);
   background:
     linear-gradient(
       180deg,
@@ -133,6 +133,7 @@
 .dashboard-shell--soft-form .notes-panel .panel-shell__body {
   min-height: 340px;
   overflow: hidden;
+  border-radius: calc(var(--dashboard-panel-radius) - 0.35rem);
 }
 
 .dashboard-shell--soft-form .heatmap-card .panel-shell__body {

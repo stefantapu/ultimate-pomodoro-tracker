@@ -31,6 +31,10 @@ describe("ThemePickerModal", () => {
   it("marks the active theme in the picker", () => {
     render(<ThemePickerModal />);
 
+    expect(
+      screen.getByRole("heading", { name: "Theme Picker" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Appearance")).not.toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /warm/i })).toHaveAttribute(
       "aria-checked",
       "true",

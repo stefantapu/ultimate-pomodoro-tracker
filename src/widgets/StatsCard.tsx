@@ -25,7 +25,7 @@ export const StatsCard = memo(function StatsCard({
       value: data ? formatHours(data.today_break_time) : loading ? "..." : "--",
     },
     {
-      label: "Cycles",
+      label: "Today",
       value: data ? `${data.focus_cycles_count}` : loading ? "..." : "--",
     },
     {

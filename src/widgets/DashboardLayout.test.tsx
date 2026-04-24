@@ -62,6 +62,7 @@ describe("DashboardLayout", () => {
 
     expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();
     expect(screen.getByText("Sign in to view focus history.")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
     expect(screen.getAllByText("LOCKED")).toHaveLength(4);
   });
 
