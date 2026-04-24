@@ -16,12 +16,12 @@ const HEATMAP_COLORS_BY_SKIN: Record<
   [string, string, string, string, string]
 > = {
   warm: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
-  "soft-form": ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
+  "neumorphism": ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
 };
 
 const HEATMAP_COLOR_SCHEME_BY_SKIN: Record<SkinId, "light" | "dark"> = {
   warm: "dark",
-  "soft-form": "light",
+  "neumorphism": "light",
 };
 
 function getCalendarData(heatmapData: HeatmapData[]) {

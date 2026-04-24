@@ -5,5 +5,5 @@
 @import "./styles/dashboard/40-responsive-dashboard-auth-settings.css";
 @import "./styles/dashboard/50-toolbar-cursors.css";
 @import "./styles/dashboard/60-history-dashboard.css";
-@import "./styles/dashboard/70-theme-soft-form-dashboard.css";
-@import "./styles/dashboard/80-theme-picker-and-soft-form-overrides.css";
+@import "./styles/dashboard/70-theme-neumorphism-dashboard.css";
+@import "./styles/dashboard/80-theme-picker-and-neumorphism-overrides.css";

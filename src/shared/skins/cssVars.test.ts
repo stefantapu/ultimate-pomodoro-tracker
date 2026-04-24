@@ -110,11 +110,11 @@ const CURSOR_VARIABLE_KEYS = [
 describe("mapSkinToCssVariables contract", () => {
   it("keeps emitted CSS variable keys stable", () => {
     const warmVars = mapSkinToCssVariables(getSkinById("warm"));
-    const softVars = mapSkinToCssVariables(getSkinById("soft-form"));
+    const neumorphismVars = mapSkinToCssVariables(getSkinById("neumorphism"));
     const expected = [...EXPECTED_CSS_VARIABLE_KEYS].sort();
 
     expect(Object.keys(warmVars).sort()).toEqual(expected);
-    expect(Object.keys(softVars).sort()).toEqual(expected);
+    expect(Object.keys(neumorphismVars).sort()).toEqual(expected);
   });
 
   it("maps warm skin with concrete asset and cursor URLs", () => {
@@ -130,53 +130,60 @@ describe("mapSkinToCssVariables contract", () => {
     }
   });
 
-  it("maps soft-form skin to fallback values for optional assets", () => {
-    const softVars = mapSkinToCssVariables(getSkinById("soft-form"));
+  it("maps neumorphism skin with its page background and fallback optional assets", () => {
+    const neumorphismVars = mapSkinToCssVariables(getSkinById("neumorphism"));
 
     for (const key of IMAGE_VARIABLE_KEYS) {
-      expect(softVars[key]).toBe(
+      if (key === "--skin-page-background-image") {
+        expect(neumorphismVars[key]).toContain(
+          'url("/assets/Neumorphism/background/neumorphism.webp")',
+        );
+        continue;
+      }
+
+      expect(neumorphismVars[key]).toBe(
         SKIN_FALLBACK_CONTRACT.imageCssValueForMissingAsset,
       );
     }
 
-    expect(softVars["--skin-cursor-default"]).toBe(
+    expect(neumorphismVars["--skin-cursor-default"]).toBe(
       SKIN_FALLBACK_CONTRACT.cursorCssFallbackKeywords.cursorDefault,
     );
-    expect(softVars["--skin-cursor-pointer"]).toBe(
+    expect(neumorphismVars["--skin-cursor-pointer"]).toBe(
       SKIN_FALLBACK_CONTRACT.cursorCssFallbackKeywords.cursorPointer,
     );
-    expect(softVars["--skin-cursor-text"]).toBe(
+    expect(neumorphismVars["--skin-cursor-text"]).toBe(
       SKIN_FALLBACK_CONTRACT.cursorCssFallbackKeywords.cursorText,
     );
-    expect(softVars["--skin-cursor-disabled"]).toBe(
+    expect(neumorphismVars["--skin-cursor-disabled"]).toBe(
       SKIN_FALLBACK_CONTRACT.cursorCssFallbackKeywords.cursorDisabled,
     );
 
-    expect(softVars["--skin-timer-panel-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-timer-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.timerPanel),
     );
-    expect(softVars["--skin-timer-panel-mobile-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-timer-panel-mobile-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.timerPanelMobile),
     );
-    expect(softVars["--skin-action-button-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-action-button-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.startButton),
     );
-    expect(softVars["--skin-square-button-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-square-button-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.autoFocusButton),
     );
-    expect(softVars["--skin-notes-panel-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-notes-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.notesPanel),
     );
-    expect(softVars["--skin-heatmap-panel-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-heatmap-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.heatmapPanel),
     );
-    expect(softVars["--skin-stats-panel-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-stats-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.statsPanel),
     );
-    expect(softVars["--skin-top-controls-panel-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-top-controls-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.topControlsPanel),
     );
-    expect(softVars["--skin-mode-tab-button-aspect-ratio"]).toBe(
+    expect(neumorphismVars["--skin-mode-tab-button-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.modeTabButton),
     );
   });

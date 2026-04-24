@@ -89,7 +89,7 @@ describe("DashboardLayout", () => {
       "dashboard-lock-wrap dashboard-lock-wrap--dragon",
     ];
 
-    const renderBottomRowClasses = (skinId: "warm" | "soft-form") => {
+    const renderBottomRowClasses = (skinId: "warm" | "neumorphism") => {
       useSkinStore.getState().setActiveSkinId(skinId);
 
       const { container, unmount } = renderWithProviders(
@@ -110,7 +110,7 @@ describe("DashboardLayout", () => {
     };
 
     expect(renderBottomRowClasses("warm")).toEqual(expectedClasses);
-    expect(renderBottomRowClasses("soft-form")).toEqual(expectedClasses);
+    expect(renderBottomRowClasses("neumorphism")).toEqual(expectedClasses);
   });
 
   it("keeps required shell anchor class contracts after layout cleanup", () => {
@@ -164,15 +164,15 @@ describe("DashboardLayout", () => {
 
     unmount();
 
-    const softSkin = getSkinById("soft-form");
+    const neumorphismSkin = getSkinById("neumorphism");
     useSkinStore.setState({
-      activeSkinId: "soft-form",
+      activeSkinId: "neumorphism",
       activeSkin: {
-        ...softSkin,
+        ...neumorphismSkin,
         capabilities: {
-          ...softSkin.capabilities,
+          ...neumorphismSkin.capabilities,
           effects: {
-            ...softSkin.capabilities.effects,
+            ...neumorphismSkin.capabilities.effects,
             embers: true,
           },
         },
@@ -184,7 +184,7 @@ describe("DashboardLayout", () => {
     );
 
     expect(secondContainer.querySelector(".dashboard-shell")).toHaveClass(
-      "dashboard-shell--soft-form",
+      "dashboard-shell--neumorphism",
     );
     expect(secondContainer.querySelector(".dashboard-embers")).not.toBeNull();
   });

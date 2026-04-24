@@ -39,8 +39,8 @@ describe("HeatmapCard", () => {
     });
   });
 
-  it("uses soft-form palette with light tooltip scheme on the soft-form skin", () => {
-    useSkinStore.getState().setActiveSkinId("soft-form");
+  it("uses neumorphism palette with light tooltip scheme on the neumorphism skin", () => {
+    useSkinStore.getState().setActiveSkinId("neumorphism");
 
     renderWithProviders(
       <HeatmapCard

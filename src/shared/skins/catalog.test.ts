@@ -16,7 +16,7 @@ describe("skin catalog contract", () => {
     const skins = listSkins();
     const ids = skins.map((skin) => skin.id);
 
-    expect(ids).toEqual(["warm", "soft-form"]);
+    expect(ids).toEqual(["warm", "neumorphism"]);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
@@ -47,17 +47,19 @@ describe("skin catalog contract", () => {
 
   it("resolves known ids and falls back unknown ids to default", () => {
     const warm = getSkinById("warm");
-    const softForm = getSkinById("soft-form");
+    const neumorphism = getSkinById("neumorphism");
+    const legacyNeumorphism = getSkinById("soft-form");
     const fallback = getSkinById("unknown-skin-id");
 
     expect(warm.id).toBe("warm");
-    expect(softForm.id).toBe("soft-form");
+    expect(neumorphism.id).toBe("neumorphism");
+    expect(legacyNeumorphism.id).toBe("neumorphism");
     expect(fallback.id).toBe(DEFAULT_SKIN_ID);
   });
 
   it("validates ids through isSkinId", () => {
     expect(isSkinId("warm")).toBe(true);
-    expect(isSkinId("soft-form")).toBe(true);
+    expect(isSkinId("neumorphism")).toBe(true);
     expect(isSkinId("unknown")).toBe(false);
   });
 });

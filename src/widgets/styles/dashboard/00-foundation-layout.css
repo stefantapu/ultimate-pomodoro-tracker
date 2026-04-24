@@ -114,7 +114,7 @@
   background-color: var(--dashboard-bg);
 }
 
-.dashboard-shell--soft-form {
+.dashboard-shell--neumorphism {
   background-image:
     radial-gradient(
       circle at top left,
@@ -126,7 +126,15 @@
       rgba(255, 255, 255, 0.72),
       transparent 26%
     ),
-    linear-gradient(180deg, #eef2f6 0%, #e6eaef 100%);
+    linear-gradient(
+      180deg,
+      rgba(238, 242, 246, 0.7),
+      rgba(230, 234, 239, 0.78)
+    ),
+    var(--skin-page-background-image);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
   background-color: var(--dashboard-bg);
 }
 
@@ -271,4 +279,3 @@
   padding: 0 0.9rem;
   text-transform: none;
 }
-

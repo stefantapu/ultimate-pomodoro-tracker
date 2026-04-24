@@ -1,4 +1,4 @@
-export type SkinId = "warm" | "soft-form";
+export type SkinId = "warm" | "neumorphism";
 
 export type SkinImageAsset = {
   src: string;
