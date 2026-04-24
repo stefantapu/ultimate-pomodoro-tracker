@@ -164,4 +164,16 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.5);
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, { loop: true });
   });
+
+  it("renders settings modal with soft-form class hooks for theme-specific audio styling", async () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("soft-form");
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(await screen.findByText("Sound")).toBeInTheDocument();
+    expect(document.querySelector(".settings-modal__overlay--soft-form")).not.toBeNull();
+  });
 });

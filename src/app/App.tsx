@@ -52,11 +52,16 @@ const LazyThemePickerModal = lazy(() =>
 
 function AuthModalFallback({
   skinCssVariables,
+  skinId,
 }: {
   skinCssVariables: ReturnType<typeof mapSkinToCssVariables>;
+  skinId: string;
 }) {
   return (
-    <div className="auth-block app-auth-fallback" style={skinCssVariables}>
+    <div
+      className={`auth-block app-auth-fallback auth-block--${skinId}`}
+      style={skinCssVariables}
+    >
       <div className="auth-block__panel">
         <p className="auth-block__description app-auth-fallback__description">
           Loading sign in...
@@ -99,7 +104,14 @@ function App() {
       ) : null}
 
       {isAuthModalOpen ? (
-        <Suspense fallback={<AuthModalFallback skinCssVariables={skinCssVariables} />}>
+        <Suspense
+          fallback={
+            <AuthModalFallback
+              skinCssVariables={skinCssVariables}
+              skinId={activeSkin.id}
+            />
+          }
+        >
           <LazyAuthBlock />
         </Suspense>
       ) : null}

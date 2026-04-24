@@ -100,6 +100,7 @@ describe("App", () => {
 
   it("keeps auth fallback rendering with theme variables while auth modal chunk is pending", () => {
     shouldSuspendAuthBlock = true;
+    useSkinStore.getState().setActiveSkinId("soft-form");
     useAuthMock.mockReturnValue({
       user: { id: "user-1" },
       loading: false,
@@ -118,6 +119,7 @@ describe("App", () => {
     const fallbackRoot = fallbackCopy.closest(".app-auth-fallback");
 
     expect(fallbackRoot).not.toBeNull();
+    expect(fallbackRoot).toHaveClass("auth-block--soft-form");
     expect(fallbackRoot?.getAttribute("style")).toContain("--dashboard-bg");
   });
 });
