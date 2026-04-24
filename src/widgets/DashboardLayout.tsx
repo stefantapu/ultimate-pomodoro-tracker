@@ -4,6 +4,7 @@ import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
+import styles from "./DashboardLayout.module.css";
 import { BackgroundEmbers } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
@@ -38,6 +39,10 @@ type DashboardLayoutProps = {
 type PanelFallbackProps = {
   message: string;
 };
+
+function joinClassNames(...classNames: Array<string | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
 
 function PlaceholderHeatmapCard({ message }: PanelFallbackProps) {
   return (
@@ -120,7 +125,12 @@ function GuestNotesPanel({
   LockedOverlayComponent: ComponentType;
 }) {
   return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+    <div
+      className={joinClassNames(
+        styles["dashboard-notes-wrap"],
+        "dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap",
+      )}
+    >
       <PlaceholderNotesPanel message="Sign in to save notes." />
       <LockedOverlayComponent />
     </div>
@@ -142,7 +152,12 @@ function GuestDragonPanel({
 
 function AuthenticatedNotesPanel() {
   return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+    <div
+      className={joinClassNames(
+        styles["dashboard-notes-wrap"],
+        "dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap",
+      )}
+    >
       <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
         <LazyNotesPanel />
       </Suspense>
@@ -184,8 +199,8 @@ export const DashboardLayout = memo(function DashboardLayout({
       {activeSkin.capabilities.effects.embers && !isOverlayOpen ? (
         <BackgroundEmbers />
       ) : null}
-      <div className="dashboard-content">
-        <div className="dashboard-toolbar">
+      <div className={joinClassNames(styles["dashboard-content"], "dashboard-content")}>
+        <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
           <InfographicsButton />
           <ThemePickerButton />
           <SettingsButton />
@@ -212,12 +227,24 @@ export const DashboardLayout = memo(function DashboardLayout({
           </div>
         </section>
 
-        <main className="dashboard-main">
-          <section className="dashboard-section dashboard-section--primary">
+        <main className={joinClassNames(styles["dashboard-main"], "dashboard-main")}>
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--primary"],
+              "dashboard-section dashboard-section--primary",
+            )}
+          >
             <TimerBlock />
           </section>
 
-          <section className="dashboard-section dashboard-section--secondary">
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--secondary"],
+              "dashboard-section dashboard-section--secondary",
+            )}
+          >
             {user ? (
               <AuthenticatedNotesPanel />
             ) : (
@@ -225,8 +252,14 @@ export const DashboardLayout = memo(function DashboardLayout({
             )}
           </section>
 
-          <section className="dashboard-section dashboard-section--bottom">
-            <div className="dashboard-bottom-row">
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--bottom"],
+              "dashboard-section dashboard-section--bottom",
+            )}
+          >
+            <div className={joinClassNames(styles["dashboard-bottom-row"], "dashboard-bottom-row")}>
               {user ? (
                 <>
                   <Suspense
