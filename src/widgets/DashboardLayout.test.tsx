@@ -112,33 +112,28 @@ describe("DashboardLayout", () => {
     expect(renderBottomRowClasses("soft-form")).toEqual(expectedClasses);
   });
 
-  it("keeps legacy layout class contracts after additive module migration", () => {
+  it("keeps required shell anchor class contracts after layout cleanup", () => {
     const { container } = renderWithProviders(
       <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
     );
 
-    expect(container.querySelector(".dashboard-content")).toHaveClass(
-      "dashboard-content",
-    );
     expect(container.querySelector(".dashboard-toolbar")).toHaveClass(
       "dashboard-toolbar",
     );
-    expect(container.querySelector(".dashboard-main")).toHaveClass("dashboard-main");
-
-    const primarySection = container.querySelector(".dashboard-section--primary");
-    expect(primarySection).toHaveClass("dashboard-section", "dashboard-section--primary");
-
-    const secondarySection = container.querySelector(".dashboard-section--secondary");
-    expect(secondarySection).toHaveClass(
-      "dashboard-section",
-      "dashboard-section--secondary",
+    expect(container.querySelector(".dashboard-bottom-row")).toHaveClass(
+      "dashboard-bottom-row",
     );
 
-    const bottomSection = container.querySelector(".dashboard-section--bottom");
-    expect(bottomSection).toHaveClass("dashboard-section", "dashboard-section--bottom");
+    const notesWrap = container.querySelector(".dashboard-lock-wrap--notes");
+    expect(notesWrap).toHaveClass("dashboard-lock-wrap", "dashboard-lock-wrap--notes");
+    expect(notesWrap).not.toHaveClass("dashboard-notes-wrap");
 
-    const notesWrap = container.querySelector(".dashboard-notes-wrap");
-    expect(notesWrap).toHaveClass("dashboard-notes-wrap", "dashboard-lock-wrap");
+    expect(container.querySelector(".dashboard-content")).toBeNull();
+    expect(container.querySelector(".dashboard-main")).toBeNull();
+    expect(container.querySelector(".dashboard-section")).toBeNull();
+    expect(container.querySelector(".dashboard-section--primary")).toBeNull();
+    expect(container.querySelector(".dashboard-section--secondary")).toBeNull();
+    expect(container.querySelector(".dashboard-section--bottom")).toBeNull();
   });
 
   it("renders embers from skin capability, not just skin id", () => {

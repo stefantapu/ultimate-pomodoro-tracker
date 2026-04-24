@@ -128,7 +128,7 @@ function GuestNotesPanel({
     <div
       className={joinClassNames(
         styles["dashboard-notes-wrap"],
-        "dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap",
+        "dashboard-lock-wrap dashboard-lock-wrap--notes",
       )}
     >
       <PlaceholderNotesPanel message="Sign in to save notes." />
@@ -155,7 +155,7 @@ function AuthenticatedNotesPanel() {
     <div
       className={joinClassNames(
         styles["dashboard-notes-wrap"],
-        "dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap",
+        "dashboard-lock-wrap dashboard-lock-wrap--notes",
       )}
     >
       <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
@@ -199,7 +199,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       {activeSkin.capabilities.effects.embers && !isOverlayOpen ? (
         <BackgroundEmbers />
       ) : null}
-      <div className={joinClassNames(styles["dashboard-content"], "dashboard-content")}>
+      <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
           <InfographicsButton />
           <ThemePickerButton />
@@ -227,12 +227,11 @@ export const DashboardLayout = memo(function DashboardLayout({
           </div>
         </section>
 
-        <main className={joinClassNames(styles["dashboard-main"], "dashboard-main")}>
+        <main className={styles["dashboard-main"]}>
           <section
             className={joinClassNames(
               styles["dashboard-section"],
               styles["dashboard-section--primary"],
-              "dashboard-section dashboard-section--primary",
             )}
           >
             <TimerBlock />
@@ -242,7 +241,6 @@ export const DashboardLayout = memo(function DashboardLayout({
             className={joinClassNames(
               styles["dashboard-section"],
               styles["dashboard-section--secondary"],
-              "dashboard-section dashboard-section--secondary",
             )}
           >
             {user ? (
@@ -256,7 +254,6 @@ export const DashboardLayout = memo(function DashboardLayout({
             className={joinClassNames(
               styles["dashboard-section"],
               styles["dashboard-section--bottom"],
-              "dashboard-section dashboard-section--bottom",
             )}
           >
             <div className={joinClassNames(styles["dashboard-bottom-row"], "dashboard-bottom-row")}>

@@ -55,6 +55,11 @@
   --skin-auto-focus-button-image: none;
   --skin-auto-break-button-image: none;
   --skin-sound-button-image: none;
+  --skin-settings-button-image: none;
+  --skin-settings-icon-image: none;
+  --skin-history-icon-image: none;
+  --skin-exit-button-image: none;
+  --skin-exit-icon-image: none;
   --skin-cursor-default: auto;
   --skin-cursor-pointer: pointer;
   --skin-cursor-text: text;

@@ -54,9 +54,6 @@
 }
 
 .dashboard-shell--soft-form .top-controls .themed-button--tab {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
   height: 52px;
   min-height: 52px;
   padding: 0 1.25rem;
@@ -187,9 +184,6 @@
 .dashboard-shell--soft-form .stats-card__item,
 .dashboard-shell--soft-form .dragon-card__level-row {
   color: var(--dashboard-text-dark);
-}
-
-.dashboard-shell--soft-form .heatmap-card__content {
 }
 
 .dashboard-shell--soft-form .heatmap-card__calendar {

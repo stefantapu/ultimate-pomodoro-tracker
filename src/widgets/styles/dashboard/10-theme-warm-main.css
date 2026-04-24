@@ -137,9 +137,6 @@
   --top-controls-item-height: 50px;
   min-height: 0;
   height: var(--top-controls-item-height);
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
   justify-self: center;
   align-self: center;
   font-size: 0.8rem;
@@ -315,13 +312,7 @@
 }
 
 .dashboard-shell--warm .action-buttons__button--start:hover,
-.dashboard-shell--warm .action-buttons__button--start:focus-visible {
-  color: #fff0cd;
-  text-shadow:
-    0 1px 1px rgba(13, 4, 1, 0.9),
-    0 0 0.65rem rgba(255, 205, 118, 0.56);
-}
-
+.dashboard-shell--warm .action-buttons__button--start:focus-visible,
 .dashboard-shell--warm .action-buttons__button--start:active {
   color: #fff0cd;
   text-shadow:
@@ -335,13 +326,7 @@
 }
 
 .dashboard-shell--warm .action-buttons__button--reset:hover,
-.dashboard-shell--warm .action-buttons__button--reset:focus-visible {
-  color: #ffd9be;
-  text-shadow:
-    0 1px 1px rgba(12, 4, 1, 0.9),
-    0 0 0.65rem rgba(255, 153, 84, 0.5);
-}
-
+.dashboard-shell--warm .action-buttons__button--reset:focus-visible,
 .dashboard-shell--warm .action-buttons__button--reset:active {
   color: #ffd9be;
   text-shadow:

@@ -1,11 +1,3 @@
-.dashboard-shell {
-  --skin-settings-button-image: none;
-  --skin-settings-icon-image: none;
-  --skin-history-icon-image: none;
-  --skin-exit-button-image: none;
-  --skin-exit-icon-image: none;
-}
-
 .dashboard-shell button,
 .dashboard-shell a,
 .dashboard-shell [role="button"],
@@ -36,13 +28,6 @@
 .dashboard-shell .is-disabled *,
 .dashboard-shell [aria-disabled="true"] {
   cursor: var(--skin-cursor-disabled);
-}
-
-.dashboard-shell--warm .dashboard-toolbar {
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  border: none;
 }
 
 .dashboard-shell--warm .toolbar-icon-button {

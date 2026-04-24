@@ -1,1 +1,123 @@
-1. Target Architecture Keep only true app-wide primitives global: body, #root, base typography, @font-face, accessibility helpers, and third-party overrides. Move widget/component styling to CSS Modules colocated with components (_.module.css), especially classes currently owned by one component. Keep theming token-driven via CSS variables from cssVars.ts, not selector-heavy theme blocks. Keep theme definition in catalog.ts, but treat it as a strict theme contract: semantic color/spacing/typography/elevation tokens + optional asset slots + feature flags. Wire assets only through the skin contract and CSS vars (url(...) or none), not per-component hardcoded paths. Organize responsive rules by ownership: Global/layout breakpoints in one layout stylesheet. Component-specific breakpoints inside each component module. Theme files should not own layout behavior except art-specific exceptions. 2. Refactor Strategy Baseline and safety net. Non-behavioral CSS split (copy/move only). Theme contract hardening. Modal/overlay consolidation. Component-by-component CSS Module migration. Theme selector reduction and legacy cleanup. Phase details: Phase 1 (safe split): break dashboard.css into multiple files with identical selectors and import order preserved; no JSX changes. Phase 2 (contract): formalize required/optional skin tokens in types.ts and keep all runtime values flowing through mapSkinToCssVariables. Phase 3 (modals): unify repeated modal/overlay/auth/history/theme-picker theme overrides into shared tokenized styles. Phase 4 (modules): migrate low-coupling components first; leave legacy global classes in place until each component is verified. Phase 5 (theme cleanup): shrink .dashboard-shell--warm / .dashboard-shell--soft-form blocks to art-only deltas, move common behavior to tokenized component styles. Phase 6 (final): remove dead selectors, duplicate cursor/state blocks, and leftover inline visual styles. 3. First Refactor Candidates Highest impact + low risk: Third-party overrides in dashboard.css: react-activity-calendar and forge-toast blocks (easy extraction, no JSX coupling). Modal families: settings-modal_, history-dashboard*, theme-picker-modal*, auth-block* (well-prefixed blocks, currently duplicated theme treatment). Base reusable primitives: themed-button*, panel-shell*, toolbar icon button classes. Quick wins for coupling reduction: Inline-styled components TopBar.tsx, QuickNotes.tsx, and loading style in App.tsx. 4. CSS File Split Proposal Global/base: src/styles/base/reset.css src/styles/base/typography.css src/styles/base/app-shell.css Theme tokens + theme layers: src/styles/theme/theme-contract.css (default/fallback vars) src/styles/theme/theme-warm.css (art-specific warm deltas) src/styles/theme/theme-soft-form.css (soft-form deltas) Layout: src/styles/layout/dashboard-layout.css Component styles (CSS Modules): src/widgets/DashboardLayout.module.css src/widgets/TimerCard.module.css src/widgets/TopControls.module.css src/widgets/ActionButtons.module.css src/widgets/PanelShell.module.css Modal styles: src/widgets/modals/AuthBlock.module.css src/widgets/modals/SettingsModal.module.css src/widgets/modals/InfographicsModal.module.css src/widgets/modals/ThemePickerModal.module.css Third-party overrides: src/styles/vendors/react-activity-calendar.css src/styles/vendors/sonner.css Transition shim: keep src/widgets/dashboard.css as temporary import hub during migration, then retire. 5. Theme System Cleanup Replace big theme selectors with tokenized component styles: Component modules consume var(--dashboard-*) and var(--skin-_) only. Reduce JSX activeSkin.id branching: Introduce skin feature flags in catalog (example: effects.embers, audio.hasAssets) and branch on capability, not specific ID. Move hardcoded inline visual values to module classes backed by tokens. Keep theme-specific CSS only for true art direction differences; everything else becomes token-driven shared styles. Keep soft-form functional with null assets by relying on none variable fallbacks, not separate structural branches. 6. Migration Rules Allowed in global CSS: reset/base/html-body/root, utility classes, vendor overrides, cross-cutting layout shell. Must use CSS variables: colors, typography, radii, shadows, spacing scales, interactive surfaces, theme asset URLs/cursors. CSS Modules required when styles are component-owned and not reused globally. Theme-specific JSX branching allowed only for structural/behavioral differences not representable by tokens (and must use feature flags, not raw skin ID checks). Asset references must originate from skin catalog/config, never hardcoded inside component markup/CSS modules. New themes must compile by filling the typed theme contract first; no ad-hoc selector additions in legacy global files. 7. Risk Assessment Visual regressions from cascade/order changes. Mitigation: preserve import order during split; migrate one block family at a time. Specificity regressions when moving from global selectors to modules. Mitigation: keep temporary compatibility classes until parity is verified. Theme parity drift (warm has full assets, soft-form mostly null). Mitigation: enforce required token defaults and explicit optional asset fallback behavior. Hidden dependencies in the 3,642-line stylesheet. Mitigation: migrate by prefixed blocks (settings-modal_, history-dashboard\*, etc.) with side-by-side verification per phase. Runtime behavior tied to style classes (is-active, is-running, is-stone-impacting). Mitigation: keep class contract unchanged until each component module is fully validated.
+# Styling/Theming Refactor: Final State Snapshot
+
+This document reflects the current **as-built** styling/theming architecture after the completed safe incremental refactor scope.
+
+## Completed Phases Summary
+
+The following work is complete:
+
+1. Monolithic `dashboard.css` split into ordered dashboard style shards with behavior-preserving import order.
+2. Theme/skin contract hardening in `src/shared/skins`:
+   - stronger typing for required vs optional fields
+   - explicit capabilities
+   - centralized fallback behavior
+3. Live consumer cleanup for obvious runtime/UI theme bypasses.
+4. Modal/overlay selector-group dedupe and safe consolidation (no JSX contract changes).
+5. Conservative CSS Modules migration for low-risk primitives/components:
+   - `PanelShell`
+   - `ThemedButton` base
+   - toolbar icon base primitives
+   - `TopControls`
+   - `ActionButtons`
+   - `TimerCard`
+   - `DashboardLayout` shell/layout-owned base selectors
+6. Selective cleanup around migrated components (dead selectors and exact-safe duplicate pruning).
+7. Final safe incremental reduction pass:
+   - additional exact-safe theme-selector reductions
+   - selective DashboardLayout legacy structural class reduction
+   - root shell token ownership cleanup
+   - final dead/duplicate cleanup in touched families
+
+## Current Styling Architecture
+
+- `src/widgets/dashboard.css` is the temporary import hub and source-of-truth order boundary:
+  1. `00-foundation-layout.css`
+  2. `10-theme-warm-main.css`
+  3. `20-analytics-vendor-and-panels.css`
+  4. `30-auth-settings-toast.css`
+  5. `40-responsive-dashboard-auth-settings.css`
+  6. `50-toolbar-cursors.css`
+  7. `60-history-dashboard.css`
+  8. `70-theme-soft-form-dashboard.css`
+  9. `80-theme-picker-and-soft-form-overrides.css`
+
+- Theme contract flow is now explicit and typed:
+  - `src/shared/skins/types.ts`
+  - `src/shared/skins/catalog.ts`
+  - `src/shared/skins/cssVars.ts`
+- Root shell token application remains runtime-driven through `DashboardLayout`:
+  - `className="dashboard-shell dashboard-shell--${activeSkin.id}"`
+  - `style={mapSkinToCssVariables(activeSkin)}`
+
+- Ownership model:
+  - CSS Modules own component base styling where safely migrated.
+  - Global shard CSS intentionally retains theme/state/responsive/specificity-sensitive overlays.
+
+## CSS Modules Ownership (Current)
+
+Current module-owned base families:
+
+1. `PanelShell`: base shell/title/body primitives.
+2. `ThemedButton`: base button + base active state.
+3. Toolbar icon primitives: base positioning/label/icon defaults.
+4. `TopControls`: wrapper base layout.
+5. `ActionButtons`: wrapper base + start/reset base sizing.
+6. `TimerCard`: base card sizing, body stacking, time/digit/separator structure.
+7. `DashboardLayout`: shell/layout-owned structural wrappers and paired responsive base rules.
+
+Note: compatibility class emission remains selective and intentional; not all legacy classes were removed.
+
+## What Intentionally Remains Global
+
+The following stay global by design for stability/cascade safety:
+
+1. Warm/soft-form theme deltas (`.dashboard-shell--warm`, `.dashboard-shell--soft-form`) and true art-direction differences.
+2. Asset-coupled selectors (panel/background/icon imagery and related theme art blocks).
+3. Stateful/interactive visual selectors (running/active/impact/hover/focus families where theme-specific).
+4. Responsive clusters still coupled to global cascade/specificity.
+5. Modal/overlay families and their cross-family/theme overrides.
+6. Vendor overrides (`react-activity-calendar`, toast styling blocks).
+7. Shell-level cursor suites and root token scope selectors.
+
+## Remaining Legacy Class Contracts by Necessity
+
+Legacy classes intentionally still rendered/depended on include:
+
+1. Root shell/theme wrappers:
+   - `dashboard-shell`
+   - `dashboard-shell--warm`
+   - `dashboard-shell--soft-form`
+2. Shell anchors still used by global selectors:
+   - `dashboard-toolbar`
+   - `dashboard-bottom-row`
+   - `dashboard-lock-wrap*`
+3. Migrated component compatibility families still needed for global theme/responsive coupling:
+   - `timer-card*` (`is-running`, panel art/image, time/digit/separator families)
+   - `top-controls`
+   - `action-buttons*`
+   - `panel-shell*`
+   - `themed-button` + `themed-button--*` + `is-active`
+   - `toolbar-icon-button*`
+
+Structural DashboardLayout compatibility classes were safely reduced where no global dependency remained (for example structural wrappers now owned by `DashboardLayout.module.css`).
+
+## Safe Future Follow-Ups (Optional, Not Required)
+
+Conservative follow-ups that are safe candidates when needed:
+
+1. Continue family-by-family selector dependency retirement for remaining compatibility classes.
+2. Move additional responsive rules into component modules only where ownership is singular and specificity risk is low.
+3. Retire `dashboard.css` import-hub only after global shard dependencies are fully untangled and verified.
+4. Keep warm/soft theme wrappers until token-only parity is proven for currently coupled art/state families.
+
+### Intentionally Deferred
+
+1. Broad theme-selector architecture rewrite.
+2. Broad responsive architecture normalization.
+3. Aggressive legacy class purge across heavily coupled selector families.
+4. Visual redesign or runtime behavior changes.
+
+## Final Verdict
+
+The styling/theming refactor is **functionally complete for the safe incremental scope**.  
+Architecture is now significantly cleaner and more explicit, while intentional global/theme coupling is retained where required for visual and runtime stability.
