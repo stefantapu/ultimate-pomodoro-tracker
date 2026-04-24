@@ -548,6 +548,16 @@
   color: #ffe1bf;
 }
 
+.dashboard-shell--warm .dashboard-lock-wrap--heatmap {
+  width: min(100%, 400px);
+}
+
+.dashboard-shell--warm .dashboard-lock-wrap--heatmap .heatmap-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .dashboard-shell--warm .stats-card {
   border: none;
   background: transparent;
