@@ -179,6 +179,7 @@
 .settings-modal__overlay--neumorphism .settings-modal__notice,
 .settings-modal__overlay--neumorphism .settings-modal__warning {
   border: 1px solid var(--dashboard-stroke-soft);
+  border-radius: calc(var(--dashboard-modal-radius) - 0.9rem);
   background: var(--dashboard-surface-raised);
   color: var(--dashboard-text-dark);
   box-shadow: var(--dashboard-shadow-inset);
@@ -288,6 +289,10 @@
   box-shadow: var(--dashboard-shadow-inset);
 }
 
+.history-dashboard__overlay--neumorphism .history-dashboard__hourly-guides span {
+  border-top-color: rgba(138, 149, 161, 0.18);
+}
+
 .history-dashboard__overlay--neumorphism .history-dashboard__week-bar,
 .history-dashboard__overlay--neumorphism .history-dashboard__hourly-bar {
   background: linear-gradient(180deg, #aeb7c2, #7f8b99 70%, #67717e);
@@ -357,6 +362,10 @@
 }
 
 /* Soft-form parity overrides: keep these late for deterministic cascade precedence. */
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal {
+  font-family: var(--dashboard-font-family);
+}
+
 .auth-block--neumorphism .auth-block__input::placeholder {
   color: var(--dashboard-text-muted);
   opacity: 1;
@@ -393,6 +402,76 @@
   font-family: var(--dashboard-font-family);
   letter-spacing: 0.02em;
   text-transform: none;
+}
+
+.auth-block--neumorphism .auth-block__close,
+.settings-modal__overlay--neumorphism .settings-modal__close,
+.history-dashboard__overlay--neumorphism .history-dashboard__close,
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  font-size: 0;
+}
+
+.auth-block--neumorphism .auth-block__close::before,
+.auth-block--neumorphism .auth-block__close::after,
+.settings-modal__overlay--neumorphism .settings-modal__close::before,
+.settings-modal__overlay--neumorphism .settings-modal__close::after,
+.history-dashboard__overlay--neumorphism .history-dashboard__close::before,
+.history-dashboard__overlay--neumorphism .history-dashboard__close::after,
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::before,
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after {
+  content: "";
+  position: absolute;
+  width: 0.78rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.auth-block--neumorphism .auth-block__close::before,
+.settings-modal__overlay--neumorphism .settings-modal__close::before,
+.history-dashboard__overlay--neumorphism .history-dashboard__close::before,
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::before {
+  transform: rotate(45deg);
+}
+
+.auth-block--neumorphism .auth-block__close::after,
+.settings-modal__overlay--neumorphism .settings-modal__close::after,
+.history-dashboard__overlay--neumorphism .history-dashboard__close::after,
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after {
+  transform: rotate(-45deg);
+}
+
+body[data-dashboard-skin="neumorphism"] .forge-toast {
+  border: 1px solid rgba(138, 149, 161, 0.26) !important;
+  border-radius: 1.1rem !important;
+  background: #eef1f5 !important;
+  color: #2f3640 !important;
+  font-family: "DM Sans", "Segoe UI", sans-serif !important;
+  box-shadow:
+    12px 12px 28px rgba(177, 186, 196, 0.58),
+    -12px -12px 26px rgba(255, 255, 255, 0.94) !important;
+  text-align: left;
+}
+
+body[data-dashboard-skin="neumorphism"] .forge-toast__title {
+  color: #2f3640 !important;
+  font-family: "DM Sans", "Segoe UI", sans-serif !important;
+  letter-spacing: 0.02em !important;
+  text-shadow: none;
+  text-transform: none;
+}
+
+body[data-dashboard-skin="neumorphism"] .forge-toast [data-close-button] {
+  border: 1px solid rgba(138, 149, 161, 0.26) !important;
+  border-radius: 999px !important;
+  background: #eef1f5 !important;
+  color: #2f3640 !important;
+  box-shadow:
+    12px 12px 28px rgba(177, 186, 196, 0.58),
+    -12px -12px 26px rgba(255, 255, 255, 0.94);
 }
 
 @media (max-width: 640px) {
