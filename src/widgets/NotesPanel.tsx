@@ -2,39 +2,11 @@ import { useNotes } from "@shared/hooks/useNotes";
 import { memo, useCallback, useEffect, useRef } from "react";
 import { PanelShell } from "./PanelShell";
 
-const MAX_NOTEPAD_LENGTH = 340;
+const MAX_NOTEPAD_LENGTH = 1000;
 const MAX_NOTEPAD_LINES = 10;
 
 function normalizeNotepadContent(value: string) {
   return value.replace(/\r\n/g, "\n").slice(0, MAX_NOTEPAD_LENGTH);
-}
-
-function fitNotepadContent(
-  textarea: HTMLTextAreaElement | null,
-  value: string,
-) {
-  const normalizedValue = normalizeNotepadContent(value);
-
-  if (!textarea) {
-    return normalizedValue;
-  }
-
-  const previousValue = textarea.value;
-  let fittedValue = normalizedValue;
-
-  textarea.value = fittedValue;
-
-  while (
-    fittedValue.length > 0 &&
-    textarea.scrollHeight > textarea.clientHeight + 1
-  ) {
-    fittedValue = fittedValue.slice(0, -1);
-    textarea.value = fittedValue;
-  }
-
-  textarea.value = previousValue;
-
-  return fittedValue;
 }
 
 function NotesPanelBase() {
@@ -43,21 +15,16 @@ function NotesPanelBase() {
   const activeNoteIdRef = useRef<string | null>(null);
   const saveTimeoutRef = useRef<number | null>(null);
   const isPersistingRef = useRef(false);
-  const contentRef = useRef("");
 
   const primaryNote = notes[0] ?? null;
 
   const syncTextareaValue = useCallback((nextValue: string) => {
-    const fittedValue = fitNotepadContent(textareaRef.current, nextValue);
+    const normalizedValue = normalizeNotepadContent(nextValue);
     const textarea = textareaRef.current;
 
-    contentRef.current = fittedValue;
-
-    if (textarea && textarea.value !== fittedValue) {
-      textarea.value = fittedValue;
+    if (textarea && textarea.value !== normalizedValue) {
+      textarea.value = normalizedValue;
     }
-
-    return fittedValue;
   }, []);
 
   const schedulePersist = useCallback((nextValue: string) => {
@@ -102,38 +69,6 @@ function NotesPanelBase() {
   }, [primaryNote?.content, primaryNote?.id, syncTextareaValue]);
 
   useEffect(() => {
-    const nextContent = fitNotepadContent(
-      textareaRef.current,
-      primaryNote?.content ?? "",
-    );
-
-    if (!primaryNote?.id || primaryNote.content === nextContent) {
-      return;
-    }
-
-    updateNote(primaryNote.id, { content: nextContent });
-  }, [primaryNote?.content, primaryNote?.id, updateNote]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const previousValue = contentRef.current;
-      const fittedValue = syncTextareaValue(previousValue);
-
-      if (fittedValue === previousValue) {
-        return;
-      }
-
-      schedulePersist(fittedValue);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [schedulePersist, syncTextareaValue]);
-
-  useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
         window.clearTimeout(saveTimeoutRef.current);
@@ -158,12 +93,7 @@ function NotesPanelBase() {
           maxLength={MAX_NOTEPAD_LENGTH}
           aria-label="Notes notepad"
           onChange={(event) => {
-            const nextValue = fitNotepadContent(
-              event.currentTarget,
-              event.currentTarget.value,
-            );
-
-            contentRef.current = nextValue;
+            const nextValue = normalizeNotepadContent(event.currentTarget.value);
 
             if (event.currentTarget.value !== nextValue) {
               event.currentTarget.value = nextValue;

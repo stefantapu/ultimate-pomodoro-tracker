@@ -170,12 +170,25 @@
 }
 
 .dashboard-shell--neumorphism .notes-panel__notepad {
+  --notes-scrollbar-track: rgba(138, 149, 161, 0.16);
+  --notes-scrollbar-thumb: rgba(112, 124, 139, 0.48);
+  --notes-scrollbar-thumb-hover: rgba(94, 106, 122, 0.68);
   min-height: 0;
-  height: auto;
+  height: 100%;
   padding: 1.05rem 1.15rem 1rem;
   border: none;
+  clip-path: inset(0 round calc(var(--dashboard-panel-radius) - 0.35rem));
   color: var(--dashboard-text-dark);
   background-clip: padding-box;
+}
+
+.dashboard-shell--neumorphism
+  .notes-panel__notepad::-webkit-scrollbar-button:vertical:start:decrement,
+.dashboard-shell--neumorphism
+  .notes-panel__notepad::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+  height: 1.15rem;
+  background: transparent;
 }
 
 .dashboard-shell--neumorphism .notes-panel__notepad::placeholder {
