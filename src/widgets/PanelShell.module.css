@@ -1,0 +1,21 @@
+.panel-shell {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: var(--dashboard-radius);
+  background: var(--dashboard-panel);
+  color: var(--dashboard-text);
+  box-sizing: border-box;
+}
+
+.panel-shell__title {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  color: var(--dashboard-text-muted);
+}
+
+.panel-shell__body {
+  min-height: 0;
+}

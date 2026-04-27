@@ -1,4 +1,4 @@
-export type SkinId = "warm" | "soft-form";
+export type SkinId = "warm" | "neumorphism";
 
 export type SkinImageAsset = {
   src: string;
@@ -13,31 +13,71 @@ export type SkinCursorAsset = {
   hotspotY: number;
 };
 
-export type SkinAssets = {
-  pageBackground: SkinImageAsset | null;
-  notesPanel: SkinImageAsset | null;
-  heatmapPanel: SkinImageAsset | null;
-  statsPanel: SkinImageAsset | null;
-  dragonPanel: SkinImageAsset | null;
-  topControlsPanel: SkinImageAsset | null;
-  modeTabButton: SkinImageAsset | null;
-  timerPanel: SkinImageAsset | null;
-  timerPanelMobile: SkinImageAsset | null;
-  startButton: SkinImageAsset | null;
-  resetButton: SkinImageAsset | null;
-  autoFocusButton: SkinImageAsset | null;
-  autoBreakButton: SkinImageAsset | null;
-  soundButton: SkinImageAsset | null;
-  settingsButton: SkinImageAsset | null;
-  settingsIcon: SkinImageAsset | null;
-  historyIcon: SkinImageAsset | null;
-  exitButton: SkinImageAsset | null;
-  exitIcon: SkinImageAsset | null;
-  cursorDefault: SkinCursorAsset | null;
-  cursorPointer: SkinCursorAsset | null;
-  cursorText: SkinCursorAsset | null;
-  cursorDisabled: SkinCursorAsset | null;
-};
+export const SKIN_IMAGE_ASSET_KEYS = [
+  "pageBackground",
+  "notesPanel",
+  "heatmapPanel",
+  "statsPanel",
+  "dragonPanel",
+  "topControlsPanel",
+  "modeTabButton",
+  "timerPanel",
+  "timerPanelMobile",
+  "startButton",
+  "resetButton",
+  "autoFocusButton",
+  "autoBreakButton",
+  "soundButton",
+  "settingsButton",
+  "settingsIcon",
+  "historyIcon",
+  "exitButton",
+  "exitIcon",
+] as const;
+
+export type SkinImageAssetKey = (typeof SKIN_IMAGE_ASSET_KEYS)[number];
+
+export const SKIN_CURSOR_ASSET_KEYS = [
+  "cursorDefault",
+  "cursorPointer",
+  "cursorText",
+  "cursorDisabled",
+] as const;
+
+export type SkinCursorAssetKey = (typeof SKIN_CURSOR_ASSET_KEYS)[number];
+
+export const SKIN_AUDIO_ASSET_KEYS = [
+  "alarm",
+  "timerControl",
+  "toolbarClick",
+  "focusAmbience",
+] as const;
+
+export type SkinAudioAssetKey = (typeof SKIN_AUDIO_ASSET_KEYS)[number];
+
+export const SKIN_ASPECT_RATIO_FALLBACK_KEYS = [
+  "timerPanel",
+  "timerPanelMobile",
+  "startButton",
+  "autoFocusButton",
+  "notesPanel",
+  "heatmapPanel",
+  "statsPanel",
+  "topControlsPanel",
+  "modeTabButton",
+] as const;
+
+export type SkinAspectRatioFallbackKey =
+  (typeof SKIN_ASPECT_RATIO_FALLBACK_KEYS)[number];
+
+export type SkinImageAssets = Record<SkinImageAssetKey, SkinImageAsset | null>;
+
+export type SkinCursorAssets = Record<
+  SkinCursorAssetKey,
+  SkinCursorAsset | null
+>;
+
+export type SkinAssets = SkinImageAssets & SkinCursorAssets;
 
 export type SkinColors = {
   dashboardBg: string;
@@ -88,17 +128,66 @@ export type SkinLayout = {
   modalRadius: string;
 };
 
-export type SkinAudio = {
-  alarm: string | null;
-  timerControl: string | null;
-  toolbarClick: string | null;
-  focusAmbience: string | null;
+export type SkinAudio = Record<SkinAudioAssetKey, string | null>;
+
+export type SkinCapabilities = {
+  effects: {
+    embers: boolean;
+  };
+  audio: {
+    alarm: boolean;
+    timerControl: boolean;
+    toolbarClick: boolean;
+    focusAmbience: boolean;
+  };
+  visual: {
+    timerPanelArt: boolean;
+    toolbarIconArt: boolean;
+    customCursors: boolean;
+  };
+};
+
+export type SkinCursorFallbackKeyword =
+  | "auto"
+  | "pointer"
+  | "text"
+  | "not-allowed";
+
+export type SkinFallbackContract = {
+  imageCssValueForMissingAsset: "none";
+  cursorCssFallbackKeywords: Record<
+    SkinCursorAssetKey,
+    SkinCursorFallbackKeyword
+  >;
+  aspectRatioDefaults: Record<SkinAspectRatioFallbackKey, number>;
+};
+
+export const SKIN_FALLBACK_CONTRACT: SkinFallbackContract = {
+  imageCssValueForMissingAsset: "none",
+  cursorCssFallbackKeywords: {
+    cursorDefault: "auto",
+    cursorPointer: "pointer",
+    cursorText: "text",
+    cursorDisabled: "not-allowed",
+  },
+  aspectRatioDefaults: {
+    timerPanel: 2.68,
+    timerPanelMobile: 1,
+    startButton: 3,
+    autoFocusButton: 1,
+    notesPanel: 0.76,
+    heatmapPanel: 2.39,
+    statsPanel: 0.8967,
+    topControlsPanel: 6.5,
+    modeTabButton: 3.53,
+  },
 };
 
 export type SkinProfile = {
   id: SkinId;
   label: string;
   description: string;
+  capabilities: SkinCapabilities;
   assets: SkinAssets;
   audio: SkinAudio;
   colors: SkinColors;

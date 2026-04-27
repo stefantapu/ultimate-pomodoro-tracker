@@ -1,9 +1,10 @@
-import { memo, Suspense, lazy, useMemo, type ComponentType } from "react";
+import { memo, Suspense, lazy, useEffect, useMemo, type ComponentType } from "react";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
+import styles from "./DashboardLayout.module.css";
 import { BackgroundEmbers } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
@@ -39,6 +40,10 @@ type PanelFallbackProps = {
   message: string;
 };
 
+function joinClassNames(...classNames: Array<string | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
+
 function PlaceholderHeatmapCard({ message }: PanelFallbackProps) {
   return (
     <PanelShell className="heatmap-card" bodyClassName="heatmap-card__content">
@@ -51,7 +56,7 @@ function PlaceholderStatsCard({ message }: PanelFallbackProps) {
   const items = [
     { label: "Focus", value: message },
     { label: "Break", value: message },
-    { label: "Cycles", value: message },
+    { label: "Today", value: message },
     { label: "Streak", value: message },
   ];
 
@@ -120,7 +125,12 @@ function GuestNotesPanel({
   LockedOverlayComponent: ComponentType;
 }) {
   return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+    <div
+      className={joinClassNames(
+        styles["dashboard-notes-wrap"],
+        "dashboard-lock-wrap dashboard-lock-wrap--notes",
+      )}
+    >
       <PlaceholderNotesPanel message="Sign in to save notes." />
       <LockedOverlayComponent />
     </div>
@@ -142,7 +152,12 @@ function GuestDragonPanel({
 
 function AuthenticatedNotesPanel() {
   return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--notes dashboard-notes-wrap">
+    <div
+      className={joinClassNames(
+        styles["dashboard-notes-wrap"],
+        "dashboard-lock-wrap dashboard-lock-wrap--notes",
+      )}
+    >
       <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
         <LazyNotesPanel />
       </Suspense>
@@ -176,14 +191,26 @@ export const DashboardLayout = memo(function DashboardLayout({
     [activeSkin],
   );
 
+  useEffect(() => {
+    document.body.dataset.dashboardSkin = activeSkin.id;
+
+    return () => {
+      if (document.body.dataset.dashboardSkin === activeSkin.id) {
+        delete document.body.dataset.dashboardSkin;
+      }
+    };
+  }, [activeSkin.id]);
+
   return (
     <div
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
-      {activeSkin.id === "warm" && !isOverlayOpen ? <BackgroundEmbers /> : null}
-      <div className="dashboard-content">
-        <div className="dashboard-toolbar">
+      {activeSkin.capabilities.effects.embers && !isOverlayOpen ? (
+        <BackgroundEmbers />
+      ) : null}
+      <div className={styles["dashboard-content"]}>
+        <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
           <InfographicsButton />
           <ThemePickerButton />
           <SettingsButton />
@@ -210,12 +237,22 @@ export const DashboardLayout = memo(function DashboardLayout({
           </div>
         </section>
 
-        <main className="dashboard-main">
-          <section className="dashboard-section dashboard-section--primary">
+        <main className={styles["dashboard-main"]}>
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--primary"],
+            )}
+          >
             <TimerBlock />
           </section>
 
-          <section className="dashboard-section dashboard-section--secondary">
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--secondary"],
+            )}
+          >
             {user ? (
               <AuthenticatedNotesPanel />
             ) : (
@@ -223,8 +260,13 @@ export const DashboardLayout = memo(function DashboardLayout({
             )}
           </section>
 
-          <section className="dashboard-section dashboard-section--bottom">
-            <div className="dashboard-bottom-row">
+          <section
+            className={joinClassNames(
+              styles["dashboard-section"],
+              styles["dashboard-section--bottom"],
+            )}
+          >
+            <div className={joinClassNames(styles["dashboard-bottom-row"], "dashboard-bottom-row")}>
               {user ? (
                 <>
                   <Suspense

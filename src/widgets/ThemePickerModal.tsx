@@ -39,10 +39,7 @@ export const ThemePickerModal = memo(function ThemePickerModal() {
         onClick={(event) => event.stopPropagation()}
       >
         <header className="theme-picker-modal__header">
-          <div>
-            <p className="theme-picker-modal__eyebrow">Appearance</p>
-            <h2 id="theme-picker-title">Theme Picker</h2>
-          </div>
+          <h2 id="theme-picker-title">Theme Picker</h2>
           <button
             type="button"
             className="theme-picker-modal__close"

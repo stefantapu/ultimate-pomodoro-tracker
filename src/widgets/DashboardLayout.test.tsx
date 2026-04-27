@@ -1,7 +1,8 @@
 import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
+import { useUIStore } from "@shared/stores/uiStore";
 import { renderWithProviders } from "../test/testUtils";
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardLayout } from "./DashboardLayout";
 
@@ -42,7 +43,14 @@ afterEach(() => {
     activeSkinId: "warm",
     activeSkin: getSkinById("warm"),
   });
+  useUIStore.setState((state) => ({
+    ...state,
+    isSettingsModalOpen: false,
+    isInfographicsModalOpen: false,
+    isThemePickerModalOpen: false,
+  }));
   window.localStorage.clear();
+  delete document.body.dataset.dashboardSkin;
 });
 
 describe("DashboardLayout", () => {
@@ -55,6 +63,7 @@ describe("DashboardLayout", () => {
 
     expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();
     expect(screen.getByText("Sign in to view focus history.")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
     expect(screen.getAllByText("LOCKED")).toHaveLength(4);
   });
 
@@ -74,6 +83,26 @@ describe("DashboardLayout", () => {
     expect(screen.getByText("Dragon card")).toBeInTheDocument();
   });
 
+  it("syncs body dashboard skin data attribute for portal-rendered UI", async () => {
+    const { unmount } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(document.body.dataset.dashboardSkin).toBe("warm");
+
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("neumorphism");
+    });
+
+    await waitFor(() => {
+      expect(document.body.dataset.dashboardSkin).toBe("neumorphism");
+    });
+
+    unmount();
+
+    expect(document.body.dataset.dashboardSkin).toBeUndefined();
+  });
+
   it("keeps the same bottom-row wrapper structure across themes", () => {
     const expectedClasses = [
       "dashboard-lock-wrap dashboard-lock-wrap--heatmap",
@@ -81,7 +110,7 @@ describe("DashboardLayout", () => {
       "dashboard-lock-wrap dashboard-lock-wrap--dragon",
     ];
 
-    const renderBottomRowClasses = (skinId: "warm" | "soft-form") => {
+    const renderBottomRowClasses = (skinId: "warm" | "neumorphism") => {
       useSkinStore.getState().setActiveSkinId(skinId);
 
       const { container, unmount } = renderWithProviders(
@@ -102,6 +131,82 @@ describe("DashboardLayout", () => {
     };
 
     expect(renderBottomRowClasses("warm")).toEqual(expectedClasses);
-    expect(renderBottomRowClasses("soft-form")).toEqual(expectedClasses);
+    expect(renderBottomRowClasses("neumorphism")).toEqual(expectedClasses);
+  });
+
+  it("keeps required shell anchor class contracts after layout cleanup", () => {
+    const { container } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(container.querySelector(".dashboard-toolbar")).toHaveClass(
+      "dashboard-toolbar",
+    );
+    expect(container.querySelector(".dashboard-bottom-row")).toHaveClass(
+      "dashboard-bottom-row",
+    );
+
+    const notesWrap = container.querySelector(".dashboard-lock-wrap--notes");
+    expect(notesWrap).toHaveClass("dashboard-lock-wrap", "dashboard-lock-wrap--notes");
+    expect(notesWrap).not.toHaveClass("dashboard-notes-wrap");
+
+    expect(container.querySelector(".dashboard-content")).toBeNull();
+    expect(container.querySelector(".dashboard-main")).toBeNull();
+    expect(container.querySelector(".dashboard-section")).toBeNull();
+    expect(container.querySelector(".dashboard-section--primary")).toBeNull();
+    expect(container.querySelector(".dashboard-section--secondary")).toBeNull();
+    expect(container.querySelector(".dashboard-section--bottom")).toBeNull();
+  });
+
+  it("renders embers from skin capability, not just skin id", () => {
+    const warmSkin = getSkinById("warm");
+    useSkinStore.setState({
+      activeSkinId: "warm",
+      activeSkin: {
+        ...warmSkin,
+        capabilities: {
+          ...warmSkin.capabilities,
+          effects: {
+            ...warmSkin.capabilities.effects,
+            embers: false,
+          },
+        },
+      },
+    });
+
+    const { container, unmount } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(container.querySelector(".dashboard-shell")).toHaveClass(
+      "dashboard-shell--warm",
+    );
+    expect(container.querySelector(".dashboard-embers")).toBeNull();
+
+    unmount();
+
+    const neumorphismSkin = getSkinById("neumorphism");
+    useSkinStore.setState({
+      activeSkinId: "neumorphism",
+      activeSkin: {
+        ...neumorphismSkin,
+        capabilities: {
+          ...neumorphismSkin.capabilities,
+          effects: {
+            ...neumorphismSkin.capabilities.effects,
+            embers: true,
+          },
+        },
+      },
+    });
+
+    const { container: secondContainer } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(secondContainer.querySelector(".dashboard-shell")).toHaveClass(
+      "dashboard-shell--neumorphism",
+    );
+    expect(secondContainer.querySelector(".dashboard-embers")).not.toBeNull();
   });
 });

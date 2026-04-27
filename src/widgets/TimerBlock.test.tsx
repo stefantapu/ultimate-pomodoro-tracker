@@ -153,9 +153,9 @@ describe("TimerBlock", () => {
     expect(document.title).toBe("Forge Timer - Pomodoro");
   });
 
-  it("uses silent audio placeholders on the soft-form skin", () => {
+  it("uses silent audio placeholders on the neumorphism skin", () => {
     act(() => {
-      useSkinStore.getState().setActiveSkinId("soft-form");
+      useSkinStore.getState().setActiveSkinId("neumorphism");
     });
 
     renderWithProviders(<TimerBlock />);
@@ -163,5 +163,17 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(null, 1);
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.5);
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, { loop: true });
+  });
+
+  it("renders settings modal with neumorphism class hooks for theme-specific audio styling", async () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("neumorphism");
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(await screen.findByText("Sound")).toBeInTheDocument();
+    expect(document.querySelector(".settings-modal__overlay--neumorphism")).not.toBeNull();
   });
 });

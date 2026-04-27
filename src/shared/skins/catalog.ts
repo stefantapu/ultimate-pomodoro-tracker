@@ -5,6 +5,22 @@ const warmSkin: SkinProfile = {
   id: "warm",
   label: "Warm",
   description: "Primary warm palette with themed timer controls.",
+  capabilities: {
+    effects: {
+      embers: true,
+    },
+    audio: {
+      alarm: true,
+      timerControl: true,
+      toolbarClick: true,
+      focusAmbience: true,
+    },
+    visual: {
+      timerPanelArt: true,
+      toolbarIconArt: true,
+      customCursors: true,
+    },
+  },
   assets: {
     pageBackground: buildImageAsset("/assets/red_lava_theme/background.webp", {
       width: 1920,
@@ -70,10 +86,10 @@ const warmSkin: SkinProfile = {
       "/assets/red_lava_theme/settings_button/settings_icon_100x100.webp",
       { width: 100, height: 100 },
     ),
-    historyIcon: buildImageAsset(
-      "/assets/red_lava_theme/history_icon.webp",
-      { width: 100, height: 100 },
-    ),
+    historyIcon: buildImageAsset("/assets/red_lava_theme/history_icon.webp", {
+      width: 100,
+      height: 100,
+    }),
     exitButton: buildImageAsset(
       "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
       { width: 150, height: 150 },
@@ -159,13 +175,32 @@ const warmSkin: SkinProfile = {
   },
 };
 
-const softFormSkin: SkinProfile = {
-  id: "soft-form",
-  label: "Soft-Form Studio",
+const neumorphismSkin: SkinProfile = {
+  id: "neumorphism",
+  label: "Neumorphism",
   description:
     "Ultra-light monochrome neumorphic skin with soft depth and calm contrast.",
+  capabilities: {
+    effects: {
+      embers: false,
+    },
+    audio: {
+      alarm: false,
+      timerControl: false,
+      toolbarClick: false,
+      focusAmbience: false,
+    },
+    visual: {
+      timerPanelArt: false,
+      toolbarIconArt: false,
+      customCursors: false,
+    },
+  },
   assets: {
-    pageBackground: null,
+    pageBackground: buildImageAsset(
+      "/assets/Neumorphism/background/neumorphism.webp",
+      { width: 1672, height: 941 },
+    ),
     notesPanel: null,
     heatmapPanel: null,
     statsPanel: null,
@@ -245,19 +280,36 @@ const softFormSkin: SkinProfile = {
   },
 };
 
-const skins: SkinProfile[] = [warmSkin, softFormSkin];
+const skinCatalog = {
+  warm: warmSkin,
+  neumorphism: neumorphismSkin,
+} satisfies Record<SkinId, SkinProfile>;
 
-const skinById = new Map<SkinId, SkinProfile>(
-  skins.map((skin) => [skin.id, skin]),
-);
+const skins: readonly SkinProfile[] = [
+  skinCatalog.warm,
+  skinCatalog.neumorphism,
+];
+
+const skinById = new Map<SkinId, SkinProfile>([
+  ["warm", skinCatalog.warm],
+  ["neumorphism", skinCatalog.neumorphism],
+]);
+
+const legacySkinIds = new Map<string, SkinId>([["soft-form", "neumorphism"]]);
 
 export const DEFAULT_SKIN_ID: SkinId = "warm";
 
-export function listSkins(): SkinProfile[] {
+export function listSkins(): readonly SkinProfile[] {
   return skins;
 }
 
 export function getSkinById(skinId: string): SkinProfile {
+  const legacySkinId = legacySkinIds.get(skinId);
+
+  if (legacySkinId) {
+    return skinById.get(legacySkinId)!;
+  }
+
   if (skinById.has(skinId as SkinId)) {
     return skinById.get(skinId as SkinId)!;
   }
@@ -268,4 +320,3 @@ export function getSkinById(skinId: string): SkinProfile {
 export function isSkinId(value: string): value is SkinId {
   return skinById.has(value as SkinId);
 }
-

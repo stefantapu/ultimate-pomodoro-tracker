@@ -113,3 +113,22 @@ code {
   background: var(--code-bg);
 }
 
+.app-loading-state {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 1rem;
+  background: var(--dashboard-bg, var(--bg));
+  color: var(--dashboard-text, var(--text-h));
+  font-family: var(--dashboard-font-family, var(--sans));
+}
+
+.app-auth-fallback {
+  background: var(--dashboard-modal-overlay, rgba(0, 0, 0, 0.45));
+}
+
+.app-auth-fallback__description {
+  color: var(--dashboard-text-muted, inherit);
+}
+

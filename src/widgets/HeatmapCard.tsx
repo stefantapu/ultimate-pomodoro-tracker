@@ -1,5 +1,7 @@
 import { memo } from "react";
 import type { HeatmapData } from "@shared/hooks/useAnalytics";
+import type { SkinId } from "@shared/skins/types";
+import { useSkinStore } from "@shared/stores/skinStore";
 import { ActivityCalendar } from "react-activity-calendar";
 import { PanelShell } from "./PanelShell";
 
@@ -9,6 +11,18 @@ type HeatmapCardProps = {
 };
 
 const HEATMAP_WINDOW_DAYS = 183;
+const HEATMAP_COLORS_BY_SKIN: Record<
+  SkinId,
+  [string, string, string, string, string]
+> = {
+  warm: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
+  "neumorphism": ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
+};
+
+const HEATMAP_COLOR_SCHEME_BY_SKIN: Record<SkinId, "light" | "dark"> = {
+  warm: "dark",
+  "neumorphism": "light",
+};
 
 function getCalendarData(heatmapData: HeatmapData[]) {
   const recentHeatmapData = heatmapData.slice(-HEATMAP_WINDOW_DAYS);
@@ -42,6 +56,7 @@ export const HeatmapCard = memo(function HeatmapCard({
   heatmapData,
   loading,
 }: HeatmapCardProps) {
+  const activeSkinId = useSkinStore((state) => state.activeSkinId);
   const totalFocusedHours = (
     heatmapData.reduce((sum, day) => sum + day.value, 0) / 3600
   ).toFixed(1);
@@ -51,9 +66,10 @@ export const HeatmapCard = memo(function HeatmapCard({
     return `${Number(day)}/${Number(month)}`;
   };
 
+  const heatmapColors = HEATMAP_COLORS_BY_SKIN[activeSkinId];
   const calendarTheme = {
-    light: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
-    dark: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
+    light: heatmapColors,
+    dark: heatmapColors,
   };
 
   return (
@@ -65,7 +81,7 @@ export const HeatmapCard = memo(function HeatmapCard({
           <ActivityCalendar
             data={getCalendarData(heatmapData)}
             theme={calendarTheme}
-            colorScheme="dark"
+            colorScheme={HEATMAP_COLOR_SCHEME_BY_SKIN[activeSkinId]}
             maxLevel={4}
             blockSize={12}
             blockMargin={4}

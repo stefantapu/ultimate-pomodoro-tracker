@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
   DEFAULT_SKIN_ID,
   getSkinById,
-  isSkinId,
 } from "@shared/skins/catalog";
 import type { SkinId, SkinProfile } from "@shared/skins/types";
 
@@ -16,8 +15,8 @@ function readStoredSkinId(): SkinId {
   try {
     const rawValue = window.localStorage.getItem(STORAGE_KEY);
 
-    if (rawValue && isSkinId(rawValue)) {
-      return rawValue;
+    if (rawValue) {
+      return getSkinById(rawValue).id;
     }
   } catch {
     return DEFAULT_SKIN_ID;

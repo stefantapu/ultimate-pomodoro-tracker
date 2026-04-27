@@ -19,23 +19,27 @@ describe("ThemePickerModal", () => {
     }));
   });
 
-  it("applies soft-form and persists the selection", () => {
+  it("applies neumorphism and persists the selection", () => {
     render(<ThemePickerModal />);
 
-    fireEvent.click(screen.getByRole("radio", { name: /soft-form studio/i }));
+    fireEvent.click(screen.getByRole("radio", { name: /neumorphism/i }));
 
-    expect(useSkinStore.getState().activeSkinId).toBe("soft-form");
-    expect(localStorage.getItem("pomodoro-active-skin")).toBe("soft-form");
+    expect(useSkinStore.getState().activeSkinId).toBe("neumorphism");
+    expect(localStorage.getItem("pomodoro-active-skin")).toBe("neumorphism");
   });
 
   it("marks the active theme in the picker", () => {
     render(<ThemePickerModal />);
 
+    expect(
+      screen.getByRole("heading", { name: "Theme Picker" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Appearance")).not.toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /warm/i })).toHaveAttribute(
       "aria-checked",
       "true",
     );
-    expect(screen.getByRole("radio", { name: /soft-form studio/i })).toHaveAttribute(
+    expect(screen.getByRole("radio", { name: /neumorphism/i })).toHaveAttribute(
       "aria-checked",
       "false",
     );

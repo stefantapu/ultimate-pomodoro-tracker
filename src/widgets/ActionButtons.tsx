@@ -6,6 +6,7 @@ import {
   useState,
   type PointerEvent,
 } from "react";
+import styles from "./ActionButtons.module.css";
 import { ThemedButton } from "./ThemedButton";
 
 type ActionButtonsProps = {
@@ -17,6 +18,10 @@ type ActionButtonsProps = {
 type StoneButton = "primary" | "reset";
 
 const STONE_IMPACT_DURATION_MS = 1000;
+
+function joinClassNames(...classNames: Array<string | false | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
 
 export const ActionButtons = memo(function ActionButtons({
   status,
@@ -74,22 +79,24 @@ export const ActionButtons = memo(function ActionButtons({
   };
 
   const getStoneButtonClassName = (
-    baseClassName: string,
+    legacyClassName: string,
+    moduleClassName: string,
     button: StoneButton,
   ) =>
-    [
-      baseClassName,
+    joinClassNames(
+      moduleClassName,
+      legacyClassName,
       impactButton === button && "is-stone-impacting",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    );
 
   const primaryButtonClassName = getStoneButtonClassName(
     "action-buttons__button--start",
+    styles["action-buttons__button--start"],
     "primary",
   );
   const resetButtonClassName = getStoneButtonClassName(
     "action-buttons__button--reset",
+    styles["action-buttons__button--reset"],
     "reset",
   );
 
@@ -104,7 +111,7 @@ export const ActionButtons = memo(function ActionButtons({
   };
 
   return (
-    <div className="action-buttons">
+    <div className={joinClassNames(styles["action-buttons"], "action-buttons")}>
       <ThemedButton
         variant="action"
         className={primaryButtonClassName}

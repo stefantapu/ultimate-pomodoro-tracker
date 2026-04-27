@@ -1,10 +1,12 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useMemo } from "react";
 import { DashboardLayout } from "../widgets/DashboardLayout";
 import { LockedOverlay } from "../widgets/LockedOverlay";
 import {
   markToastHostReady,
   useUIStore,
 } from "../shared/stores/uiStore";
+import { mapSkinToCssVariables } from "../shared/skins/cssVars";
+import { useSkinStore } from "../shared/stores/skinStore";
 import { useAuth } from "./providers/useAuth";
 
 const LazyAuthBlock = lazy(() =>
@@ -48,11 +50,22 @@ const LazyThemePickerModal = lazy(() =>
   })),
 );
 
-function AuthModalFallback() {
+function AuthModalFallback({
+  skinCssVariables,
+  skinId,
+}: {
+  skinCssVariables: ReturnType<typeof mapSkinToCssVariables>;
+  skinId: string;
+}) {
   return (
-    <div className="auth-block">
+    <div
+      className={`auth-block app-auth-fallback auth-block--${skinId}`}
+      style={skinCssVariables}
+    >
       <div className="auth-block__panel">
-        <p className="auth-block__description">Loading sign in...</p>
+        <p className="auth-block__description app-auth-fallback__description">
+          Loading sign in...
+        </p>
       </div>
     </div>
   );
@@ -60,6 +73,7 @@ function AuthModalFallback() {
 
 function App() {
   const { user, loading } = useAuth();
+  const activeSkin = useSkinStore((state) => state.activeSkin);
   const isAuthModalOpen = useUIStore((state) => state.isAuthModalOpen);
   const isInfographicsModalOpen = useUIStore(
     (state) => state.isInfographicsModalOpen,
@@ -68,10 +82,14 @@ function App() {
     (state) => state.isThemePickerModalOpen,
   );
   const isToastHostEnabled = useUIStore((state) => state.isToastHostEnabled);
+  const skinCssVariables = useMemo(
+    () => mapSkinToCssVariables(activeSkin),
+    [activeSkin],
+  );
 
   if (loading) {
     return (
-      <div style={{ height: "100vh", display: "grid", placeItems: "center", color: "white" }}>
+      <div className="app-loading-state" style={skinCssVariables}>
         Loading Realm...
       </div>
     );
@@ -86,7 +104,14 @@ function App() {
       ) : null}
 
       {isAuthModalOpen ? (
-        <Suspense fallback={<AuthModalFallback />}>
+        <Suspense
+          fallback={
+            <AuthModalFallback
+              skinCssVariables={skinCssVariables}
+              skinId={activeSkin.id}
+            />
+          }
+        >
           <LazyAuthBlock />
         </Suspense>
       ) : null}

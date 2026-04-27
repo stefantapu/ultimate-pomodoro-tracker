@@ -6,6 +6,7 @@ import {
   useState,
   type PointerEvent,
 } from "react";
+import styles from "./TopControls.module.css";
 import { ThemedButton } from "./ThemedButton";
 
 type TopControlsProps = {
@@ -14,6 +15,10 @@ type TopControlsProps = {
 };
 
 const STONE_IMPACT_DURATION_MS = 1000;
+
+function joinClassNames(...classNames: Array<string | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
 
 export const TopControls = memo(function TopControls({
   mode,
@@ -73,7 +78,7 @@ export const TopControls = memo(function TopControls({
     impactMode === nextMode ? "is-stone-impacting" : undefined;
 
   return (
-    <div className="top-controls">
+    <div className={joinClassNames(styles["top-controls"], "top-controls")}>
       <ThemedButton
         variant="tab"
         active={mode === "focus"}

@@ -1,6 +1,7 @@
 import { useAlarm } from "@shared/hooks/useAlarm";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useSettingsSync } from "@shared/hooks/useSettingsSync";
+import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import {
   extractTimerSettings,
   readUserSettings,
@@ -45,9 +46,18 @@ const LazySettingsModal = lazy(() =>
 
 const STATE_STORAGE_KEY = "pomodoro-timer-state";
 
-function SettingsModalFallback() {
+function SettingsModalFallback({
+  skinId,
+  skinCssVariables,
+}: {
+  skinId: string;
+  skinCssVariables: ReturnType<typeof mapSkinToCssVariables>;
+}) {
   return (
-    <div className="settings-modal__overlay">
+    <div
+      className={`settings-modal__overlay settings-modal__overlay--${skinId}`}
+      style={skinCssVariables}
+    >
       <div className="settings-modal">
         <header className="settings-modal__header">
           <h2>Settings</h2>
@@ -62,6 +72,10 @@ function SettingsModalFallback() {
 
 export function TimerBlock() {
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const skinCssVariables = useMemo(
+    () => mapSkinToCssVariables(activeSkin),
+    [activeSkin],
+  );
   const alarmSoundSrc = activeSkin.audio.alarm;
   const timerControlSoundSrc = activeSkin.audio.timerControl;
   const uiPreviewSoundSrc = activeSkin.audio.toolbarClick ?? activeSkin.audio.timerControl;
@@ -624,7 +638,14 @@ export function TimerBlock() {
   return (
     <div className="timer-block">
       {isSettingsModalOpen ? (
-        <Suspense fallback={<SettingsModalFallback />}>
+        <Suspense
+          fallback={
+            <SettingsModalFallback
+              skinId={activeSkin.id}
+              skinCssVariables={skinCssVariables}
+            />
+          }
+        >
           <LazySettingsModal
             focusDraftMinutes={focusDraftMinutes}
             breakDraftMinutes={breakDraftMinutes}
