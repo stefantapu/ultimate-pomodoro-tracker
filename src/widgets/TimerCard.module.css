@@ -22,6 +22,7 @@
 
 .timer-card__time {
   font-family: var(--dashboard-display-font-family);
+  font-style: var(--dashboard-display-font-style);
   font-size: 5rem;
   line-height: 1;
   display: inline-flex;

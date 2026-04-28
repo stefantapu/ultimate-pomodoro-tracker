@@ -158,7 +158,7 @@ describe("DashboardLayout", () => {
     expect(container.querySelector(".dashboard-section--bottom")).toBeNull();
   });
 
-  it("renders embers from skin capability, not just skin id", () => {
+  it("renders ambient particles from skin capability, not just skin id", () => {
     const warmSkin = getSkinById("warm");
     useSkinStore.setState({
       activeSkinId: "warm",
@@ -168,7 +168,7 @@ describe("DashboardLayout", () => {
           ...warmSkin.capabilities,
           effects: {
             ...warmSkin.capabilities.effects,
-            embers: false,
+            ambient: null,
           },
         },
       },
@@ -181,7 +181,7 @@ describe("DashboardLayout", () => {
     expect(container.querySelector(".dashboard-shell")).toHaveClass(
       "dashboard-shell--warm",
     );
-    expect(container.querySelector(".dashboard-embers")).toBeNull();
+    expect(container.querySelector(".dashboard-particles")).toBeNull();
 
     unmount();
 
@@ -194,7 +194,7 @@ describe("DashboardLayout", () => {
           ...neumorphismSkin.capabilities,
           effects: {
             ...neumorphismSkin.capabilities.effects,
-            embers: true,
+            ambient: getSkinById("warm").capabilities.effects.ambient,
           },
         },
       },
@@ -207,6 +207,23 @@ describe("DashboardLayout", () => {
     expect(secondContainer.querySelector(".dashboard-shell")).toHaveClass(
       "dashboard-shell--neumorphism",
     );
+    expect(secondContainer.querySelector(".dashboard-particles")).not.toBeNull();
     expect(secondContainer.querySelector(".dashboard-embers")).not.toBeNull();
+  });
+
+  it("renders viking snow particles from the ambient effect config", () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("viking");
+    });
+
+    const { container } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    expect(container.querySelector(".dashboard-shell")).toHaveClass(
+      "dashboard-shell--viking",
+    );
+    expect(container.querySelector(".dashboard-particles--snow")).not.toBeNull();
+    expect(container.querySelector(".dashboard-particle--snow")).not.toBeNull();
   });
 });

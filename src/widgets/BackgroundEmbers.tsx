@@ -1,6 +1,9 @@
+import type { SkinAmbientEffect } from "@shared/skins/types";
 import { memo, useMemo, type CSSProperties } from "react";
 
-const EMBER_COUNT = 100;
+type BackgroundParticlesProps = {
+  effect: SkinAmbientEffect;
+};
 
 function createSeededRandom(seed: number) {
   let value = seed >>> 0;
@@ -11,47 +14,75 @@ function createSeededRandom(seed: number) {
   };
 }
 
-export const BackgroundEmbers = memo(function BackgroundEmbers() {
-  const embers = useMemo(() => {
-    const random = createSeededRandom(0x1f2e3d4c);
-    const colors = [
-      "rgba(255, 119, 49, 0.92)",
-      "rgba(255, 157, 72, 0.88)",
-      "rgba(255, 205, 126, 0.82)",
-      "rgba(252, 252, 252, 0.84)",
-    ];
+function interpolate(
+  randomValue: number,
+  range: readonly [number, number],
+) {
+  return range[0] + randomValue * (range[1] - range[0]);
+}
 
-    return Array.from({ length: EMBER_COUNT }, (_, index) => {
-      const size = 2.8 + random() * 3.4;
-      const left = random() * 100;
-      const duration = 10 + random() * 7;
-      const delay = -random() * duration;
-      const drift = (random() - 0.5) * 18;
-      const travel = 108 + random() * 20;
-      const opacity = 0.34 + random() * 0.48;
-      const color = colors[Math.floor(random() * colors.length)];
+export const BackgroundParticles = memo(function BackgroundParticles({
+  effect,
+}: BackgroundParticlesProps) {
+  const particles = useMemo(() => {
+    const random = createSeededRandom(effect.seed);
+
+    return Array.from({ length: effect.count }, (_, index) => {
+      const size = interpolate(random(), effect.sizeRangePx);
+      const duration = interpolate(random(), effect.durationRangeSec);
+      const delay = interpolate(random(), effect.delayRangeSec);
+      const opacity = interpolate(random(), effect.opacityRange);
+      const startX = interpolate(random(), effect.startXRangePercent);
+      const startY = interpolate(random(), effect.startYRangePercent);
+      const travelX = interpolate(random(), effect.travelXRangeVw);
+      const travelY = interpolate(random(), effect.travelYRangeSvh);
+      const drift = interpolate(random(), effect.driftRangeVw);
+      const color = effect.colors[Math.floor(random() * effect.colors.length)];
 
       return {
-        id: `ember-${index}`,
+        id: `${effect.kind}-${index}`,
         style: {
-          "--ember-left": `${left.toFixed(2)}%`,
-          "--ember-size": `${size.toFixed(2)}px`,
-          "--ember-duration": `${duration.toFixed(2)}s`,
-          "--ember-delay": `${delay.toFixed(2)}s`,
-          "--ember-drift": `${drift.toFixed(2)}vw`,
-          "--ember-travel": `${travel.toFixed(2)}svh`,
-          "--ember-opacity": opacity.toFixed(2),
-          "--ember-color": color,
+          "--particle-left": `${startX.toFixed(2)}%`,
+          "--particle-top": `${startY.toFixed(2)}%`,
+          "--particle-size": `${size.toFixed(2)}px`,
+          "--particle-duration": `${duration.toFixed(2)}s`,
+          "--particle-delay": `${delay.toFixed(2)}s`,
+          "--particle-opacity": opacity.toFixed(2),
+          "--particle-travel-x": `${travelX.toFixed(2)}vw`,
+          "--particle-travel-y": `${travelY.toFixed(2)}svh`,
+          "--particle-drift": `${drift.toFixed(2)}vw`,
+          "--particle-color": color,
         } as CSSProperties,
       };
     });
-  }, []);
+  }, [effect]);
 
   return (
-    <div className="dashboard-embers" aria-hidden="true">
-      {embers.map((ember) => (
-        <span key={ember.id} className="dashboard-ember" style={ember.style} />
+    <div
+      className={[
+        "dashboard-particles",
+        `dashboard-particles--${effect.kind}`,
+        effect.kind === "embers" ? "dashboard-embers" : undefined,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-hidden="true"
+    >
+      {particles.map((particle) => (
+        <span
+          key={particle.id}
+          className={[
+            "dashboard-particle",
+            `dashboard-particle--${effect.kind}`,
+            effect.kind === "embers" ? "dashboard-ember" : undefined,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          style={particle.style}
+        />
       ))}
     </div>
   );
 });
+
+export const BackgroundEmbers = BackgroundParticles;

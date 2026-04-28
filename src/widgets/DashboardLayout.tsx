@@ -5,7 +5,7 @@ import { useUIStore } from "@shared/stores/uiStore";
 import type { User } from "@supabase/supabase-js";
 import "./dashboard.css";
 import styles from "./DashboardLayout.module.css";
-import { BackgroundEmbers } from "./BackgroundEmbers";
+import { BackgroundParticles } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
@@ -206,8 +206,8 @@ export const DashboardLayout = memo(function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
-      {activeSkin.capabilities.effects.embers && !isOverlayOpen ? (
-        <BackgroundEmbers />
+      {activeSkin.capabilities.effects.ambient && !isOverlayOpen ? (
+        <BackgroundParticles effect={activeSkin.capabilities.effects.ambient} />
       ) : null}
       <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>

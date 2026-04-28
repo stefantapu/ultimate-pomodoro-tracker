@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 type UseAlarmOptions = {
   loop?: boolean;
+  fadeInMs?: number;
 };
 
 export const useAlarm = (
@@ -10,7 +11,18 @@ export const useAlarm = (
   options: UseAlarmOptions = {},
 ) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { loop = false } = options;
+  const fadeFrameRef = useRef<number | null>(null);
+  const fadeStartedAtRef = useRef<number | null>(null);
+  const { loop = false, fadeInMs = 0 } = options;
+
+  const cancelFade = useCallback(() => {
+    if (fadeFrameRef.current !== null) {
+      window.cancelAnimationFrame(fadeFrameRef.current);
+      fadeFrameRef.current = null;
+    }
+
+    fadeStartedAtRef.current = null;
+  }, []);
 
   const ensureAudio = useCallback(() => {
     if (typeof Audio === "undefined" || !src) {
@@ -29,10 +41,9 @@ export const useAlarm = (
 
     a.src = src;
     a.loop = loop;
-    a.volume = volume;
 
     return a;
-  }, [loop, src, volume]);
+  }, [loop, src]);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -56,6 +67,8 @@ export const useAlarm = (
 
     if (!a) return;
 
+    const shouldFadeIn = fadeInMs > 0 && (restart || a.paused);
+
     if (!restart && !a.paused) {
       return;
     }
@@ -70,20 +83,51 @@ export const useAlarm = (
       }
     }
 
+    cancelFade();
+    a.volume = shouldFadeIn ? 0 : volume;
+
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
-  }, [ensureAudio]);
+
+    if (!shouldFadeIn || typeof window === "undefined") {
+      return;
+    }
+
+    const startedAt = window.performance.now();
+    fadeStartedAtRef.current = startedAt;
+
+    const applyFade = (timestamp: number) => {
+      if (fadeStartedAtRef.current !== startedAt) {
+        return;
+      }
+
+      const progress = Math.min(1, (timestamp - startedAt) / fadeInMs);
+      a.volume = volume * progress;
+
+      if (progress < 1 && !a.paused) {
+        fadeFrameRef.current = window.requestAnimationFrame(applyFade);
+        return;
+      }
+
+      a.volume = volume;
+      fadeFrameRef.current = null;
+      fadeStartedAtRef.current = null;
+    };
+
+    fadeFrameRef.current = window.requestAnimationFrame(applyFade);
+  }, [cancelFade, ensureAudio, fadeInMs, volume]);
 
   const stop = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
+    cancelFade();
     a.pause();
     try {
       a.currentTime = 0;
     } catch {
       // No-op: currentTime reset can fail for some audio states.
     }
-  }, []);
+  }, [cancelFade]);
 
   useEffect(() => {
     return () => {
@@ -93,9 +137,10 @@ export const useAlarm = (
         return;
       }
 
+      cancelFade();
       a.pause();
     };
-  }, []);
+  }, [cancelFade]);
 
   return { play, stop };
 };

@@ -28,6 +28,15 @@ describe("ThemePickerModal", () => {
     expect(localStorage.getItem("pomodoro-active-skin")).toBe("neumorphism");
   });
 
+  it("applies viking and persists the selection", () => {
+    render(<ThemePickerModal />);
+
+    fireEvent.click(screen.getByRole("radio", { name: /viking/i }));
+
+    expect(useSkinStore.getState().activeSkinId).toBe("viking");
+    expect(localStorage.getItem("pomodoro-active-skin")).toBe("viking");
+  });
+
   it("marks the active theme in the picker", () => {
     render(<ThemePickerModal />);
 
@@ -40,6 +49,10 @@ describe("ThemePickerModal", () => {
       "true",
     );
     expect(screen.getByRole("radio", { name: /neumorphism/i })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+    expect(screen.getByRole("radio", { name: /viking/i })).toHaveAttribute(
       "aria-checked",
       "false",
     );

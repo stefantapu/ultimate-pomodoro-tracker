@@ -1,4 +1,4 @@
-export type SkinId = "warm" | "neumorphism";
+export type SkinId = "warm" | "neumorphism" | "viking";
 
 export type SkinImageAsset = {
   src: string;
@@ -21,6 +21,8 @@ export const SKIN_IMAGE_ASSET_KEYS = [
   "dragonPanel",
   "topControlsPanel",
   "modeTabButton",
+  "focusModeButton",
+  "breakModeButton",
   "timerPanel",
   "timerPanelMobile",
   "startButton",
@@ -33,6 +35,11 @@ export const SKIN_IMAGE_ASSET_KEYS = [
   "historyIcon",
   "exitButton",
   "exitIcon",
+  "toolbarButton",
+  "toolbarHistoryIcon",
+  "toolbarThemeIcon",
+  "toolbarSettingsIcon",
+  "toolbarAuthIcon",
 ] as const;
 
 export type SkinImageAssetKey = (typeof SKIN_IMAGE_ASSET_KEYS)[number];
@@ -48,7 +55,8 @@ export type SkinCursorAssetKey = (typeof SKIN_CURSOR_ASSET_KEYS)[number];
 
 export const SKIN_AUDIO_ASSET_KEYS = [
   "alarm",
-  "timerControl",
+  "primaryTimerControl",
+  "modeControl",
   "toolbarClick",
   "focusAmbience",
 ] as const;
@@ -59,6 +67,9 @@ export const SKIN_ASPECT_RATIO_FALLBACK_KEYS = [
   "timerPanel",
   "timerPanelMobile",
   "startButton",
+  "focusModeButton",
+  "breakModeButton",
+  "toolbarButton",
   "autoFocusButton",
   "notesPanel",
   "heatmapPanel",
@@ -112,6 +123,9 @@ export type SkinTypography = {
   baseFamily: string;
   displayFamily: string;
   buttonFamily: string;
+  baseStyle: "normal" | "italic";
+  displayStyle: "normal" | "italic";
+  buttonStyle: "normal" | "italic";
   buttonWeight: number;
   buttonLetterSpacing: string;
   buttonTransform: "none" | "uppercase";
@@ -130,13 +144,30 @@ export type SkinLayout = {
 
 export type SkinAudio = Record<SkinAudioAssetKey, string | null>;
 
+export type SkinAmbientEffect = {
+  kind: "embers" | "snow";
+  count: number;
+  seed: number;
+  colors: readonly string[];
+  sizeRangePx: readonly [number, number];
+  durationRangeSec: readonly [number, number];
+  delayRangeSec: readonly [number, number];
+  opacityRange: readonly [number, number];
+  startXRangePercent: readonly [number, number];
+  startYRangePercent: readonly [number, number];
+  travelXRangeVw: readonly [number, number];
+  travelYRangeSvh: readonly [number, number];
+  driftRangeVw: readonly [number, number];
+};
+
 export type SkinCapabilities = {
   effects: {
-    embers: boolean;
+    ambient: SkinAmbientEffect | null;
   };
   audio: {
     alarm: boolean;
-    timerControl: boolean;
+    primaryTimerControl: boolean;
+    modeControl: boolean;
     toolbarClick: boolean;
     focusAmbience: boolean;
   };
@@ -174,6 +205,9 @@ export const SKIN_FALLBACK_CONTRACT: SkinFallbackContract = {
     timerPanel: 2.68,
     timerPanelMobile: 1,
     startButton: 3,
+    focusModeButton: 3.53,
+    breakModeButton: 3.53,
+    toolbarButton: 1,
     autoFocusButton: 1,
     notesPanel: 0.76,
     heatmapPanel: 2.39,
@@ -190,6 +224,7 @@ export type SkinProfile = {
   capabilities: SkinCapabilities;
   assets: SkinAssets;
   audio: SkinAudio;
+  focusAmbienceFadeInMs: number;
   colors: SkinColors;
   typography: SkinTypography;
   layout: SkinLayout;
