@@ -299,6 +299,12 @@ export const DashboardLayout = memo(function DashboardLayout({
           </section>
         </main>
       </div>
+      {activeSkin.capabilities.effects.foreground && !isOverlayOpen ? (
+        <BackgroundParticles
+          effect={activeSkin.capabilities.effects.foreground}
+          layer="foreground"
+        />
+      ) : null}
     </div>
   );
 });

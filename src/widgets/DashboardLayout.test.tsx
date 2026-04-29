@@ -88,7 +88,7 @@ describe("DashboardLayout", () => {
       <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
     );
 
-    expect(document.body.dataset.dashboardSkin).toBe("warm");
+    expect(document.body.dataset.dashboardSkin).toBe("viking");
 
     act(() => {
       useSkinStore.getState().setActiveSkinId("neumorphism");
@@ -169,6 +169,7 @@ describe("DashboardLayout", () => {
           effects: {
             ...warmSkin.capabilities.effects,
             ambient: null,
+            foreground: null,
           },
         },
       },
@@ -195,6 +196,7 @@ describe("DashboardLayout", () => {
           effects: {
             ...neumorphismSkin.capabilities.effects,
             ambient: getSkinById("warm").capabilities.effects.ambient,
+            foreground: null,
           },
         },
       },
@@ -211,6 +213,27 @@ describe("DashboardLayout", () => {
     expect(secondContainer.querySelector(".dashboard-embers")).not.toBeNull();
   });
 
+  it("renders foreground particles above the dashboard interface when configured", () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("warm");
+    });
+
+    const { container } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    const foregroundLayer = container.querySelector(
+      ".dashboard-particles--foreground.dashboard-particles--embers",
+    );
+
+    expect(foregroundLayer).not.toBeNull();
+    expect(
+      foregroundLayer?.compareDocumentPosition(
+        container.querySelector(".dashboard-toolbar")!,
+      ) ?? 0,
+    ).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+  });
+
   it("renders viking snow particles from the ambient effect config", () => {
     act(() => {
       useSkinStore.getState().setActiveSkinId("viking");
@@ -224,6 +247,11 @@ describe("DashboardLayout", () => {
       "dashboard-shell--viking",
     );
     expect(container.querySelector(".dashboard-particles--snow")).not.toBeNull();
+    expect(
+      container.querySelector(
+        ".dashboard-particles--foreground.dashboard-particles--snow",
+      ),
+    ).not.toBeNull();
     expect(container.querySelector(".dashboard-particle--snow")).not.toBeNull();
   });
 });

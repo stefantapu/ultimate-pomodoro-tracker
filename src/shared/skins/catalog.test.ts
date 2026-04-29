@@ -39,6 +39,11 @@ describe("skin catalog contract", () => {
           skin.capabilities.effects.ambient.kind,
         );
       }
+      if (skin.capabilities.effects.foreground) {
+        expect(["embers", "snow"]).toContain(
+          skin.capabilities.effects.foreground.kind,
+        );
+      }
       expect(typeof skin.capabilities.audio.alarm).toBe("boolean");
       expect(typeof skin.capabilities.audio.primaryTimerControl).toBe(
         "boolean",
@@ -64,6 +69,11 @@ describe("skin catalog contract", () => {
     expect(viking.id).toBe("viking");
     expect(legacyNeumorphism.id).toBe("neumorphism");
     expect(fallback.id).toBe(DEFAULT_SKIN_ID);
+  });
+
+  it("uses Viking as the default skin", () => {
+    expect(DEFAULT_SKIN_ID).toBe("viking");
+    expect(getSkinById("unknown-skin-id").id).toBe("viking");
   });
 
   it("validates ids through isSkinId", () => {

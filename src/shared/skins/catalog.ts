@@ -22,6 +22,27 @@ const warmAmbientEffect: SkinAmbientEffect = {
   driftRangeVw: [-9, 9],
 };
 
+const warmForegroundEffect: SkinAmbientEffect = {
+  kind: "embers",
+  count: 44,
+  seed: 0x2a3b4c5d,
+  colors: [
+    "rgba(255, 180, 87, 0.78)",
+    "rgba(255, 126, 44, 0.72)",
+    "rgba(255, 229, 160, 0.66)",
+    "rgba(255, 252, 236, 0.72)",
+  ],
+  sizeRangePx: [1.8, 4.8],
+  durationRangeSec: [8, 15],
+  delayRangeSec: [-15, 0],
+  opacityRange: [0.18, 0.5],
+  startXRangePercent: [2, 98],
+  startYRangePercent: [78, 102],
+  travelXRangeVw: [-4, 4],
+  travelYRangeSvh: [-96, -64],
+  driftRangeVw: [-12, 12],
+};
+
 const vikingAmbientEffect: SkinAmbientEffect = {
   kind: "snow",
   count: 120,
@@ -41,6 +62,27 @@ const vikingAmbientEffect: SkinAmbientEffect = {
   travelXRangeVw: [108, 128],
   travelYRangeSvh: [-10, 12],
   driftRangeVw: [-4, 7],
+};
+
+const vikingForegroundEffect: SkinAmbientEffect = {
+  kind: "snow",
+  count: 58,
+  seed: 0x6c7d8e9f,
+  colors: [
+    "rgba(244, 251, 255, 0.72)",
+    "rgba(215, 231, 245, 0.62)",
+    "rgba(201, 216, 229, 0.5)",
+    "rgba(255, 255, 255, 0.66)",
+  ],
+  sizeRangePx: [1.2, 3.8],
+  durationRangeSec: [13, 27],
+  delayRangeSec: [-27, 0],
+  opacityRange: [0.14, 0.42],
+  startXRangePercent: [-4, 8],
+  startYRangePercent: [0, 96],
+  travelXRangeVw: [96, 116],
+  travelYRangeSvh: [-12, 16],
+  driftRangeVw: [-7, 9],
 };
 
 const redLavaModeButton = buildImageAsset(
@@ -71,6 +113,7 @@ const warmSkin: SkinProfile = {
   capabilities: {
     effects: {
       ambient: warmAmbientEffect,
+      foreground: warmForegroundEffect,
     },
     audio: {
       alarm: true,
@@ -241,6 +284,7 @@ const neumorphismSkin: SkinProfile = {
   capabilities: {
     effects: {
       ambient: null,
+      foreground: null,
     },
     audio: {
       alarm: false,
@@ -358,6 +402,7 @@ const vikingSkin: SkinProfile = {
   capabilities: {
     effects: {
       ambient: vikingAmbientEffect,
+      foreground: vikingForegroundEffect,
     },
     audio: {
       alarm: true,
@@ -553,7 +598,7 @@ const skinById = new Map<SkinId, SkinProfile>([
 
 const legacySkinIds = new Map<string, SkinId>([["soft-form", "neumorphism"]]);
 
-export const DEFAULT_SKIN_ID: SkinId = "warm";
+export const DEFAULT_SKIN_ID: SkinId = "viking";
 
 export function listSkins(): readonly SkinProfile[] {
   return skins;

@@ -473,6 +473,10 @@
 
 .dashboard-shell--viking .heatmap-card__calendar {
   width: min(100%, 90%);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .dashboard-shell--viking .heatmap-card__calendar text,
@@ -489,7 +493,11 @@
   span {
   fill: #f4fbff;
   color: #f4fbff;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-style: normal;
   font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
   text-shadow:
     0 1px 1px rgba(3, 5, 7, 0.98),
     0 -1px 1px rgba(3, 5, 7, 0.72),
@@ -555,7 +563,11 @@
 .dashboard-shell--viking .stats-card__label {
   font-size: 0.55rem;
   color: #f4fbff;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-style: normal;
   font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
   text-shadow:
     0 1px 1px rgba(3, 5, 7, 0.98),
     0 -1px 1px rgba(3, 5, 7, 0.72),
@@ -567,7 +579,11 @@
 .dashboard-shell--viking .stats-card__value {
   font-size: 0.95rem;
   color: #f4fbff;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-style: normal;
   font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
   text-shadow:
     0 1px 1px rgba(3, 5, 7, 0.98),
     0 -1px 1px rgba(3, 5, 7, 0.72),

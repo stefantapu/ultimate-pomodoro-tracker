@@ -3,6 +3,7 @@ import { memo, useMemo, type CSSProperties } from "react";
 
 type BackgroundParticlesProps = {
   effect: SkinAmbientEffect;
+  layer?: "background" | "foreground";
 };
 
 function createSeededRandom(seed: number) {
@@ -23,6 +24,7 @@ function interpolate(
 
 export const BackgroundParticles = memo(function BackgroundParticles({
   effect,
+  layer = "background",
 }: BackgroundParticlesProps) {
   const particles = useMemo(() => {
     const random = createSeededRandom(effect.seed);
@@ -61,6 +63,7 @@ export const BackgroundParticles = memo(function BackgroundParticles({
     <div
       className={[
         "dashboard-particles",
+        `dashboard-particles--${layer}`,
         `dashboard-particles--${effect.kind}`,
         effect.kind === "embers" ? "dashboard-embers" : undefined,
       ]

@@ -178,9 +178,16 @@
 .dashboard-particles {
   position: absolute;
   inset: 0;
-  z-index: 1;
   overflow: hidden;
   pointer-events: none;
+}
+
+.dashboard-particles--background {
+  z-index: 1;
+}
+
+.dashboard-particles--foreground {
+  z-index: 3;
 }
 
 .dashboard-particle {

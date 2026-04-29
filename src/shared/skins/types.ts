@@ -163,6 +163,7 @@ export type SkinAmbientEffect = {
 export type SkinCapabilities = {
   effects: {
     ambient: SkinAmbientEffect | null;
+    foreground: SkinAmbientEffect | null;
   };
   audio: {
     alarm: boolean;

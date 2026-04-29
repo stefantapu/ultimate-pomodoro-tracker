@@ -163,6 +163,7 @@ Viking exceptions use non-italic Palatino Linotype:
 - notes/notepad textarea content
 - login and password inputs
 - settings inputs and any other editable field
+- heatmap and stats panel labels/values when Norse becomes too thin over textured stone
 - dense freeform text where Norse hurts readability
 
 Palatino Linotype is also the fallback after Norse in the Viking skin typography config. Do not use the italic Palatino variant for Viking UI unless a future task explicitly asks for it.
@@ -310,7 +311,7 @@ Update or add tests for:
 - every skin exposes all image, cursor, audio, capability, typography, color, and layout fields
 - CSS variable keys remain stable across all skins
 - theme picker lists and persists the new theme
-- default remains `warm`
+- default remains the product-approved default (`viking` at the time of this guide update)
 - ambient rendering:
   - warm renders embers
   - theme with snow renders snow
@@ -382,7 +383,7 @@ Recommended order for future themes:
 ## Non-Negotiables
 
 - New themes are selectable only unless explicitly requested as default.
-- Keep `DEFAULT_SKIN_ID = "warm"` unless explicitly changed.
+- Keep `DEFAULT_SKIN_ID = "viking"` unless explicitly changed.
 - Preserve existing theme visuals and behavior.
 - Do not reuse unrelated theme-specific assets such as lava embers or Diablo cursors in a new theme unless explicitly requested.
 - Prefer separate role-specific asset slots over CSS `nth-child()` or variable hijacking.
