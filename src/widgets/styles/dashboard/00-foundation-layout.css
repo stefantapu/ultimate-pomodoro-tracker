@@ -5,6 +5,13 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "VikingTimer";
+  src: url("/assets/Viking%20Theme/Timer%20font/norse.regular.otf")
+    format("opentype");
+  font-display: swap;
+}
+
 .dashboard-shell {
   --dashboard-bg: #d9d9d9;
   --dashboard-surface: #2e2e2e;
@@ -37,6 +44,9 @@
     "Palatino Linotype", "Book Antiqua", Palatino, serif;
   --dashboard-button-font-family:
     "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --dashboard-font-style: normal;
+  --dashboard-display-font-style: normal;
+  --dashboard-button-font-style: normal;
   --dashboard-button-font-weight: 500;
   --dashboard-button-letter-spacing: 0.06em;
   --dashboard-button-text-transform: uppercase;
@@ -48,6 +58,8 @@
   --skin-dragon-panel-image: none;
   --skin-top-controls-panel-image: none;
   --skin-mode-tab-button-image: none;
+  --skin-focus-mode-button-image: none;
+  --skin-break-mode-button-image: none;
   --skin-timer-panel-image: none;
   --skin-timer-panel-image-mobile: none;
   --skin-start-button-image: none;
@@ -60,12 +72,20 @@
   --skin-history-icon-image: none;
   --skin-exit-button-image: none;
   --skin-exit-icon-image: none;
+  --skin-toolbar-button-image: none;
+  --skin-toolbar-history-icon-image: none;
+  --skin-toolbar-theme-icon-image: none;
+  --skin-toolbar-settings-icon-image: none;
+  --skin-toolbar-auth-icon-image: none;
   --skin-cursor-default: auto;
   --skin-cursor-pointer: pointer;
   --skin-cursor-text: text;
   --skin-cursor-disabled: not-allowed;
   --skin-timer-panel-aspect-ratio: 2.68;
   --skin-action-button-aspect-ratio: 3;
+  --skin-focus-mode-button-aspect-ratio: 3.53;
+  --skin-break-mode-button-aspect-ratio: 3.53;
+  --skin-toolbar-button-aspect-ratio: 1;
   --skin-square-button-aspect-ratio: 1;
   --skin-notes-panel-aspect-ratio: 0.76;
   --skin-heatmap-panel-aspect-ratio: 2.39;
@@ -92,6 +112,7 @@
   color: var(--dashboard-text-dark);
   cursor: var(--skin-cursor-default);
   font-family: var(--dashboard-font-family);
+  font-style: var(--dashboard-font-style);
 }
 
 .dashboard-shell--warm {
@@ -138,33 +159,80 @@
   background-color: var(--dashboard-bg);
 }
 
-.dashboard-embers {
+.dashboard-shell--viking {
+  background-image:
+    linear-gradient(180deg, rgba(18, 22, 27, 0.14), rgba(12, 14, 16, 0.54)),
+    radial-gradient(
+      circle at 51% 23%,
+      rgba(232, 240, 247, 0.2),
+      transparent 30%
+    ),
+    linear-gradient(105deg, rgba(22, 24, 27, 0.38), rgba(60, 67, 75, 0.14)),
+    var(--skin-page-background-image);
+  background-size: auto, auto, auto, cover;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-color: var(--dashboard-bg);
+}
+
+.dashboard-particles {
   position: absolute;
   inset: 0;
-  z-index: 1;
   overflow: hidden;
   pointer-events: none;
 }
 
-.dashboard-ember {
+.dashboard-particles--background {
+  z-index: 1;
+}
+
+.dashboard-particles--foreground {
+  z-index: 3;
+}
+
+.dashboard-particle {
   position: absolute;
-  left: var(--ember-left);
-  bottom: calc(var(--ember-start-offset, 8svh) * -1);
-  width: var(--ember-size);
-  height: var(--ember-size);
+  left: var(--particle-left);
+  top: var(--particle-top);
+  width: var(--particle-size);
+  height: var(--particle-size);
   border-radius: 999px;
   opacity: 0;
+  will-change: transform, opacity;
+}
+
+.dashboard-particle--embers {
   background: radial-gradient(
     circle,
     rgba(255, 248, 221, 0.95) 0%,
-    var(--ember-color) 42%,
+    var(--particle-color) 42%,
     rgba(255, 96, 24, 0.1) 72%,
     transparent 100%
   );
-  will-change: transform, opacity;
   transform: translate3d(0, 0, 0) scale(0.82);
-  animation: ember-rise var(--ember-duration) linear infinite;
-  animation-delay: var(--ember-delay);
+  animation-name: ember-rise;
+  animation-duration: var(--particle-duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--particle-delay);
+}
+
+.dashboard-particle--snow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.92) 0%,
+    var(--particle-color) 44%,
+    rgba(201, 216, 229, 0.08) 76%,
+    transparent 100%
+  );
+  box-shadow: 0 0 0.35rem rgba(232, 240, 247, 0.18);
+  filter: blur(0.1px);
+  transform: translate3d(0, 0, 0) scale(0.88);
+  animation-name: snow-drift;
+  animation-duration: var(--particle-duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--particle-delay);
 }
 
 @keyframes ember-rise {
@@ -174,21 +242,21 @@
   }
 
   12% {
-    opacity: calc(var(--ember-opacity) * 0.9);
+    opacity: calc(var(--particle-opacity) * 0.9);
   }
 
   36% {
-    opacity: var(--ember-opacity);
+    opacity: var(--particle-opacity);
   }
 
   72% {
-    opacity: calc(var(--ember-opacity) * 0.72);
+    opacity: calc(var(--particle-opacity) * 0.72);
   }
 
   100% {
     transform: translate3d(
-        var(--ember-drift),
-        calc(var(--ember-travel) * -1),
+        calc(var(--particle-drift) + var(--particle-travel-x)),
+        var(--particle-travel-y),
         0
       )
       scale(0.42);
@@ -196,8 +264,37 @@
   }
 }
 
+@keyframes snow-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.72);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: calc(var(--particle-opacity) * 0.72);
+  }
+
+  44% {
+    opacity: var(--particle-opacity);
+  }
+
+  82% {
+    opacity: calc(var(--particle-opacity) * 0.8);
+  }
+
+  100% {
+    transform: translate3d(
+        calc(var(--particle-travel-x) + var(--particle-drift)),
+        var(--particle-travel-y),
+        0
+      )
+      scale(1.04);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .dashboard-embers {
+  .dashboard-particles {
     display: none;
   }
 }

@@ -77,8 +77,12 @@ export function TimerBlock() {
     [activeSkin],
   );
   const alarmSoundSrc = activeSkin.audio.alarm;
-  const timerControlSoundSrc = activeSkin.audio.timerControl;
-  const uiPreviewSoundSrc = activeSkin.audio.toolbarClick ?? activeSkin.audio.timerControl;
+  const primaryTimerControlSoundSrc = activeSkin.audio.primaryTimerControl;
+  const modeControlSoundSrc = activeSkin.audio.modeControl;
+  const uiPreviewSoundSrc =
+    activeSkin.audio.toolbarClick ??
+    activeSkin.audio.primaryTimerControl ??
+    activeSkin.audio.modeControl;
   const focusAmbienceSoundSrc = activeSkin.audio.focusAmbience;
   const isSettingsModalOpen = useUIStore((state) => state.isSettingsModalOpen);
   const initialSettings = useMemo(
@@ -186,12 +190,20 @@ export function TimerBlock() {
 
   const { play: playAlarm } = useAlarm(alarmSoundSrc, alarmVolume);
   const { play: previewAlarm } = useAlarm(alarmSoundSrc, alarmVolumeDraft);
-  const { play: playStoneClick } = useAlarm(timerControlSoundSrc, uiVolume);
+  const { play: playPrimaryTimerClick } = useAlarm(
+    primaryTimerControlSoundSrc,
+    uiVolume,
+  );
+  const { play: playModeTimerClick } = useAlarm(modeControlSoundSrc, uiVolume);
   const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiVolumeDraft);
   const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
     focusAmbienceSoundSrc,
     focusAmbienceVolume,
-    { loop: true },
+    {
+      loop: true,
+      fadeInMs: activeSkin.focusAmbienceFadeInMs,
+      loopOverlapMs: 1000,
+    },
   );
 
   const { pushSettingsToCloud } = useSettingsSync(
@@ -304,7 +316,8 @@ export function TimerBlock() {
   const themeAudioHint = useMemo(() => {
     if (
       activeSkin.audio.alarm ||
-      activeSkin.audio.timerControl ||
+      activeSkin.audio.primaryTimerControl ||
+      activeSkin.audio.modeControl ||
       activeSkin.audio.toolbarClick ||
       activeSkin.audio.focusAmbience
     ) {
@@ -385,16 +398,29 @@ export function TimerBlock() {
     previewUiClick();
   }, [previewUiClick, uiPreviewSoundSrc, uiVolumeDraft]);
 
-  const playButtonClick = useCallback(() => {
-    if (!uiSoundsEnabled || uiVolume <= 0 || !timerControlSoundSrc) {
+  const playPrimaryButtonClick = useCallback(() => {
+    if (!uiSoundsEnabled || uiVolume <= 0 || !primaryTimerControlSoundSrc) {
       return;
     }
 
-    playStoneClick();
-  }, [playStoneClick, timerControlSoundSrc, uiSoundsEnabled, uiVolume]);
+    playPrimaryTimerClick();
+  }, [
+    playPrimaryTimerClick,
+    primaryTimerControlSoundSrc,
+    uiSoundsEnabled,
+    uiVolume,
+  ]);
+
+  const playModeButtonClick = useCallback(() => {
+    if (!uiSoundsEnabled || uiVolume <= 0 || !modeControlSoundSrc) {
+      return;
+    }
+
+    playModeTimerClick();
+  }, [modeControlSoundSrc, playModeTimerClick, uiSoundsEnabled, uiVolume]);
 
   const handlePrimaryAction = useCallback(() => {
-    playButtonClick();
+    playPrimaryButtonClick();
 
     if (status === "running") {
       pause();
@@ -402,19 +428,19 @@ export function TimerBlock() {
     }
 
     start();
-  }, [pause, playButtonClick, start, status]);
+  }, [pause, playPrimaryButtonClick, start, status]);
 
   const handleResetTimer = useCallback(() => {
-    playButtonClick();
+    playPrimaryButtonClick();
     reset();
-  }, [playButtonClick, reset]);
+  }, [playPrimaryButtonClick, reset]);
 
   const handleSelectMode = useCallback(
     (nextMode: Mode) => {
-      playButtonClick();
+      playModeButtonClick();
       switchMode(nextMode);
     },
-    [playButtonClick, switchMode],
+    [playModeButtonClick, switchMode],
   );
 
   const restoreSettingsDrafts = useCallback(() => {

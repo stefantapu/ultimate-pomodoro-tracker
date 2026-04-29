@@ -1,0 +1,52 @@
+; Diablo IV
+
+[Version]
+signature="$CHICAGO$"
+
+[DefaultInstall]
+CopyFiles = Scheme.Cur, Scheme.Txt
+AddReg    = Scheme.Reg
+
+[DestinationDirs]
+Scheme.Cur = 10,"%CUR_DIR%"
+Scheme.Txt = 10,"%CUR_DIR%"
+
+[Scheme.Reg]
+HKCU,"Control Panel\Cursors\Schemes","%SCHEME_NAME%",,"%10%\%CUR_DIR%\%pointer%,%10%\%CUR_DIR%\%help%,%10%\%CUR_DIR%\%work%,%10%\%CUR_DIR%\%busy%,%10%\%CUR_DIR%\%cross%,%10%\%CUR_DIR%\%Text%,%10%\%CUR_DIR%\%Hand%,%10%\%CUR_DIR%\%unavailiable%,%10%\%CUR_DIR%\%Vert%,%10%\%CUR_DIR%\%Horz%,%10%\%CUR_DIR%\%Dgn1%,%10%\%CUR_DIR%\%Dgn2%,%10%\%CUR_DIR%\%move%,%10%\%CUR_DIR%\%alternate%,%10%\%CUR_DIR%\%link%"
+
+; -- Common Information
+
+[Scheme.Cur]
+d4-normal-select.cur
+d4-help-select.cur
+d4-working-in-background.ani
+d4-busy.ani
+d4-text-select.cur
+d4-unavailable.cur
+d4-vertical-resize.cur
+d4-horizontal-resize.cur
+d4-diagonal-1.cur
+d4-diagonal-2.cur
+d4-move.cur
+d4-link-select.cur
+d4-precision-select.cur
+d4-handwriting.cur
+d4-alt-select.cur
+[Strings]
+CUR_DIR       = "Cursors\Diablo IV"
+SCHEME_NAME   = "Diablo IV"
+pointer       = "d4-normal-select.cur"
+help          = "d4-help-select.cur"
+work          = "d4-working-in-background.ani"
+busy          = "d4-busy.ani"
+text          = "d4-text-select.cur"
+unavailiable  = "d4-unavailable.cur"
+vert          = "d4-vertical-resize.cur"
+horz          = "d4-horizontal-resize.cur"
+dgn1          = "d4-diagonal-1.cur"
+dgn2          = "d4-diagonal-2.cur"
+move          = "d4-move.cur"
+link          = "d4-link-select.cur"
+cross         = "d4-precision-select.cur"
+hand          = "d4-handwriting.cur"
+alternate     = "d4-alt-select.cur"

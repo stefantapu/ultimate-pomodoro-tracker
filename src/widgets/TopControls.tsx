@@ -75,7 +75,10 @@ export const TopControls = memo(function TopControls({
   };
 
   const getTabClassName = (nextMode: Mode) =>
-    impactMode === nextMode ? "is-stone-impacting" : undefined;
+    joinClassNames(
+      `top-controls__button--${nextMode}`,
+      impactMode === nextMode ? "is-stone-impacting" : undefined,
+    );
 
   return (
     <div className={joinClassNames(styles["top-controls"], "top-controls")}>

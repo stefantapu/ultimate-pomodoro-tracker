@@ -33,6 +33,9 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--dashboard-font-family",
   "--dashboard-display-font-family",
   "--dashboard-button-font-family",
+  "--dashboard-font-style",
+  "--dashboard-display-font-style",
+  "--dashboard-button-font-style",
   "--dashboard-button-font-weight",
   "--dashboard-button-letter-spacing",
   "--dashboard-button-text-transform",
@@ -43,6 +46,8 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--skin-dragon-panel-image",
   "--skin-top-controls-panel-image",
   "--skin-mode-tab-button-image",
+  "--skin-focus-mode-button-image",
+  "--skin-break-mode-button-image",
   "--skin-timer-panel-image",
   "--skin-timer-panel-image-mobile",
   "--skin-start-button-image",
@@ -55,6 +60,11 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--skin-history-icon-image",
   "--skin-exit-button-image",
   "--skin-exit-icon-image",
+  "--skin-toolbar-button-image",
+  "--skin-toolbar-history-icon-image",
+  "--skin-toolbar-theme-icon-image",
+  "--skin-toolbar-settings-icon-image",
+  "--skin-toolbar-auth-icon-image",
   "--skin-cursor-default",
   "--skin-cursor-pointer",
   "--skin-cursor-text",
@@ -62,6 +72,9 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--skin-timer-panel-aspect-ratio",
   "--skin-timer-panel-mobile-aspect-ratio",
   "--skin-action-button-aspect-ratio",
+  "--skin-focus-mode-button-aspect-ratio",
+  "--skin-break-mode-button-aspect-ratio",
+  "--skin-toolbar-button-aspect-ratio",
   "--skin-square-button-aspect-ratio",
   "--skin-notes-panel-aspect-ratio",
   "--skin-heatmap-panel-aspect-ratio",
@@ -86,6 +99,8 @@ const IMAGE_VARIABLE_KEYS = [
   "--skin-dragon-panel-image",
   "--skin-top-controls-panel-image",
   "--skin-mode-tab-button-image",
+  "--skin-focus-mode-button-image",
+  "--skin-break-mode-button-image",
   "--skin-timer-panel-image",
   "--skin-timer-panel-image-mobile",
   "--skin-start-button-image",
@@ -98,6 +113,11 @@ const IMAGE_VARIABLE_KEYS = [
   "--skin-history-icon-image",
   "--skin-exit-button-image",
   "--skin-exit-icon-image",
+  "--skin-toolbar-button-image",
+  "--skin-toolbar-history-icon-image",
+  "--skin-toolbar-theme-icon-image",
+  "--skin-toolbar-settings-icon-image",
+  "--skin-toolbar-auth-icon-image",
 ] as const;
 
 const CURSOR_VARIABLE_KEYS = [
@@ -111,10 +131,12 @@ describe("mapSkinToCssVariables contract", () => {
   it("keeps emitted CSS variable keys stable", () => {
     const warmVars = mapSkinToCssVariables(getSkinById("warm"));
     const neumorphismVars = mapSkinToCssVariables(getSkinById("neumorphism"));
+    const vikingVars = mapSkinToCssVariables(getSkinById("viking"));
     const expected = [...EXPECTED_CSS_VARIABLE_KEYS].sort();
 
     expect(Object.keys(warmVars).sort()).toEqual(expected);
     expect(Object.keys(neumorphismVars).sort()).toEqual(expected);
+    expect(Object.keys(vikingVars).sort()).toEqual(expected);
   });
 
   it("maps warm skin with concrete asset and cursor URLs", () => {
@@ -167,6 +189,15 @@ describe("mapSkinToCssVariables contract", () => {
     );
     expect(neumorphismVars["--skin-action-button-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.startButton),
+    );
+    expect(neumorphismVars["--skin-focus-mode-button-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.focusModeButton),
+    );
+    expect(neumorphismVars["--skin-break-mode-button-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.breakModeButton),
+    );
+    expect(neumorphismVars["--skin-toolbar-button-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.toolbarButton),
     );
     expect(neumorphismVars["--skin-square-button-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.autoFocusButton),

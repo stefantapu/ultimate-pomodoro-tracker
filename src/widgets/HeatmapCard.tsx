@@ -17,11 +17,13 @@ const HEATMAP_COLORS_BY_SKIN: Record<
 > = {
   warm: ["#3b1509", "#7a2f12", "#b64614", "#e66f1a", "#ffb85a"],
   "neumorphism": ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
+  viking: ["#201f21", "#434449", "#6f7d8d", "#a0aebe", "#e8f0f7"],
 };
 
 const HEATMAP_COLOR_SCHEME_BY_SKIN: Record<SkinId, "light" | "dark"> = {
   warm: "dark",
   "neumorphism": "light",
+  viking: "dark",
 };
 
 function getCalendarData(heatmapData: HeatmapData[]) {

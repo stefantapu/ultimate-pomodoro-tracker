@@ -18,7 +18,7 @@ vi.mock("@shared/hooks/useSyncSession", () => ({
 }));
 
 vi.mock("@shared/hooks/useSettingsSync", () => ({
-  useSettingsSync: (_settings: unknown, _onSettingsFetched: unknown) => ({
+  useSettingsSync: () => ({
     pushSettingsToCloud: pushSettingsToCloudMock,
   }),
 }));
@@ -162,7 +162,37 @@ describe("TimerBlock", () => {
 
     expect(useAlarmMock).toHaveBeenCalledWith(null, 1);
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.5);
-    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, { loop: true });
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
+      loop: true,
+      fadeInMs: 0,
+      loopOverlapMs: 1000,
+    });
+  });
+
+  it("uses distinct viking audio roles with focus ambience fade-in", () => {
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("viking");
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Viking Theme/Sound effects/Alarm-on-timer-finish-sound.mp3",
+      1,
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Viking Theme/Sound effects/Start-Pause-Click.mp3",
+      0.5,
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Viking Theme/Sound effects/Focus-Break-Click.mp3",
+      0.5,
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
+      0.2,
+      { loop: true, fadeInMs: 1800, loopOverlapMs: 1000 },
+    );
   });
 
   it("renders settings modal with neumorphism class hooks for theme-specific audio styling", async () => {
