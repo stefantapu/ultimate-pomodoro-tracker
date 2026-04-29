@@ -89,7 +89,10 @@ function App() {
 
   if (loading) {
     return (
-      <div className="app-loading-state" style={skinCssVariables}>
+      <div
+        className={`app-loading-state app-loading-state--${activeSkin.id}`}
+        style={skinCssVariables}
+      >
         Loading Realm...
       </div>
     );

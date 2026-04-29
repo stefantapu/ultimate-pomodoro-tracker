@@ -18,7 +18,7 @@ vi.mock("@shared/hooks/useSyncSession", () => ({
 }));
 
 vi.mock("@shared/hooks/useSettingsSync", () => ({
-  useSettingsSync: (_settings: unknown, _onSettingsFetched: unknown) => ({
+  useSettingsSync: () => ({
     pushSettingsToCloud: pushSettingsToCloudMock,
   }),
 }));
@@ -165,6 +165,7 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
       loop: true,
       fadeInMs: 0,
+      loopOverlapMs: 1000,
     });
   });
 
@@ -190,7 +191,7 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
       0.2,
-      { loop: true, fadeInMs: 1800 },
+      { loop: true, fadeInMs: 1800, loopOverlapMs: 1000 },
     );
   });
 

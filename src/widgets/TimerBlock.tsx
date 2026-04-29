@@ -199,7 +199,11 @@ export function TimerBlock() {
   const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
     focusAmbienceSoundSrc,
     focusAmbienceVolume,
-    { loop: true, fadeInMs: activeSkin.focusAmbienceFadeInMs },
+    {
+      loop: true,
+      fadeInMs: activeSkin.focusAmbienceFadeInMs,
+      loopOverlapMs: 1000,
+    },
   );
 
   const { pushSettingsToCloud } = useSettingsSync(

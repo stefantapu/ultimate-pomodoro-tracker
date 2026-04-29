@@ -16,7 +16,7 @@ The current themes are:
 
 - `warm`: default theme, red lava art, embers, custom Diablo cursors, current global alarm/click sounds.
 - `neumorphism`: silent, art-light, CSS-drawn controls, no ambient effect.
-- `viking`: selectable theme, warm-like layout proportions, Viking art, snow particles, custom cursors, distinct audio roles, Norse timer/control font, Palatino Linotype Italic for general UI.
+- `viking`: selectable theme, warm-like layout proportions, Viking art, snow particles, custom cursors, distinct audio roles, Norse as the primary visible UI font, and non-italic Palatino Linotype as fallback plus the editable-text font.
 
 Future themes should be additive. Do not alter existing theme visuals or behavior unless the task explicitly asks for a cross-theme refactor.
 
@@ -120,18 +120,52 @@ For warm-like art themes:
   - `.toolbar-icon-button--settings`
   - `.toolbar-icon-button--exit`
 
+## Modal, Loading, Popup, and Portal Surfaces
+
+Dashboard-scoped selectors are not enough for every themed surface. Some UI renders through portals, global app states, or third-party containers, so each theme must cover both shell-scoped UI and portal-scoped UI.
+
+Theme these surfaces when adding or changing a skin:
+
+- Auth/login lock surface: `.auth-block--{skinId}`.
+- Settings modal: `.settings-modal__overlay--{skinId}`.
+- History/infographics modal: `.history-dashboard__overlay--{skinId}`.
+- Theme picker modal: `.theme-picker-modal__overlay--{skinId}`.
+- App loading screen: `.app-loading-state--{skinId}`.
+- Toast popups: `body[data-dashboard-skin="{skinId}"] .forge-toast`.
+- Lazy loading and fallback panels inside themed dashboard shells.
+- Locked overlays, tooltips, and other temporary status surfaces.
+
+Use `mapSkinToCssVariables(activeSkin)` on modal roots/fallback states where the component can receive inline styles. Keep `body[data-dashboard-skin="{skinId}"]` in sync for toast and portal content that cannot inherit from `.dashboard-shell--{skinId}`.
+
+For Viking specifically:
+
+- Modals, loading states, popups, and toast text use Norse unless the field is editable.
+- Panels use a frosted dark stone/metal treatment with pale text and restrained glow.
+- Inputs, login/password fields, textareas, and notepad content use non-italic Palatino Linotype for readability.
+- Do not let shared warm/lava modal colors leak into Viking portal surfaces; Viking overrides live in `90-theme-viking-dashboard.css` after the shared modal styles.
+- If a modal already looks visually correct, prefer typography, contrast, and state-text fixes over layout changes.
+
 ## Typography Rules
 
-Use decorative fonts narrowly.
+Decide the scope of decorative fonts per theme and document the exceptions.
 
-For Viking, the Norse font is used only for:
+For Viking, Norse (`VikingTimer`) is the primary font for visible UI text, including:
 
 - timer counter
-- Focus/Break buttons
-- Start/Pause button
-- Reset button
+- Focus/Break, Start/Pause, and Reset buttons
+- toolbar buttons and icon-button labels
+- modal headings, labels, helper text, and button text
+- loading, empty, locked, toast, popup, and status text
+- heatmap/stat/level panel labels and values
 
-Everything else uses Palatino Linotype Italic through the skin typography config.
+Viking exceptions use non-italic Palatino Linotype:
+
+- notes/notepad textarea content
+- login and password inputs
+- settings inputs and any other editable field
+- dense freeform text where Norse hurts readability
+
+Palatino Linotype is also the fallback after Norse in the Viking skin typography config. Do not use the italic Palatino variant for Viking UI unless a future task explicitly asks for it.
 
 For future themes, decide whether the decorative font is:
 
@@ -139,7 +173,21 @@ For future themes, decide whether the decorative font is:
 - timer/control-only
 - global
 
-Prefer timer/control-only unless readability is proven.
+Prefer timer/control-only unless readability is proven. If a theme uses a decorative font globally, define editable-text and dense-reading exceptions up front.
+
+## Main Panel Text and Contrast Rules
+
+Art-backed panels can make text hard to read even when the layout is correct. Start with text styling before changing spacing or panel geometry.
+
+For fixed art panels:
+
+- Adjust text color, weight, shadow, stroke, and font before changing panel layout.
+- For image-backed buttons, remove default rectangular backgrounds and box-shadows that can create glassy squares behind the art.
+- Heatmap/vendor SVG labels may need `paint-order: stroke fill`, a dark stroke, and stronger text color.
+- Stats panels usually need brighter labels/values plus text-shadow because the stone texture varies in brightness.
+- Notes/notepad content should preserve readable editing typography; for Viking that means non-italic Palatino Linotype.
+
+Only change insets, spacing, or sizing when the task explicitly calls for it. In the Viking pass, the notes notepad was the explicit exception: its top and bottom inset were expanded because the selected textarea felt too small.
 
 ## Ambient Effects
 
@@ -192,7 +240,11 @@ Focus ambience must only play while:
 - ambience file is available
 - ambience volume is greater than zero
 
-Use `focusAmbienceFadeInMs` for loops that start abruptly. The fade applies only when playback starts from stopped; native loop playback should continue without a fade between loop iterations.
+Use `focusAmbienceFadeInMs` for loops that start abruptly. The fade applies only when playback starts from stopped.
+
+Do not reload or rewrite `audio.src` when only the ambience volume changes. Volume changes during playback must update active audio elements in place, otherwise the sound can stop or restart.
+
+For loops with an abrupt file boundary, use an overlap loop instead of relying only on native loop playback. `loopOverlapMs` starts a standby audio element before the active one ends, then alternates between them. Viking focus ambience uses a `1000` ms overlap so the next loop begins one second before the current loop finishes.
 
 Do not wire empty placeholder audio files into a live skin. If files are not real yet, keep the corresponding audio field `null`.
 
@@ -267,11 +319,14 @@ Update or add tests for:
   - warm/neumorphism behavior stays unchanged
   - new theme maps each audio role correctly
   - focus ambience passes the configured fade-in option
+  - changing ambience volume while playing does not pause, reload, or restart the sound
+  - overlap ambience starts the standby loop before the active loop ends when `loopOverlapMs` is configured
 - heatmap maps include the new `SkinId`
 
 Run:
 
 ```bash
+npm run lint
 npm test
 npm run build
 ```
@@ -279,13 +334,37 @@ npm run build
 Then visually verify in the browser:
 
 - theme picker selection
+- auth/login modal and locked signed-out state
+- settings modal
+- theme picker modal
+- history/infographics modal
+- app loading state and lazy loading fallbacks
+- toast popups
 - desktop dashboard layout
 - mobile/square timer panel behavior
 - signed-out locked panels
 - signed-in analytics/notes/dragon panels
+- notepad/input font exceptions
+- heatmap and stats text contrast
+- image-backed buttons do not show rectangular/glass backgrounds behind the art
 - console errors
 - ambient particles render and do not occlude the UI
 - timer/control text remains inside art assets
+
+## Viking Session Handoff
+
+Use this as compressed context for the current Viking styling pass:
+
+- Scope is Viking only unless a task explicitly says cross-theme.
+- Norse should appear everywhere visible except editable text areas and inputs.
+- Palatino Linotype is non-italic, both as Norse fallback and as the font for notepad/input text.
+- Modal visuals were accepted; the remaining modal/popup/loading work was typography, contrast, and consistency.
+- Main-screen work should be text color/style/contrast only unless the user explicitly calls out a sizing issue.
+- The notes notepad top/bottom expansion was explicitly requested and is the exception to the no-spacing rule.
+- The stats and heatmap panels needed stronger pale text and shadows/strokes over textured stone.
+- Timer art buttons should not show default semi-transparent rectangular backgrounds or box-shadows.
+- Focus ambience volume changes must not stop playback.
+- Viking focus ambience should use a short overlap loop; current target is `loopOverlapMs: 1000`.
 
 ## Implementation Order
 

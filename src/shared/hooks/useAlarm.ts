@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 type UseAlarmOptions = {
   loop?: boolean;
   fadeInMs?: number;
+  loopOverlapMs?: number;
 };
 
 export const useAlarm = (
@@ -11,9 +12,15 @@ export const useAlarm = (
   options: UseAlarmOptions = {},
 ) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const standbyAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeFrameRef = useRef<number | null>(null);
   const fadeStartedAtRef = useRef<number | null>(null);
-  const { loop = false, fadeInMs = 0 } = options;
+  const loopTimeoutRef = useRef<number | null>(null);
+  const previousSrcRef = useRef<string | null>(src);
+  const volumeRef = useRef(volume);
+  const scheduleLoopOverlapRef = useRef<(a: HTMLAudioElement) => void>(() => {});
+  const { loop = false, fadeInMs = 0, loopOverlapMs = 0 } = options;
+  const shouldOverlapLoop = loop && loopOverlapMs > 0;
 
   const cancelFade = useCallback(() => {
     if (fadeFrameRef.current !== null) {
@@ -24,43 +31,150 @@ export const useAlarm = (
     fadeStartedAtRef.current = null;
   }, []);
 
-  const ensureAudio = useCallback(() => {
+  const cancelLoopTimeout = useCallback(() => {
+    if (loopTimeoutRef.current !== null) {
+      window.clearTimeout(loopTimeoutRef.current);
+      loopTimeoutRef.current = null;
+    }
+  }, []);
+
+  const resetAudio = useCallback((a: HTMLAudioElement | null) => {
+    if (!a) {
+      return;
+    }
+
+    a.pause();
+
+    try {
+      a.currentTime = 0;
+    } catch {
+      // Some browsers can reject currentTime resets for not-yet-ready audio.
+    }
+  }, []);
+
+  const ensureAudio = useCallback((targetRef = audioRef) => {
     if (typeof Audio === "undefined" || !src) {
       return null;
     }
 
-    if (audioRef.current == null) {
-      audioRef.current = new Audio(src);
+    if (targetRef.current == null) {
+      targetRef.current = new Audio(src);
+      targetRef.current.setAttribute("data-audio-src", src);
     }
 
-    const a = audioRef.current;
+    const a = targetRef.current;
 
     if (!a) {
       return null;
     }
 
-    a.src = src;
-    a.loop = loop;
+    if (a.getAttribute("data-audio-src") !== src) {
+      resetAudio(a);
+      a.src = src;
+      a.setAttribute("data-audio-src", src);
+    }
+
+    a.loop = shouldOverlapLoop ? false : loop;
 
     return a;
-  }, [loop, src]);
+  }, [loop, resetAudio, shouldOverlapLoop, src]);
+
+  const stop = useCallback(() => {
+    cancelFade();
+    cancelLoopTimeout();
+    resetAudio(audioRef.current);
+    resetAudio(standbyAudioRef.current);
+  }, [cancelFade, cancelLoopTimeout, resetAudio]);
+
+  const scheduleLoopOverlap = useCallback((a: HTMLAudioElement) => {
+    cancelLoopTimeout();
+
+    if (!shouldOverlapLoop || typeof window === "undefined") {
+      return;
+    }
+
+    const scheduleFromDuration = () => {
+      if (audioRef.current !== a || a.paused) {
+        return;
+      }
+
+      if (!Number.isFinite(a.duration) || a.duration <= 0) {
+        return;
+      }
+
+      const overlapSeconds = loopOverlapMs / 1000;
+      const delayMs = Math.max(0, (a.duration - a.currentTime - overlapSeconds) * 1000);
+
+      loopTimeoutRef.current = window.setTimeout(() => {
+        if (audioRef.current !== a || a.paused) {
+          return;
+        }
+
+        const nextAudio = ensureAudio(standbyAudioRef);
+
+        if (!nextAudio) {
+          return;
+        }
+
+        nextAudio.loop = false;
+        nextAudio.volume = volumeRef.current;
+
+        try {
+          nextAudio.currentTime = 0;
+        } catch {
+          // No-op: currentTime reset can fail for not-yet-ready audio.
+        }
+
+        const playPromise = nextAudio.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+
+        audioRef.current = nextAudio;
+        standbyAudioRef.current = a;
+        scheduleLoopOverlapRef.current(nextAudio);
+      }, delayMs);
+    };
+
+    if (Number.isFinite(a.duration) && a.duration > 0) {
+      scheduleFromDuration();
+      return;
+    }
+
+    const handleMetadata = () => {
+      a.removeEventListener("loadedmetadata", handleMetadata);
+      scheduleFromDuration();
+    };
+
+    a.addEventListener("loadedmetadata", handleMetadata);
+  }, [cancelLoopTimeout, ensureAudio, loopOverlapMs, shouldOverlapLoop]);
 
   useEffect(() => {
-    const a = audioRef.current;
+    scheduleLoopOverlapRef.current = scheduleLoopOverlap;
+  }, [scheduleLoopOverlap]);
 
-    if (!a) {
-      return;
-    }
+  useEffect(() => {
+    volumeRef.current = volume;
 
     if (!src) {
-      a.pause();
+      stop();
       return;
     }
 
-    a.src = src;
-    a.loop = loop;
-    a.volume = volume;
-  }, [loop, src, volume]);
+    if (previousSrcRef.current !== src) {
+      stop();
+      previousSrcRef.current = src;
+    }
+
+    for (const a of [audioRef.current, standbyAudioRef.current]) {
+      if (!a) {
+        continue;
+      }
+
+      a.loop = shouldOverlapLoop ? false : loop;
+      a.volume = volume;
+    }
+  }, [loop, shouldOverlapLoop, src, stop, volume]);
 
   const play = useCallback((restart = true) => {
     const a = ensureAudio();
@@ -74,20 +188,17 @@ export const useAlarm = (
     }
 
     if (restart) {
-      a.pause();
-
-      try {
-        a.currentTime = 0;
-      } catch {
-        // Some browsers can reject currentTime resets for not-yet-ready audio.
-      }
+      resetAudio(a);
     }
 
     cancelFade();
-    a.volume = shouldFadeIn ? 0 : volume;
+    cancelLoopTimeout();
+    a.volume = shouldFadeIn ? 0 : volumeRef.current;
 
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
+
+    scheduleLoopOverlap(a);
 
     if (!shouldFadeIn || typeof window === "undefined") {
       return;
@@ -101,46 +212,37 @@ export const useAlarm = (
         return;
       }
 
-      const progress = Math.min(1, (timestamp - startedAt) / fadeInMs);
-      a.volume = volume * progress;
+      const progress = Math.max(
+        0,
+        Math.min(1, (timestamp - startedAt) / fadeInMs),
+      );
+      a.volume = volumeRef.current * progress;
 
       if (progress < 1 && !a.paused) {
         fadeFrameRef.current = window.requestAnimationFrame(applyFade);
         return;
       }
 
-      a.volume = volume;
+      a.volume = volumeRef.current;
       fadeFrameRef.current = null;
       fadeStartedAtRef.current = null;
     };
 
     fadeFrameRef.current = window.requestAnimationFrame(applyFade);
-  }, [cancelFade, ensureAudio, fadeInMs, volume]);
-
-  const stop = useCallback(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    cancelFade();
-    a.pause();
-    try {
-      a.currentTime = 0;
-    } catch {
-      // No-op: currentTime reset can fail for some audio states.
-    }
-  }, [cancelFade]);
+  }, [
+    cancelFade,
+    cancelLoopTimeout,
+    ensureAudio,
+    fadeInMs,
+    resetAudio,
+    scheduleLoopOverlap,
+  ]);
 
   useEffect(() => {
     return () => {
-      const a = audioRef.current;
-
-      if (!a) {
-        return;
-      }
-
-      cancelFade();
-      a.pause();
+      stop();
     };
-  }, [cancelFade]);
+  }, [stop]);
 
   return { play, stop };
 };
