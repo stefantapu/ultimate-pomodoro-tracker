@@ -1050,10 +1050,12 @@
 .dashboard-shell--viking .notes-panel__status,
 .dashboard-shell--viking .dragon-card__level-value {
   color: #f4fbff;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-style: normal;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   text-align: center;
+  text-transform: none;
   text-shadow:
     0 1px 1px rgba(5, 7, 9, 0.92),
     0 0 0.5rem rgba(201, 216, 229, 0.28);
@@ -1061,9 +1063,10 @@
 
 .dashboard-shell--viking .locked-overlay__copy {
   color: #f4fbff;
-  font-family: "VikingTimer", var(--dashboard-button-font-family);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-style: normal;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   text-shadow:
     0 1px 1px rgba(5, 7, 9, 0.94),
     0 0 0.45rem rgba(232, 246, 255, 0.3);

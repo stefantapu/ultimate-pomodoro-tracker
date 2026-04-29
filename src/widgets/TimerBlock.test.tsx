@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
 import { getSkinById } from "@shared/skins/catalog";
@@ -161,7 +161,7 @@ describe("TimerBlock", () => {
     renderWithProviders(<TimerBlock />);
 
     expect(useAlarmMock).toHaveBeenCalledWith(null, 1);
-    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.5);
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.25);
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
       loop: true,
       fadeInMs: 0,
@@ -182,11 +182,11 @@ describe("TimerBlock", () => {
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Start-Pause-Click.mp3",
-      0.5,
+      0.25,
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Focus-Break-Click.mp3",
-      0.5,
+      0.25,
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
@@ -205,5 +205,26 @@ describe("TimerBlock", () => {
 
     expect(await screen.findByText("Sound")).toBeInTheDocument();
     expect(document.querySelector(".settings-modal__overlay--neumorphism")).not.toBeNull();
+  });
+
+  it("applies valid settings changes when clicking the settings backdrop", async () => {
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    const uiVolumeSlider = await screen.findByLabelText("UI sounds volume");
+    fireEvent.change(uiVolumeSlider, { target: { value: "80" } });
+    fireEvent.click(document.querySelector(".settings-modal__overlay")!);
+
+    await waitFor(() => {
+      expect(document.querySelector(".settings-modal__overlay")).toBeNull();
+      expect(
+        JSON.parse(localStorage.getItem(USER_SETTINGS_STORAGE_KEY) ?? "{}"),
+      ).toMatchObject({
+        uiVolume: 0.8,
+      });
+    });
   });
 });
