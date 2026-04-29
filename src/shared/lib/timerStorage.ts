@@ -31,10 +31,12 @@ export const DEFAULT_AUDIO_SETTINGS = {
   alarmEnabled: true,
   alarmVolume: 1,
   uiSoundsEnabled: true,
-  uiVolume: 0.5,
-  focusAmbienceEnabled: false,
+  uiVolume: 1,
+  focusAmbienceEnabled: true,
   focusAmbienceVolume: 0.2,
 } satisfies Omit<UserSettings, keyof TimerSettings>;
+
+export const UI_SOUND_OUTPUT_GAIN = 0.5;
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   ...DEFAULT_TIMER_SETTINGS,

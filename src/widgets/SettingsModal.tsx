@@ -298,11 +298,23 @@ export function SettingsModal({
     setSettingsModalOpen(false);
   };
 
+  const handleBackdropClick = () => {
+    if (isSettingsDirty) {
+      if (canSaveSettings) {
+        handleSave();
+      }
+
+      return;
+    }
+
+    handleCancel();
+  };
+
   const modal = (
     <div
       className={`settings-modal__overlay settings-modal__overlay--${activeSkin.id}`}
       style={skinCssVariables}
-      onClick={handleCancel}
+      onClick={handleBackdropClick}
     >
       <div
         className="settings-modal"

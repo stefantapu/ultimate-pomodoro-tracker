@@ -313,18 +313,12 @@ body[data-dashboard-skin="neumorphism"] {
   place-items: center;
   padding: 0.7rem;
   cursor: pointer;
-  background:
-    linear-gradient(180deg, rgba(24, 8, 4, 0.1), rgba(13, 4, 2, 0.74)),
-    radial-gradient(
-      circle at 50% 28%,
-      rgba(255, 170, 90, 0.12),
-      transparent 42%
-    );
-  backdrop-filter: blur(1.5px);
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .locked-overlay__content {
-  display: grid;
+  display: none;
   place-items: center;
   width: min(calc(100% - 0.2rem), 9rem);
 }
@@ -350,16 +344,17 @@ body[data-dashboard-skin="neumorphism"] {
 
 .locked-overlay:hover .locked-overlay__copy,
 .locked-overlay:focus-visible .locked-overlay__copy {
-  border-color: rgba(255, 202, 132, 0.68);
-  box-shadow: 0 0 0.7rem rgba(255, 120, 39, 0.18);
-  filter: brightness(1.06);
+  border-color: transparent;
+  box-shadow: none;
+  filter: none;
 }
 
 .locked-overlay:focus-visible {
-  outline: none;
+  outline: 2px solid var(--dashboard-accent);
+  outline-offset: -0.35rem;
 }
 
 .locked-overlay:active .locked-overlay__copy {
-  transform: translateY(1px);
-  filter: brightness(0.98);
+  transform: none;
+  filter: none;
 }

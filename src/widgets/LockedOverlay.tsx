@@ -16,10 +16,6 @@ export function LockedOverlay() {
           setAuthModalOpen(true);
         }
       }}
-    >
-      <div className="locked-overlay__content">
-        <div className="locked-overlay__copy">SIGN IN</div>
-      </div>
-    </div>
+    />
   );
 }

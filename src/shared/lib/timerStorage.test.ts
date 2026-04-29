@@ -24,6 +24,10 @@ describe("timerStorage", () => {
 
   it("returns default user settings when nothing is stored", () => {
     expect(readUserSettings()).toEqual(DEFAULT_USER_SETTINGS);
+    expect(readUserSettings()).toMatchObject({
+      uiVolume: 1,
+      focusAmbienceEnabled: true,
+    });
   });
 
   it("applies the legacy sound override when audio settings were not stored", () => {

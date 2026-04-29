@@ -5,6 +5,7 @@ import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import {
   extractTimerSettings,
   readUserSettings,
+  UI_SOUND_OUTPUT_GAIN,
   USER_SETTINGS_STORAGE_KEY,
   writeUserSettings,
 } from "@shared/lib/timerStorage";
@@ -187,15 +188,26 @@ export function TimerBlock() {
     () => extractTimerSettings(currentSettings),
     [currentSettings],
   );
+  const uiPlaybackVolume = useMemo(
+    () => clampVolume(uiVolume * UI_SOUND_OUTPUT_GAIN),
+    [uiVolume],
+  );
+  const uiPreviewVolume = useMemo(
+    () => clampVolume(uiVolumeDraft * UI_SOUND_OUTPUT_GAIN),
+    [uiVolumeDraft],
+  );
 
   const { play: playAlarm } = useAlarm(alarmSoundSrc, alarmVolume);
   const { play: previewAlarm } = useAlarm(alarmSoundSrc, alarmVolumeDraft);
   const { play: playPrimaryTimerClick } = useAlarm(
     primaryTimerControlSoundSrc,
-    uiVolume,
+    uiPlaybackVolume,
   );
-  const { play: playModeTimerClick } = useAlarm(modeControlSoundSrc, uiVolume);
-  const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiVolumeDraft);
+  const { play: playModeTimerClick } = useAlarm(
+    modeControlSoundSrc,
+    uiPlaybackVolume,
+  );
+  const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiPreviewVolume);
   const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
     focusAmbienceSoundSrc,
     focusAmbienceVolume,
