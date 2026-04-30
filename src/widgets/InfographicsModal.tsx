@@ -244,10 +244,6 @@ export function InfographicsModal() {
           value: formatCount(data.summary.completed_cycles_count),
         },
         {
-          label: "Interrupted",
-          value: formatHours(data.summary.interrupted_focus_time),
-        },
-        {
           label: "Streak",
           value: `${data.summary.current_streak}d`,
         },

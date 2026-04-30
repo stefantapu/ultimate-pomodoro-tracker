@@ -34,7 +34,6 @@ function createSyncClient(error: unknown = null) {
 
 const payload: SessionPayload = {
   mode: "focus",
-  status: "completed",
   duration_seconds: 1500,
   accumulated_seconds: 1500,
   started_at: "2026-04-15T12:00:00.000Z",
@@ -95,6 +94,32 @@ describe("useSyncSession", () => {
     });
 
     expect(localStorage.getItem("pomodoro_sync_queue:user-1")).toBe("[]");
+  });
+
+  it("strips legacy status fields from queued sessions before insert", async () => {
+    const { client, insertMock } = createSyncClient();
+    getSupabaseClientMock.mockResolvedValue(client);
+    localStorage.setItem(
+      "pomodoro_sync_queue:user-1",
+      JSON.stringify([{ ...payload, status: "interrupted" }]),
+    );
+
+    renderHook(() => useSyncSession(), {
+      wrapper: wrapperFactory({
+        user: { id: "user-1" } as AuthContextType["user"],
+        session: null,
+        loading: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(insertMock).toHaveBeenCalledWith([
+        {
+          ...payload,
+          user_id: "user-1",
+        },
+      ]);
+    });
   });
 
   it("keeps the queue when Supabase returns an insert error", async () => {
