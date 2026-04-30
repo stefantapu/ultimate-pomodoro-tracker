@@ -6,11 +6,14 @@ import type { Mode } from "../lib/timerTypes";
 
 export type SessionPayload = {
   mode: Mode;
-  status: "completed" | "interrupted";
   duration_seconds: number;
   accumulated_seconds: number;
   started_at: string;
   finished_at: string;
+};
+
+type QueuedSessionPayload = SessionPayload & {
+  status?: "completed" | "interrupted";
 };
 
 const SYNC_QUEUE_KEY_PREFIX = "pomodoro_sync_queue";
@@ -23,7 +26,7 @@ export function useSyncSession() {
   const { user } = useAuth();
   const refreshAnalytics = useUIStore((state) => state.refreshAnalytics);
 
-  const getQueue = useCallback((): SessionPayload[] => {
+  const getQueue = useCallback((): QueuedSessionPayload[] => {
     if (!user) {
       return [];
     }
@@ -37,7 +40,7 @@ export function useSyncSession() {
   }, [user]);
 
   const saveQueue = useCallback(
-    (queue: SessionPayload[]) => {
+    (queue: QueuedSessionPayload[]) => {
       if (!user) {
         return;
       }
@@ -53,7 +56,12 @@ export function useSyncSession() {
     const queue = getQueue();
     if (queue.length === 0) return;
 
-    const payloads = queue.map((item) => ({ ...item, user_id: user.id }));
+    const payloads = queue.map((item) => {
+      const payload = { ...item, user_id: user.id };
+      delete payload.status;
+
+      return payload;
+    });
 
     try {
       const supabase = await getSupabaseClient();

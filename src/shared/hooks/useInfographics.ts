@@ -7,7 +7,6 @@ export type InfographicsSummary = {
   today_focus_time: number;
   current_week_focus_time: number;
   completed_cycles_count: number;
-  interrupted_focus_time: number;
   total_focus_time: number;
   current_streak: number;
   active_days: number;
@@ -21,7 +20,6 @@ export type InfographicsPeriodBucket = {
   focus_seconds: number;
   break_seconds: number;
   completed_cycles: number;
-  interrupted_focus_seconds: number;
 };
 
 export type InfographicsFocusPeriod = {

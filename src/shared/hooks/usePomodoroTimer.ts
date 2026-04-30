@@ -40,7 +40,7 @@ export function usePomodoroTimer({
   }, [state]);
 
   const checkAndSyncSession = useCallback(
-    (status: "completed" | "interrupted", finalAccumulatedSeconds?: number) => {
+    (finalAccumulatedSeconds?: number) => {
       const currentState = stateRef.current;
       const duration =
         currentState.mode === "focus" ? focusDuration : breakDuration;
@@ -53,7 +53,6 @@ export function usePomodoroTimer({
       ) {
         syncSession({
           mode: currentState.mode,
-          status,
           duration_seconds: duration,
           accumulated_seconds: accumulated,
           started_at: currentState.sessionStartedAt,
@@ -85,7 +84,7 @@ export function usePomodoroTimer({
       completedMode === "focus" ? autoBreak : autoFocus;
 
     onSessionComplete?.();
-    checkAndSyncSession("completed", finalAccum);
+    checkAndSyncSession(finalAccum);
 
     if (shouldAutoStartNext) {
       const nextDuration =
@@ -137,7 +136,7 @@ export function usePomodoroTimer({
         currentState.accumulatedSeconds +
         Math.max(0, currentState.timeLeft - remaining);
 
-      checkAndSyncSession("interrupted", finalAccum);
+      checkAndSyncSession(finalAccum);
 
       dispatch({
         type: "PAUSE",
@@ -153,7 +152,7 @@ export function usePomodoroTimer({
     const currentState = stateRef.current;
     
     const finalAccum = getFinalAccumulatedSeconds(currentState);
-    checkAndSyncSession("interrupted", finalAccum);
+    checkAndSyncSession(finalAccum);
 
     dispatch({
       type: "RESET",
@@ -177,7 +176,7 @@ export function usePomodoroTimer({
     (mode: Mode) => {
       const currentState = stateRef.current;
       const finalAccum = getFinalAccumulatedSeconds(currentState);
-      checkAndSyncSession("interrupted", finalAccum);
+      checkAndSyncSession(finalAccum);
       dispatch({
         type: "SWITCH_MODE",
         mode,
@@ -242,7 +241,7 @@ export function usePomodoroTimer({
     }
 
     const finalAccum = getFinalAccumulatedSeconds(currentState);
-    checkAndSyncSession("interrupted", finalAccum);
+    checkAndSyncSession(finalAccum);
 
     dispatch({
       type: "RESET",

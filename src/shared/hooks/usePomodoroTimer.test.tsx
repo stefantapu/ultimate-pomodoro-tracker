@@ -18,7 +18,7 @@ describe("usePomodoroTimer", () => {
     vi.setSystemTime(new Date("2026-04-15T12:00:00.000Z"));
   });
 
-  it("starts, pauses, and syncs interrupted progress", () => {
+  it("starts, pauses, and syncs recorded progress", () => {
     const { result } = renderHook(() =>
       usePomodoroTimer({
         settings: {
@@ -45,7 +45,6 @@ describe("usePomodoroTimer", () => {
     expect(syncSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         mode: "focus",
-        status: "interrupted",
         duration_seconds: 10,
         accumulated_seconds: 4,
         started_at: "2026-04-15T12:00:00.000Z",
@@ -96,7 +95,6 @@ describe("usePomodoroTimer", () => {
     expect(syncSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         mode: "focus",
-        status: "completed",
         duration_seconds: 5,
         accumulated_seconds: 5,
       }),
