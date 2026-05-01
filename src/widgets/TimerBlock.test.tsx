@@ -10,6 +10,10 @@ import { TimerBlock } from "./TimerBlock";
 const syncSessionMock = vi.fn();
 const pushSettingsToCloudMock = vi.fn();
 const useAlarmMock = vi.fn();
+let useAlarmReturns: Array<{
+  play: ReturnType<typeof vi.fn>;
+  stop: ReturnType<typeof vi.fn>;
+}>;
 
 vi.mock("@shared/hooks/useSyncSession", () => ({
   useSyncSession: () => ({
@@ -33,9 +37,15 @@ describe("TimerBlock", () => {
     syncSessionMock.mockReset();
     pushSettingsToCloudMock.mockReset();
     useAlarmMock.mockReset();
-    useAlarmMock.mockReturnValue({
-      play: vi.fn(),
-      stop: vi.fn(),
+    useAlarmReturns = [];
+    useAlarmMock.mockImplementation(() => {
+      const controls = {
+        play: vi.fn(),
+        stop: vi.fn(),
+      };
+
+      useAlarmReturns.push(controls);
+      return controls;
     });
     useSkinStore.setState({
       activeSkinId: "warm",
@@ -166,7 +176,35 @@ describe("TimerBlock", () => {
       loop: true,
       fadeInMs: 0,
       loopOverlapMs: 1000,
+      outputGain: 1,
     });
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
+      fadeInMs: 250,
+      outputGain: 1,
+    });
+  });
+
+  it("uses boosted warm ambience for playback and previews", () => {
+    renderWithProviders(<TimerBlock />);
+
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+      0.2,
+      {
+        loop: true,
+        fadeInMs: 0,
+        loopOverlapMs: 1000,
+        outputGain: 2.5,
+      },
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+      0.2,
+      {
+        fadeInMs: 250,
+        outputGain: 2.5,
+      },
+    );
   });
 
   it("uses distinct viking audio roles with focus ambience fade-in", () => {
@@ -191,11 +229,16 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
       0.2,
-      { loop: true, fadeInMs: 1800, loopOverlapMs: 1000 },
+      { loop: true, fadeInMs: 1800, loopOverlapMs: 1000, outputGain: 1 },
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
+      0.2,
+      { fadeInMs: 250, outputGain: 1 },
     );
   });
 
-  it("renders settings modal with neumorphism class hooks for theme-specific audio styling", async () => {
+  it("renders settings modal with ambience preview across themes", async () => {
     act(() => {
       useSkinStore.getState().setActiveSkinId("neumorphism");
       useUIStore.getState().setSettingsModalOpen(true);
@@ -205,6 +248,69 @@ describe("TimerBlock", () => {
 
     expect(await screen.findByText("Sound")).toBeInTheDocument();
     expect(document.querySelector(".settings-modal__overlay--neumorphism")).not.toBeNull();
+    const previewButtons = screen.getAllByRole("button", { name: "Preview" });
+
+    expect(previewButtons).toHaveLength(3);
+    expect(previewButtons[2]).toBeDisabled();
+  });
+
+  it("stops ambience previews when another preview runs or settings are saved", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true }),
+    );
+
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    const previewButtons = await screen.findAllByRole("button", {
+      name: "Preview",
+    });
+    const previewAlarmControls = useAlarmReturns[1];
+    const previewUiControls = useAlarmReturns[4];
+    const previewAmbienceControls = useAlarmReturns[6];
+
+    fireEvent.click(previewButtons[2]);
+
+    expect(previewAmbienceControls.play).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(previewButtons[0]);
+
+    expect(previewAmbienceControls.stop).toHaveBeenCalledTimes(2);
+    expect(previewAlarmControls.play).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(previewButtons[2]);
+    fireEvent.click(previewButtons[1]);
+
+    expect(previewAmbienceControls.stop).toHaveBeenCalledTimes(4);
+    expect(previewUiControls.play).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(previewButtons[2]);
+    fireEvent.change(screen.getByLabelText("Focus ambience volume"), {
+      target: { value: "30" },
+    });
+    const saveButton = screen.getByRole("button", { name: "Save settings" });
+
+    await waitFor(() => {
+      expect(saveButton).toBeEnabled();
+    });
+
+    const stopCallsBeforeSave = useAlarmReturns.reduce(
+      (sum, controls) => sum + controls.stop.mock.calls.length,
+      0,
+    );
+
+    fireEvent.click(saveButton);
+
+    expect(
+      useAlarmReturns.reduce(
+        (sum, controls) => sum + controls.stop.mock.calls.length,
+        0,
+      ),
+    ).toBeGreaterThan(stopCallsBeforeSave);
   });
 
   it("applies valid settings changes when clicking the settings backdrop", async () => {

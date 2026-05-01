@@ -101,6 +101,10 @@ const redLavaHistoryIcon = buildImageAsset(
   "/assets/red_lava_theme/history_icon.webp",
   { width: 100, height: 100 },
 );
+const redLavaThemeIcon = buildImageAsset(
+  "/assets/red_lava_theme/change_theme_icon.webp",
+  { width: 80, height: 81 },
+);
 const redLavaExitIcon = buildImageAsset(
   "/assets/red_lava_theme/exit_icon/exit_icon_15x15.webp",
   { width: 15, height: 15 },
@@ -191,7 +195,7 @@ const warmSkin: SkinProfile = {
     exitIcon: redLavaExitIcon,
     toolbarButton: redLavaSettingsButton,
     toolbarHistoryIcon: redLavaHistoryIcon,
-    toolbarThemeIcon: redLavaSettingsIcon,
+    toolbarThemeIcon: redLavaThemeIcon,
     toolbarSettingsIcon: redLavaSettingsIcon,
     toolbarAuthIcon: redLavaExitIcon,
     cursorDefault: {
@@ -216,13 +220,15 @@ const warmSkin: SkinProfile = {
     },
   },
   audio: {
-    alarm: "/sounds/alarm.mp3",
-    primaryTimerControl: "/sounds/stone_click.mp3",
-    modeControl: "/sounds/stone_click.mp3",
-    toolbarClick: "/sounds/click_on_elements.mp3",
-    focusAmbience: "/sounds/focus_embers_loop.mp3",
+    alarm: "/assets/red_lava_theme/audio/alarm.mp3",
+    primaryTimerControl: "/assets/red_lava_theme/audio/stone_click.mp3",
+    modeControl: "/assets/red_lava_theme/audio/stone_click.mp3",
+    toolbarClick: "/assets/red_lava_theme/audio/click_on_elements.mp3",
+    focusAmbience:
+      "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
   },
   focusAmbienceFadeInMs: 0,
+  focusAmbienceOutputGain: 2.5,
   colors: {
     dashboardBg: "#2b1109",
     surface: "#412016",
@@ -342,6 +348,7 @@ const neumorphismSkin: SkinProfile = {
     focusAmbience: null,
   },
   focusAmbienceFadeInMs: 0,
+  focusAmbienceOutputGain: 1,
   colors: {
     dashboardBg: "#e8ebef",
     surface: "#eef1f5",
@@ -525,6 +532,7 @@ const vikingSkin: SkinProfile = {
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
   },
   focusAmbienceFadeInMs: 1800,
+  focusAmbienceOutputGain: 1,
   colors: {
     dashboardBg: "#201f21",
     surface: "#313134",

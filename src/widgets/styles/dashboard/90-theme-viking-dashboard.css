@@ -689,7 +689,8 @@
 .auth-block--viking,
 .settings-modal__overlay--viking,
 .history-dashboard__overlay--viking,
-.theme-picker-modal__overlay--viking {
+.theme-picker-modal__overlay--viking,
+.logout-confirmation__overlay--viking {
   background:
     linear-gradient(180deg, rgba(18, 22, 27, 0.78), rgba(8, 10, 12, 0.9)),
     radial-gradient(
@@ -706,7 +707,8 @@
 .auth-block--viking .auth-block__panel,
 .settings-modal__overlay--viking .settings-modal,
 .history-dashboard__overlay--viking .history-dashboard,
-.theme-picker-modal__overlay--viking .theme-picker-modal {
+.theme-picker-modal__overlay--viking .theme-picker-modal,
+.logout-confirmation__overlay--viking .logout-confirmation {
   border: 1px solid rgba(201, 216, 229, 0.36);
   border-radius: 0.18rem;
   background:
@@ -730,7 +732,8 @@
 .auth-block--viking .auth-block__panel::before,
 .settings-modal__overlay--viking .settings-modal::before,
 .history-dashboard__overlay--viking .history-dashboard::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal::before {
+.theme-picker-modal__overlay--viking .theme-picker-modal::before,
+.logout-confirmation__overlay--viking .logout-confirmation::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -749,7 +752,9 @@
 .settings-modal__overlay--viking .settings-modal__section + .settings-modal__section,
 .settings-modal__overlay--viking .settings-modal__footer,
 .history-dashboard__overlay--viking .history-dashboard__header,
-.theme-picker-modal__overlay--viking .theme-picker-modal__header {
+.theme-picker-modal__overlay--viking .theme-picker-modal__header,
+.logout-confirmation__overlay--viking .logout-confirmation__header,
+.logout-confirmation__overlay--viking .logout-confirmation__actions {
   border-color: rgba(201, 216, 229, 0.2);
 }
 
@@ -757,7 +762,8 @@
 .settings-modal__overlay--viking .settings-modal__header h2,
 .history-dashboard__overlay--viking .history-dashboard__header h2,
 .history-dashboard__overlay--viking .history-dashboard__panel h3,
-.theme-picker-modal__overlay--viking .theme-picker-modal__header h2 {
+.theme-picker-modal__overlay--viking .theme-picker-modal__header h2,
+.logout-confirmation__overlay--viking .logout-confirmation__header h2 {
   color: #f4fbff;
   font-family: "VikingTimer", var(--dashboard-button-font-family);
   font-style: normal;
@@ -786,7 +792,8 @@
 .theme-picker-modal__overlay--viking .theme-picker-modal__intro,
 .theme-picker-modal__overlay--viking .theme-picker-modal__option-state,
 .theme-picker-modal__overlay--viking
-  .theme-picker-modal__option-description {
+  .theme-picker-modal__option-description,
+.logout-confirmation__overlay--viking .logout-confirmation__body p {
   color: #c9d8e7;
 }
 
@@ -894,7 +901,9 @@
 .settings-modal__overlay--viking .settings-modal__close,
 .history-dashboard__overlay--viking .history-dashboard__close,
 .history-dashboard__overlay--viking .history-dashboard__week-actions button,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close,
+.logout-confirmation__overlay--viking .logout-confirmation__button,
+.logout-confirmation__overlay--viking .logout-confirmation__close {
   border: 1px solid rgba(201, 216, 229, 0.32);
   border-radius: 0.12rem;
   background:
@@ -908,7 +917,8 @@
 
 .auth-block--viking .auth-block__button,
 .settings-modal__overlay--viking .settings-modal__button,
-.history-dashboard__overlay--viking .history-dashboard__week-actions button {
+.history-dashboard__overlay--viking .history-dashboard__week-actions button,
+.logout-confirmation__overlay--viking .logout-confirmation__button {
   font-family: "VikingTimer", var(--dashboard-button-font-family);
   font-style: normal;
   letter-spacing: 0.04em;
@@ -917,7 +927,8 @@
 .auth-block--viking .auth-block__close,
 .settings-modal__overlay--viking .settings-modal__close,
 .history-dashboard__overlay--viking .history-dashboard__close,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close,
+.logout-confirmation__overlay--viking .logout-confirmation__close {
   position: relative;
   display: inline-grid;
   place-items: center;
@@ -931,7 +942,9 @@
 .history-dashboard__overlay--viking .history-dashboard__close::before,
 .history-dashboard__overlay--viking .history-dashboard__close::after,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::after {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::after,
+.logout-confirmation__overlay--viking .logout-confirmation__close::before,
+.logout-confirmation__overlay--viking .logout-confirmation__close::after {
   content: "";
   position: absolute;
   width: 0.76rem;
@@ -943,14 +956,16 @@
 .auth-block--viking .auth-block__close::before,
 .settings-modal__overlay--viking .settings-modal__close::before,
 .history-dashboard__overlay--viking .history-dashboard__close::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::before {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::before,
+.logout-confirmation__overlay--viking .logout-confirmation__close::before {
   transform: rotate(45deg);
 }
 
 .auth-block--viking .auth-block__close::after,
 .settings-modal__overlay--viking .settings-modal__close::after,
 .history-dashboard__overlay--viking .history-dashboard__close::after,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::after {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::after,
+.logout-confirmation__overlay--viking .logout-confirmation__close::after {
   transform: rotate(-45deg);
 }
 
@@ -973,7 +988,13 @@
   .history-dashboard__week-actions
   button:not(:disabled):focus-visible,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close:hover,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close:focus-visible {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close:focus-visible,
+.logout-confirmation__overlay--viking
+  .logout-confirmation__button:not(:disabled):hover,
+.logout-confirmation__overlay--viking
+  .logout-confirmation__button:not(:disabled):focus-visible,
+.logout-confirmation__overlay--viking .logout-confirmation__close:hover,
+.logout-confirmation__overlay--viking .logout-confirmation__close:focus-visible {
   color: #ffffff;
   border-color: rgba(232, 246, 255, 0.58);
   filter: brightness(1.08);

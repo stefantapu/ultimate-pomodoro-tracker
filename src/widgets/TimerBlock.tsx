@@ -215,6 +215,18 @@ export function TimerBlock() {
       loop: true,
       fadeInMs: activeSkin.focusAmbienceFadeInMs,
       loopOverlapMs: 1000,
+      outputGain: activeSkin.focusAmbienceOutputGain,
+    },
+  );
+  const {
+    play: previewFocusAmbience,
+    stop: stopPreviewFocusAmbience,
+  } = useAlarm(
+    focusAmbienceSoundSrc,
+    focusAmbienceVolumeDraft,
+    {
+      fadeInMs: 250,
+      outputGain: activeSkin.focusAmbienceOutputGain,
     },
   );
 
@@ -395,20 +407,44 @@ export function TimerBlock() {
   );
 
   const handlePreviewAlarm = useCallback(() => {
+    stopPreviewFocusAmbience();
+
     if (alarmVolumeDraft <= 0 || !alarmSoundSrc) {
       return;
     }
 
     previewAlarm();
-  }, [alarmSoundSrc, alarmVolumeDraft, previewAlarm]);
+  }, [alarmSoundSrc, alarmVolumeDraft, previewAlarm, stopPreviewFocusAmbience]);
 
   const handlePreviewUiSounds = useCallback(() => {
+    stopPreviewFocusAmbience();
+
     if (uiVolumeDraft <= 0 || !uiPreviewSoundSrc) {
       return;
     }
 
     previewUiClick();
-  }, [previewUiClick, uiPreviewSoundSrc, uiVolumeDraft]);
+  }, [previewUiClick, stopPreviewFocusAmbience, uiPreviewSoundSrc, uiVolumeDraft]);
+
+  const handlePreviewFocusAmbience = useCallback(() => {
+    stopPreviewFocusAmbience();
+
+    if (
+      focusAmbienceVolumeDraft <= 0 ||
+      !focusAmbienceSoundSrc ||
+      !isFocusAmbienceAvailable
+    ) {
+      return;
+    }
+
+    previewFocusAmbience();
+  }, [
+    focusAmbienceSoundSrc,
+    focusAmbienceVolumeDraft,
+    isFocusAmbienceAvailable,
+    previewFocusAmbience,
+    stopPreviewFocusAmbience,
+  ]);
 
   const playPrimaryButtonClick = useCallback(() => {
     if (!uiSoundsEnabled || uiVolume <= 0 || !primaryTimerControlSoundSrc) {
@@ -517,13 +553,16 @@ export function TimerBlock() {
   );
 
   const handleCancelSettings = useCallback(() => {
+    stopPreviewFocusAmbience();
     restoreSettingsDrafts();
-  }, [restoreSettingsDrafts]);
+  }, [restoreSettingsDrafts, stopPreviewFocusAmbience]);
 
   const handleSaveSettings = useCallback(() => {
     if (!canSaveSettings) {
       return;
     }
+
+    stopPreviewFocusAmbience();
 
     const nextFocusDurationSeconds = draftFocusDurationSeconds;
     const nextBreakDurationSeconds = draftBreakDurationSeconds;
@@ -574,6 +613,7 @@ export function TimerBlock() {
     draftFocusDurationSeconds,
     focusAmbienceEnabledDraft,
     focusAmbienceVolumeDraft,
+    stopPreviewFocusAmbience,
     uiSoundsEnabledDraft,
     uiVolumeDraft,
   ]);
@@ -620,6 +660,12 @@ export function TimerBlock() {
       hardReset();
     }
   }, [hardReset, resetTimerTrigger]);
+
+  useEffect(() => {
+    if (!isSettingsModalOpen) {
+      stopPreviewFocusAmbience();
+    }
+  }, [isSettingsModalOpen, stopPreviewFocusAmbience]);
 
   useEffect(() => {
     if (!shouldPlayFocusAmbience) {
@@ -722,6 +768,10 @@ export function TimerBlock() {
             onPreviewUiSounds={handlePreviewUiSounds}
             onToggleFocusAmbience={handleToggleFocusAmbienceDraft}
             onFocusAmbienceVolumeChange={handleFocusAmbienceVolumeChange}
+            onPreviewFocusAmbience={handlePreviewFocusAmbience}
+            isFocusAmbiencePreviewDisabled={
+              !focusAmbienceSoundSrc || !isFocusAmbienceAvailable
+            }
           />
         </Suspense>
       ) : null}

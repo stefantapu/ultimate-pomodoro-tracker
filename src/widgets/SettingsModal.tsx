@@ -1,5 +1,6 @@
 import type { Mode } from "@shared/lib/timerTypes";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
+import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { useUIStore } from "@shared/stores/uiStore";
 import { useSkinStore } from "@shared/stores/skinStore";
 import {
@@ -120,6 +121,7 @@ type AudioSettingRowProps = {
   hint?: string;
   checked?: boolean;
   previewLabel?: string;
+  previewDisabled?: boolean;
   onToggle?: () => void;
   onPreview?: () => void;
   onValueChange: (nextValue: string) => void;
@@ -133,6 +135,7 @@ function AudioSettingRow({
   hint,
   checked,
   previewLabel,
+  previewDisabled = false,
   onToggle,
   onPreview,
   onValueChange,
@@ -166,7 +169,7 @@ function AudioSettingRow({
           <button
             type="button"
             className="settings-modal__audio-preview"
-            disabled={disabled}
+            disabled={disabled || previewDisabled}
             onClick={onPreview}
           >
             {previewLabel ?? "Preview"}
@@ -231,6 +234,8 @@ type SettingsModalProps = {
   onPreviewUiSounds: () => void;
   onToggleFocusAmbience: () => void;
   onFocusAmbienceVolumeChange: (nextValue: string) => void;
+  onPreviewFocusAmbience: () => void;
+  isFocusAmbiencePreviewDisabled: boolean;
 };
 
 export function SettingsModal({
@@ -271,10 +276,13 @@ export function SettingsModal({
   onPreviewUiSounds,
   onToggleFocusAmbience,
   onFocusAmbienceVolumeChange,
+  onPreviewFocusAmbience,
+  isFocusAmbiencePreviewDisabled,
 }: SettingsModalProps) {
   const isOpen = useUIStore((state) => state.isSettingsModalOpen);
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -285,6 +293,7 @@ export function SettingsModal({
   }
 
   const handleCancel = () => {
+    playToolbarClick();
     onCancelSettings();
     setSettingsModalOpen(false);
   };
@@ -294,6 +303,7 @@ export function SettingsModal({
       return;
     }
 
+    playToolbarClick();
     onSaveSettings();
     setSettingsModalOpen(false);
   };
@@ -444,7 +454,9 @@ export function SettingsModal({
               value={focusAmbienceVolumeDraft}
               valueLabel={focusAmbienceVolumeLabel}
               hint={focusAmbienceHint}
+              previewDisabled={isFocusAmbiencePreviewDisabled}
               onToggle={onToggleFocusAmbience}
+              onPreview={onPreviewFocusAmbience}
               onValueChange={onFocusAmbienceVolumeChange}
             />
           </div>

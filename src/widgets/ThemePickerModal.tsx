@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { listSkins } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
@@ -14,6 +15,7 @@ export const ThemePickerModal = memo(function ThemePickerModal() {
   );
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const setActiveSkinId = useSkinStore((state) => state.setActiveSkinId);
+  const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -23,7 +25,15 @@ export const ThemePickerModal = memo(function ThemePickerModal() {
     return null;
   }
 
-  const closeModal = () => setThemePickerModalOpen(false);
+  const closeModal = () => {
+    playToolbarClick();
+    setThemePickerModalOpen(false);
+  };
+
+  const applySkin = (skinId: typeof activeSkin.id) => {
+    playToolbarClick();
+    setActiveSkinId(skinId);
+  };
 
   const modal = (
     <div
@@ -73,7 +83,7 @@ export const ThemePickerModal = memo(function ThemePickerModal() {
                   className={`theme-picker-modal__option${
                     isActive ? " is-active" : ""
                   }`}
-                  onClick={() => setActiveSkinId(skin.id)}
+                  onClick={() => applySkin(skin.id)}
                 >
                   <span className="theme-picker-modal__option-top">
                     <span className="theme-picker-modal__option-title">
