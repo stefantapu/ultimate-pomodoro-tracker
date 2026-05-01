@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
-import { getSupabaseClient } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/useAuth";
-import { useUIStore } from "../stores/uiStore";
+import { useCallback } from "react";
+import {
+  useAuthenticatedResource,
+  type AuthenticatedResourceLoader,
+} from "./useAuthenticatedResource";
 
 export type ProfileData = {
   total_xp: number;
@@ -9,39 +10,31 @@ export type ProfileData = {
 };
 
 export function useProfile() {
-  const { user } = useAuth();
-  const analyticsCounter = useUIStore((state) => state.analyticsCounter);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [profileUserId, setProfileUserId] = useState<string | null>(null);
+  const loadProfile = useCallback<AuthenticatedResourceLoader<ProfileData>>(
+    async ({ supabase, user }) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("total_xp, level")
+        .eq("id", user.id)
+        .single();
 
-  const fetchProfile = useCallback(async () => {
-    if (!user) return;
-    const supabase = await getSupabaseClient();
+      if (error) {
+        throw error;
+      }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("total_xp, level")
-      .eq("id", user.id)
-      .single();
-
-    if (!error && data) {
-      setProfile(data as ProfileData);
-      setProfileUserId(user.id);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    queueMicrotask(() => {
-      void fetchProfile();
-    });
-  }, [analyticsCounter, fetchProfile, user]);
+      return data as ProfileData;
+    },
+    [],
+  );
+  const profile = useAuthenticatedResource<ProfileData>({
+    load: loadProfile,
+    errorMessage: "Failed to fetch profile",
+    logMessage: "Failed to fetch profile",
+    refreshOnAnalytics: true,
+  });
 
   return {
-    profile: user && profileUserId === user.id ? profile : null,
-    fetchProfile,
+    profile: profile.data,
+    fetchProfile: profile.refetch,
   };
 }

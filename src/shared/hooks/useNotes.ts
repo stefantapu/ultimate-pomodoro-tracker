@@ -1,6 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { getSupabaseClient } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/useAuth";
+import {
+  useAuthenticatedResource,
+  type AuthenticatedResourceLoader,
+} from "./useAuthenticatedResource";
 
 export type Note = {
   id: string;
@@ -12,80 +15,80 @@ export type Note = {
 };
 
 export function useNotes() {
-  const { user } = useAuth();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [notesUserId, setNotesUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const loadNotes = useCallback<AuthenticatedResourceLoader<Note[]>>(
+    async ({ supabase }) => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  const fetchNotes = useCallback(async () => {
-    if (!user) return;
+      if (error) {
+        throw error;
+      }
 
-    setLoading(true);
-    const supabase = await getSupabaseClient();
-
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setNotes(data);
-      setNotesUserId(user.id);
-    }
-
-    setLoading(false);
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    queueMicrotask(() => {
-      void fetchNotes();
-    });
-  }, [fetchNotes, user]);
+      return data as Note[];
+    },
+    [],
+  );
+  const notesResource = useAuthenticatedResource<Note[]>({
+    load: loadNotes,
+    errorMessage: "Failed to fetch notes",
+    logMessage: "Failed to fetch notes",
+  });
 
   const addNote = useCallback(
     async (content: string): Promise<Note | null> => {
-      if (!user || !content.trim()) return null;
+      if (!notesResource.user || !content.trim()) return null;
       const supabase = await getSupabaseClient();
 
       const { data, error } = await supabase
         .from("notes")
-        .insert([{ user_id: user.id, content }])
+        .insert([{ user_id: notesResource.user.id, content }])
         .select()
-      .single();
+        .single();
 
-    if (!error && data) {
-      setNotes((prev) => [data, ...prev]);
-      setNotesUserId(user.id);
-      return data;
-    }
+      if (!error && data) {
+        notesResource.setData((previous) => [data, ...(previous ?? [])]);
+        return data as Note;
+      }
 
       return null;
     },
-    [user],
+    [notesResource],
   );
 
-  const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
-    setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...updates } : n)));
-    const supabase = await getSupabaseClient();
-    await supabase.from("notes").update(updates).eq("id", id);
-  }, []);
+  const updateNote = useCallback(
+    async (id: string, updates: Partial<Note>) => {
+      notesResource.setData((previous) =>
+        previous
+          ? previous.map((note) =>
+              note.id === id ? { ...note, ...updates } : note,
+            )
+          : previous,
+      );
+      const supabase = await getSupabaseClient();
+      await supabase.from("notes").update(updates).eq("id", id);
+    },
+    [notesResource],
+  );
 
-  const deleteNote = useCallback(async (id: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-    const supabase = await getSupabaseClient();
-    await supabase.from("notes").delete().eq("id", id);
-  }, []);
+  const deleteNote = useCallback(
+    async (id: string) => {
+      notesResource.setData((previous) =>
+        previous ? previous.filter((note) => note.id !== id) : previous,
+      );
+      const supabase = await getSupabaseClient();
+      await supabase.from("notes").delete().eq("id", id);
+    },
+    [notesResource],
+  );
 
   return {
-    notes: user && notesUserId === user.id ? notes : [],
-    loading: user ? loading : false,
+    notes: notesResource.data ?? [],
+    loading: notesResource.loading,
     addNote,
     updateNote,
     deleteNote,
-    fetchNotes,
+    fetchNotes: notesResource.refetch,
   };
 }

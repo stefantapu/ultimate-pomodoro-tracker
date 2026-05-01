@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
-import { getSupabaseClient } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/useAuth";
-import { useUIStore } from "../stores/uiStore";
+import { useCallback } from "react";
+import {
+  useAuthenticatedResource,
+  type AuthenticatedResourceLoader,
+} from "./useAuthenticatedResource";
 
 export type HeatmapData = {
   date: string;
@@ -17,55 +18,30 @@ export type AnalyticsData = {
 };
 
 export function useAnalytics() {
-  const { user } = useAuth();
-  const analyticsCounter = useUIStore((state) => state.analyticsCounter);
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [dataUserId, setDataUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const loadAnalytics = useCallback<AuthenticatedResourceLoader<AnalyticsData>>(
+  async ({ supabase, user }) => {
+    const { data: result, error: rpcError } = await supabase.rpc(
+      "get_user_analytics",
+      { target_user_id: user.id },
+    );
 
-  const fetchAnalytics = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const supabase = await getSupabaseClient();
-      const { data: result, error: rpcError } = await supabase.rpc(
-        "get_user_analytics",
-        { target_user_id: user.id },
-      );
-
-      if (rpcError) throw rpcError;
-      setData(result as AnalyticsData);
-      setDataUserId(user.id);
-    } catch (error: unknown) {
-      console.error("Failed to fetch analytics", error);
-      setError(
-        error instanceof Error
-          ? error
-          : new Error("Failed to fetch analytics"),
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
-      return;
+    if (rpcError) {
+      throw rpcError;
     }
 
-    queueMicrotask(() => {
-      void fetchAnalytics();
-    });
-  }, [analyticsCounter, fetchAnalytics, user]);
+    return result as AnalyticsData;
+  }, []);
+  const analytics = useAuthenticatedResource<AnalyticsData>({
+    load: loadAnalytics,
+    errorMessage: "Failed to fetch analytics",
+    logMessage: "Failed to fetch analytics",
+    refreshOnAnalytics: true,
+  });
 
   return {
-    data: user && dataUserId === user.id ? data : null,
-    loading: user ? loading : false,
-    error: user ? error : null,
-    fetchAnalytics,
+    data: analytics.data,
+    loading: analytics.loading,
+    error: analytics.error,
+    fetchAnalytics: analytics.refetch,
   };
 }
