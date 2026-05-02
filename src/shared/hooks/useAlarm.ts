@@ -1,10 +1,16 @@
-import { useCallback, useEffect, useRef } from "react";
+import {
+  getCachedAudioElement,
+  primeAudioElementPool,
+  resolveCachedAudioSrc,
+} from "@shared/lib/audioAssetCache";
+import { useCallback, useEffect, useRef, type MutableRefObject } from "react";
 
 type UseAlarmOptions = {
   loop?: boolean;
   fadeInMs?: number;
   loopOverlapMs?: number;
   outputGain?: number;
+  cacheKey?: string;
 };
 
 type AudioGraph = {
@@ -33,6 +39,7 @@ export const useAlarm = (
     fadeInMs = 0,
     loopOverlapMs = 0,
     outputGain = 1,
+    cacheKey,
   } = options;
   const shouldOverlapLoop = loop && loopOverlapMs > 0;
   const normalizedOutputGain = Math.max(0, outputGain);
@@ -119,14 +126,31 @@ export const useAlarm = (
     }
   }, []);
 
+  const getPooledAudio = useCallback(
+    (targetRef: MutableRefObject<HTMLAudioElement | null>) => {
+      if (!src || !cacheKey) {
+        return null;
+      }
+
+      const poolIndex = targetRef === standbyAudioRef ? 1 : 0;
+      return getCachedAudioElement(src, cacheKey, poolIndex);
+    },
+    [cacheKey, src],
+  );
+
   const ensureAudio = useCallback((targetRef = audioRef) => {
     if (typeof Audio === "undefined" || !src) {
       return null;
     }
 
     if (targetRef.current == null) {
-      targetRef.current = new Audio(src);
+      targetRef.current =
+        getPooledAudio(targetRef) ?? new Audio(resolveCachedAudioSrc(src));
       targetRef.current.setAttribute("data-audio-src", src);
+      targetRef.current.setAttribute(
+        "data-audio-resolved-src",
+        resolveCachedAudioSrc(src),
+      );
     }
 
     const a = targetRef.current;
@@ -135,16 +159,22 @@ export const useAlarm = (
       return null;
     }
 
-    if (a.getAttribute("data-audio-src") !== src) {
+    const resolvedSrc = resolveCachedAudioSrc(src);
+
+    if (
+      a.getAttribute("data-audio-src") !== src ||
+      a.getAttribute("data-audio-resolved-src") !== resolvedSrc
+    ) {
       resetAudio(a);
-      a.src = src;
+      a.src = resolvedSrc;
       a.setAttribute("data-audio-src", src);
+      a.setAttribute("data-audio-resolved-src", resolvedSrc);
     }
 
     a.loop = shouldOverlapLoop ? false : loop;
 
     return a;
-  }, [loop, resetAudio, shouldOverlapLoop, src]);
+  }, [getPooledAudio, loop, resetAudio, shouldOverlapLoop, src]);
 
   const stop = useCallback(() => {
     cancelFade();
@@ -266,6 +296,14 @@ export const useAlarm = (
   useEffect(() => {
     scheduleLoopOverlapRef.current = scheduleLoopOverlap;
   }, [scheduleLoopOverlap]);
+
+  useEffect(() => {
+    if (!cacheKey) {
+      return;
+    }
+
+    primeAudioElementPool(src, cacheKey, shouldOverlapLoop ? 2 : 1);
+  }, [cacheKey, shouldOverlapLoop, src]);
 
   useEffect(() => {
     volumeRef.current = volume;

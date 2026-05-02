@@ -1,29 +1,16 @@
 import { useCallback } from "react";
 import { useUserSettings } from "@shared/hooks/useUserSettings";
+import { getCachedAudioElement } from "@shared/lib/audioAssetCache";
 import { useSkinStore } from "@shared/stores/skinStore";
 import {
   UI_SOUND_OUTPUT_GAIN,
   USER_SETTINGS_STORAGE_KEY,
 } from "@shared/lib/timerStorage";
 
-let sharedToolbarClickAudio: HTMLAudioElement | null = null;
-let sharedToolbarClickSrc: string | null = null;
-
-function getSharedToolbarClickAudio(src: string) {
-  if (typeof Audio === "undefined") {
-    return null;
-  }
-
-  if (!sharedToolbarClickAudio || sharedToolbarClickSrc !== src) {
-    sharedToolbarClickAudio = new Audio(src);
-    sharedToolbarClickSrc = src;
-  }
-
-  return sharedToolbarClickAudio;
-}
+const TOOLBAR_CLICK_AUDIO_POOL_KEY = "toolbar-click";
 
 function playSharedToolbarClick(src: string, volume: number) {
-  const audio = getSharedToolbarClickAudio(src);
+  const audio = getCachedAudioElement(src, TOOLBAR_CLICK_AUDIO_POOL_KEY);
 
   if (!audio) {
     return;
