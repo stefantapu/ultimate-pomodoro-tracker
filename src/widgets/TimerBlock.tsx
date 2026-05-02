@@ -106,12 +106,16 @@ export function TimerBlock() {
   const { play: playPrimaryTimerClick } = useAlarm(
     primaryTimerControlSoundSrc,
     uiPlaybackVolume,
+    { cacheKey: "primary-timer-control" },
   );
   const { play: playModeTimerClick } = useAlarm(
     modeControlSoundSrc,
     uiPlaybackVolume,
+    { cacheKey: "mode-control" },
   );
-  const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiPreviewVolume);
+  const { play: previewUiClick } = useAlarm(uiPreviewSoundSrc, uiPreviewVolume, {
+    cacheKey: "settings-ui-preview",
+  });
   const { play: playFocusAmbience, stop: stopFocusAmbience } = useAlarm(
     focusAmbienceSoundSrc,
     focusAmbienceVolume,
@@ -120,6 +124,7 @@ export function TimerBlock() {
       fadeInMs: activeSkin.focusAmbienceFadeInMs,
       loopOverlapMs: 1000,
       outputGain: activeSkin.focusAmbienceOutputGain,
+      cacheKey: "focus-ambience",
     },
   );
   const {
@@ -131,6 +136,7 @@ export function TimerBlock() {
     {
       fadeInMs: 250,
       outputGain: activeSkin.focusAmbienceOutputGain,
+      cacheKey: "settings-focus-ambience-preview",
     },
   );
 

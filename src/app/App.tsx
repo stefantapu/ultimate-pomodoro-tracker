@@ -7,6 +7,7 @@ import {
 } from "../shared/stores/uiStore";
 import { mapSkinToCssVariables } from "../shared/skins/cssVars";
 import { useSkinStore } from "../shared/stores/skinStore";
+import { setActiveAudioCacheSources } from "../shared/lib/audioAssetCache";
 import { useAuth } from "./providers/useAuth";
 
 const LazyAuthBlock = lazy(() =>
@@ -86,6 +87,10 @@ function App() {
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
+
+  useEffect(() => {
+    setActiveAudioCacheSources(activeSkin.audio);
+  }, [activeSkin.audio]);
 
   if (loading) {
     return (

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { resetAudioAssetCacheForTests } from "@shared/lib/audioAssetCache";
 import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useToolbarClickSound } from "./useToolbarClickSound";
@@ -8,15 +9,35 @@ class MockAudio {
   static instances: MockAudio[] = [];
 
   currentTime = 0;
+  paused = true;
   src?: string;
   volume = 1;
+  private readonly attributes = new Map<string, string>();
 
-  pause = vi.fn();
-  play = vi.fn(() => Promise.resolve());
+  load = vi.fn();
+  pause = vi.fn(() => {
+    this.paused = true;
+  });
+  play = vi.fn(() => {
+    this.paused = false;
+    return Promise.resolve();
+  });
 
   constructor(src?: string) {
     this.src = src;
     MockAudio.instances.push(this);
+  }
+
+  setAttribute(name: string, value: string) {
+    this.attributes.set(name, value);
+  }
+
+  getAttribute(name: string) {
+    return this.attributes.get(name) ?? null;
+  }
+
+  removeAttribute(name: string) {
+    this.attributes.delete(name);
   }
 }
 
@@ -32,10 +53,12 @@ function ToolbarClickHarness() {
 
 describe("useToolbarClickSound", () => {
   const originalAudio = globalThis.Audio;
+  const originalWindowAudio = window.Audio;
 
   beforeEach(() => {
     MockAudio.instances = [];
     globalThis.Audio = MockAudio as unknown as typeof Audio;
+    window.Audio = MockAudio as unknown as typeof Audio;
     useSkinStore.setState({
       activeSkinId: "warm",
       activeSkin: getSkinById("warm"),
@@ -44,7 +67,9 @@ describe("useToolbarClickSound", () => {
   });
 
   afterEach(() => {
+    resetAudioAssetCacheForTests();
     globalThis.Audio = originalAudio;
+    window.Audio = originalWindowAudio;
     vi.restoreAllMocks();
   });
 

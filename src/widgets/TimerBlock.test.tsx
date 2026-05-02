@@ -1,5 +1,6 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { resetAudioAssetCacheForTests } from "@shared/lib/audioAssetCache";
 import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
 import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
@@ -14,6 +15,39 @@ let useAlarmReturns: Array<{
   play: ReturnType<typeof vi.fn>;
   stop: ReturnType<typeof vi.fn>;
 }>;
+
+class MockAudio {
+  currentTime = 0;
+  paused = true;
+  src = "";
+  volume = 1;
+  private readonly attributes = new Map<string, string>();
+
+  load = vi.fn();
+  pause = vi.fn(() => {
+    this.paused = true;
+  });
+  play = vi.fn(() => {
+    this.paused = false;
+    return Promise.resolve();
+  });
+
+  constructor(src?: string) {
+    this.src = src ?? "";
+  }
+
+  setAttribute(name: string, value: string) {
+    this.attributes.set(name, value);
+  }
+
+  getAttribute(name: string) {
+    return this.attributes.get(name) ?? null;
+  }
+
+  removeAttribute(name: string) {
+    this.attributes.delete(name);
+  }
+}
 
 vi.mock("@shared/hooks/useSyncSession", () => ({
   useSyncSession: () => ({
@@ -32,7 +66,13 @@ vi.mock("@shared/hooks/useAlarm", () => ({
 }));
 
 describe("TimerBlock", () => {
+  const originalAudio = globalThis.Audio;
+  const originalWindowAudio = window.Audio;
+
   beforeEach(() => {
+    resetAudioAssetCacheForTests();
+    globalThis.Audio = MockAudio as unknown as typeof Audio;
+    window.Audio = MockAudio as unknown as typeof Audio;
     localStorage.clear();
     syncSessionMock.mockReset();
     pushSettingsToCloudMock.mockReset();
@@ -68,6 +108,12 @@ describe("TimerBlock", () => {
         focusAmbienceVolume: 0.2,
       }),
     );
+  });
+
+  afterEach(() => {
+    resetAudioAssetCacheForTests();
+    globalThis.Audio = originalAudio;
+    window.Audio = originalWindowAudio;
   });
 
   it("renders stored timer state and toggles start/pause", async () => {
@@ -171,16 +217,26 @@ describe("TimerBlock", () => {
     renderWithProviders(<TimerBlock />);
 
     expect(useAlarmMock).toHaveBeenCalledWith(null, 1);
-    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.25);
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.25, {
+      cacheKey: "primary-timer-control",
+    });
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.25, {
+      cacheKey: "mode-control",
+    });
+    expect(useAlarmMock).toHaveBeenCalledWith(null, 0.25, {
+      cacheKey: "settings-ui-preview",
+    });
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
       loop: true,
       fadeInMs: 0,
       loopOverlapMs: 1000,
       outputGain: 1,
+      cacheKey: "focus-ambience",
     });
     expect(useAlarmMock).toHaveBeenCalledWith(null, 0.2, {
       fadeInMs: 250,
       outputGain: 1,
+      cacheKey: "settings-focus-ambience-preview",
     });
   });
 
@@ -195,6 +251,7 @@ describe("TimerBlock", () => {
         fadeInMs: 0,
         loopOverlapMs: 1000,
         outputGain: 2.5,
+        cacheKey: "focus-ambience",
       },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
@@ -203,6 +260,7 @@ describe("TimerBlock", () => {
       {
         fadeInMs: 250,
         outputGain: 2.5,
+        cacheKey: "settings-focus-ambience-preview",
       },
     );
   });
@@ -221,20 +279,32 @@ describe("TimerBlock", () => {
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Start-Pause-Click.mp3",
       0.25,
+      { cacheKey: "primary-timer-control" },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Focus-Break-Click.mp3",
       0.25,
+      { cacheKey: "mode-control" },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
       0.2,
-      { loop: true, fadeInMs: 1800, loopOverlapMs: 1000, outputGain: 1 },
+      {
+        loop: true,
+        fadeInMs: 1800,
+        loopOverlapMs: 1000,
+        outputGain: 1,
+        cacheKey: "focus-ambience",
+      },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
       "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
       0.2,
-      { fadeInMs: 250, outputGain: 1 },
+      {
+        fadeInMs: 250,
+        outputGain: 1,
+        cacheKey: "settings-focus-ambience-preview",
+      },
     );
   });
 
