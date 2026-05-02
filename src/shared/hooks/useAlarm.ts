@@ -44,6 +44,16 @@ export const useAlarm = (
   const shouldOverlapLoop = loop && loopOverlapMs > 0;
   const normalizedOutputGain = Math.max(0, outputGain);
 
+  const shouldUseNativeLoopFallback = useCallback(() => (
+    shouldOverlapLoop &&
+    typeof document !== "undefined" &&
+    document.hidden
+  ), [shouldOverlapLoop]);
+
+  const applyLoopMode = useCallback((a: HTMLAudioElement) => {
+    a.loop = shouldUseNativeLoopFallback() || (!shouldOverlapLoop && loop);
+  }, [loop, shouldOverlapLoop, shouldUseNativeLoopFallback]);
+
   const setupAudioGraph = useCallback((a: HTMLAudioElement) => {
     const existingGraph = audioGraphRef.current.get(a);
 
@@ -171,10 +181,10 @@ export const useAlarm = (
       a.setAttribute("data-audio-resolved-src", resolvedSrc);
     }
 
-    a.loop = shouldOverlapLoop ? false : loop;
+    applyLoopMode(a);
 
     return a;
-  }, [getPooledAudio, loop, resetAudio, shouldOverlapLoop, src]);
+  }, [applyLoopMode, getPooledAudio, resetAudio, src]);
 
   const stop = useCallback(() => {
     cancelFade();
@@ -226,6 +236,13 @@ export const useAlarm = (
     if (!shouldOverlapLoop || typeof window === "undefined") {
       return;
     }
+
+    if (shouldUseNativeLoopFallback()) {
+      applyLoopMode(a);
+      return;
+    }
+
+    applyLoopMode(a);
 
     const scheduleFromDuration = () => {
       if (audioRef.current !== a || a.paused) {
@@ -284,18 +301,51 @@ export const useAlarm = (
 
     a.addEventListener("loadedmetadata", handleMetadata);
   }, [
+    applyLoopMode,
     cancelLoopTimeout,
     ensureAudio,
     loopOverlapMs,
     resumeAudioGraph,
     setAudioVolume,
     shouldOverlapLoop,
+    shouldUseNativeLoopFallback,
     startFadeIn,
   ]);
 
   useEffect(() => {
     scheduleLoopOverlapRef.current = scheduleLoopOverlap;
   }, [scheduleLoopOverlap]);
+
+  useEffect(() => {
+    if (!shouldOverlapLoop || typeof document === "undefined") {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      const activeAudio = audioRef.current;
+
+      if (!activeAudio) {
+        return;
+      }
+
+      applyLoopMode(activeAudio);
+
+      if (document.hidden) {
+        cancelLoopTimeout();
+        return;
+      }
+
+      if (!activeAudio.paused) {
+        scheduleLoopOverlapRef.current(activeAudio);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [applyLoopMode, cancelLoopTimeout, shouldOverlapLoop]);
 
   useEffect(() => {
     if (!cacheKey) {
@@ -323,10 +373,10 @@ export const useAlarm = (
         continue;
       }
 
-      a.loop = shouldOverlapLoop ? false : loop;
+      applyLoopMode(a);
       setAudioVolume(a, volume);
     }
-  }, [loop, setAudioVolume, shouldOverlapLoop, src, stop, volume]);
+  }, [applyLoopMode, setAudioVolume, src, stop, volume]);
 
   const play = useCallback((restart = true) => {
     const a = ensureAudio();
