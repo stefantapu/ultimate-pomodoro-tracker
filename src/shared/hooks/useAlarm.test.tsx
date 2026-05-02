@@ -90,10 +90,18 @@ describe("useAlarm", () => {
     callback(timestamp);
   };
 
+  const setDocumentHidden = (isHidden: boolean) => {
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      value: isHidden,
+    });
+  };
+
   beforeEach(() => {
     vi.useFakeTimers();
     MockAudio.instances = [];
     globalThis.Audio = MockAudio as unknown as typeof Audio;
+    setDocumentHidden(false);
     rafCallbacks = new Map();
     rafId = 0;
     performanceNow = 0;
@@ -110,6 +118,7 @@ describe("useAlarm", () => {
   });
 
   afterEach(() => {
+    setDocumentHidden(false);
     globalThis.Audio = originalAudio;
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -169,5 +178,39 @@ describe("useAlarm", () => {
     });
 
     expect(MockAudio.instances[1].volume).toBe(0.4);
+  });
+
+  it("uses native looping while hidden so background timer throttling cannot stop ambience", () => {
+    render(<AlarmHarness playSignal={1} volume={0.4} />);
+
+    const activeAudio = MockAudio.instances[0];
+    expect(activeAudio.loop).toBe(false);
+
+    act(() => {
+      setDocumentHidden(true);
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+
+    expect(activeAudio.loop).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+
+    expect(MockAudio.instances).toHaveLength(1);
+
+    act(() => {
+      setDocumentHidden(false);
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+
+    expect(activeAudio.loop).toBe(false);
+
+    act(() => {
+      vi.advanceTimersByTime(9000);
+    });
+
+    expect(MockAudio.instances).toHaveLength(2);
+    expect(MockAudio.instances[1].play).toHaveBeenCalledTimes(1);
   });
 });
