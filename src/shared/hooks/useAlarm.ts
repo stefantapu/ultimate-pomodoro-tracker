@@ -4,10 +4,16 @@ type UseAlarmOptions = {
   loop?: boolean;
   fadeInMs?: number;
   loopOverlapMs?: number;
+  outputGain?: number;
+};
+
+type AudioGraph = {
+  context: AudioContext;
+  gain: GainNode;
 };
 
 export const useAlarm = (
-  src: string | null = "/sounds/alarm.mp3",
+  src: string | null = "/assets/red_lava_theme/audio/alarm.mp3",
   volume = 1,
   options: UseAlarmOptions = {},
 ) => {
@@ -18,9 +24,70 @@ export const useAlarm = (
   const loopTimeoutRef = useRef<number | null>(null);
   const previousSrcRef = useRef<string | null>(src);
   const volumeRef = useRef(volume);
+  const audioGraphRef = useRef<WeakMap<HTMLAudioElement, AudioGraph>>(
+    new WeakMap(),
+  );
   const scheduleLoopOverlapRef = useRef<(a: HTMLAudioElement) => void>(() => {});
-  const { loop = false, fadeInMs = 0, loopOverlapMs = 0 } = options;
+  const {
+    loop = false,
+    fadeInMs = 0,
+    loopOverlapMs = 0,
+    outputGain = 1,
+  } = options;
   const shouldOverlapLoop = loop && loopOverlapMs > 0;
+  const normalizedOutputGain = Math.max(0, outputGain);
+
+  const setupAudioGraph = useCallback((a: HTMLAudioElement) => {
+    const existingGraph = audioGraphRef.current.get(a);
+
+    if (existingGraph) {
+      existingGraph.gain.gain.value = normalizedOutputGain;
+      return existingGraph;
+    }
+
+    if (
+      normalizedOutputGain <= 1 ||
+      typeof window === "undefined" ||
+      typeof window.AudioContext === "undefined"
+    ) {
+      return null;
+    }
+
+    try {
+      const context = new window.AudioContext();
+      const source = context.createMediaElementSource(a);
+      const gain = context.createGain();
+      source.connect(gain).connect(context.destination);
+      gain.gain.value = normalizedOutputGain;
+
+      const graph = { context, gain };
+      audioGraphRef.current.set(a, graph);
+      return graph;
+    } catch {
+      return null;
+    }
+  }, [normalizedOutputGain]);
+
+  const setAudioVolume = useCallback((a: HTMLAudioElement, nextVolume: number) => {
+    const volumeLevel = Math.max(0, Math.min(1, nextVolume));
+    const graph = setupAudioGraph(a);
+
+    if (graph) {
+      a.volume = volumeLevel;
+      graph.gain.gain.value = normalizedOutputGain;
+      return;
+    }
+
+    a.volume = Math.max(0, Math.min(1, volumeLevel * normalizedOutputGain));
+  }, [normalizedOutputGain, setupAudioGraph]);
+
+  const resumeAudioGraph = useCallback((a: HTMLAudioElement) => {
+    const graph = setupAudioGraph(a);
+
+    if (graph?.context.state === "suspended") {
+      void graph.context.resume().catch(() => {});
+    }
+  }, [setupAudioGraph]);
 
   const cancelFade = useCallback(() => {
     if (fadeFrameRef.current !== null) {
@@ -86,6 +153,43 @@ export const useAlarm = (
     resetAudio(standbyAudioRef.current);
   }, [cancelFade, cancelLoopTimeout, resetAudio]);
 
+  const startFadeIn = useCallback((a: HTMLAudioElement, durationMs: number) => {
+    cancelFade();
+
+    if (durationMs <= 0 || typeof window === "undefined") {
+      setAudioVolume(a, volumeRef.current);
+      return;
+    }
+
+    setAudioVolume(a, 0);
+
+    const startedAt = window.performance.now();
+    fadeStartedAtRef.current = startedAt;
+
+    const applyFade = (timestamp: number) => {
+      if (fadeStartedAtRef.current !== startedAt) {
+        return;
+      }
+
+      const progress = Math.max(
+        0,
+        Math.min(1, (timestamp - startedAt) / durationMs),
+      );
+      setAudioVolume(a, volumeRef.current * progress);
+
+      if (progress < 1 && !a.paused) {
+        fadeFrameRef.current = window.requestAnimationFrame(applyFade);
+        return;
+      }
+
+      setAudioVolume(a, volumeRef.current);
+      fadeFrameRef.current = null;
+      fadeStartedAtRef.current = null;
+    };
+
+    fadeFrameRef.current = window.requestAnimationFrame(applyFade);
+  }, [cancelFade, setAudioVolume]);
+
   const scheduleLoopOverlap = useCallback((a: HTMLAudioElement) => {
     cancelLoopTimeout();
 
@@ -117,7 +221,7 @@ export const useAlarm = (
         }
 
         nextAudio.loop = false;
-        nextAudio.volume = volumeRef.current;
+        setAudioVolume(nextAudio, 0);
 
         try {
           nextAudio.currentTime = 0;
@@ -125,6 +229,7 @@ export const useAlarm = (
           // No-op: currentTime reset can fail for not-yet-ready audio.
         }
 
+        resumeAudioGraph(nextAudio);
         const playPromise = nextAudio.play();
         if (playPromise && typeof playPromise.catch === "function") {
           playPromise.catch(() => {});
@@ -132,6 +237,7 @@ export const useAlarm = (
 
         audioRef.current = nextAudio;
         standbyAudioRef.current = a;
+        startFadeIn(nextAudio, loopOverlapMs);
         scheduleLoopOverlapRef.current(nextAudio);
       }, delayMs);
     };
@@ -147,7 +253,15 @@ export const useAlarm = (
     };
 
     a.addEventListener("loadedmetadata", handleMetadata);
-  }, [cancelLoopTimeout, ensureAudio, loopOverlapMs, shouldOverlapLoop]);
+  }, [
+    cancelLoopTimeout,
+    ensureAudio,
+    loopOverlapMs,
+    resumeAudioGraph,
+    setAudioVolume,
+    shouldOverlapLoop,
+    startFadeIn,
+  ]);
 
   useEffect(() => {
     scheduleLoopOverlapRef.current = scheduleLoopOverlap;
@@ -172,9 +286,9 @@ export const useAlarm = (
       }
 
       a.loop = shouldOverlapLoop ? false : loop;
-      a.volume = volume;
+      setAudioVolume(a, volume);
     }
-  }, [loop, shouldOverlapLoop, src, stop, volume]);
+  }, [loop, setAudioVolume, shouldOverlapLoop, src, stop, volume]);
 
   const play = useCallback((restart = true) => {
     const a = ensureAudio();
@@ -193,49 +307,27 @@ export const useAlarm = (
 
     cancelFade();
     cancelLoopTimeout();
-    a.volume = shouldFadeIn ? 0 : volumeRef.current;
+    setAudioVolume(a, shouldFadeIn ? 0 : volumeRef.current);
 
+    resumeAudioGraph(a);
     const p = a.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
 
     scheduleLoopOverlap(a);
 
-    if (!shouldFadeIn || typeof window === "undefined") {
-      return;
+    if (shouldFadeIn) {
+      startFadeIn(a, fadeInMs);
     }
-
-    const startedAt = window.performance.now();
-    fadeStartedAtRef.current = startedAt;
-
-    const applyFade = (timestamp: number) => {
-      if (fadeStartedAtRef.current !== startedAt) {
-        return;
-      }
-
-      const progress = Math.max(
-        0,
-        Math.min(1, (timestamp - startedAt) / fadeInMs),
-      );
-      a.volume = volumeRef.current * progress;
-
-      if (progress < 1 && !a.paused) {
-        fadeFrameRef.current = window.requestAnimationFrame(applyFade);
-        return;
-      }
-
-      a.volume = volumeRef.current;
-      fadeFrameRef.current = null;
-      fadeStartedAtRef.current = null;
-    };
-
-    fadeFrameRef.current = window.requestAnimationFrame(applyFade);
   }, [
     cancelFade,
     cancelLoopTimeout,
     ensureAudio,
     fadeInMs,
     resetAudio,
+    resumeAudioGraph,
     scheduleLoopOverlap,
+    setAudioVolume,
+    startFadeIn,
   ]);
 
   useEffect(() => {

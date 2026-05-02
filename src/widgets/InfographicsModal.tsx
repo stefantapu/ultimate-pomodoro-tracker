@@ -3,6 +3,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import {
   getLocalISODate,
   shiftISODate,
@@ -218,6 +219,7 @@ export function InfographicsModal() {
     (state) => state.setInfographicsModalOpen,
   );
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -227,7 +229,23 @@ export function InfographicsModal() {
     return null;
   }
 
-  const closeModal = () => setInfographicsModalOpen(false);
+  const closeModal = () => {
+    playToolbarClick();
+    setInfographicsModalOpen(false);
+  };
+  const selectPeriodMode = (mode: InfographicsPeriodMode) => {
+    playToolbarClick();
+    setPeriodMode(mode);
+    setAnchorDate(todayISO);
+  };
+  const shiftPeriod = (direction: -1 | 1) => {
+    playToolbarClick();
+    setAnchorDate((date) => getPeriodShiftDate(date, periodMode, direction));
+  };
+  const resetToThisPeriod = () => {
+    playToolbarClick();
+    setAnchorDate(todayISO);
+  };
   const canGoForward = data ? data.focus_period.end_date < todayISO : false;
   const summaryItems = data
     ? [
@@ -317,10 +335,7 @@ export function InfographicsModal() {
                         type="button"
                         className={mode === periodMode ? "is-active" : ""}
                         key={mode}
-                        onClick={() => {
-                          setPeriodMode(mode);
-                          setAnchorDate(todayISO);
-                        }}
+                        onClick={() => selectPeriodMode(mode)}
                       >
                         {mode}
                       </button>
@@ -328,21 +343,17 @@ export function InfographicsModal() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setAnchorDate((date) =>
-                      getPeriodShiftDate(date, periodMode, -1),
-                    )}
+                    onClick={() => shiftPeriod(-1)}
                   >
                     Prev
                   </button>
-                  <button type="button" onClick={() => setAnchorDate(todayISO)}>
+                  <button type="button" onClick={resetToThisPeriod}>
                     {getThisPeriodLabel(periodMode)}
                   </button>
                   <button
                     type="button"
                     disabled={!canGoForward}
-                    onClick={() => setAnchorDate((date) =>
-                      getPeriodShiftDate(date, periodMode, 1),
-                    )}
+                    onClick={() => shiftPeriod(1)}
                   >
                     Next
                   </button>

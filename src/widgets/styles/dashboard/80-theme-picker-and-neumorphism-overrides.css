@@ -105,7 +105,8 @@
 .auth-block--neumorphism,
 .settings-modal__overlay--neumorphism,
 .history-dashboard__overlay--neumorphism,
-.theme-picker-modal__overlay--neumorphism {
+.theme-picker-modal__overlay--neumorphism,
+.logout-confirmation__overlay--neumorphism {
   background:
     linear-gradient(
       180deg,
@@ -123,7 +124,8 @@
 .auth-block--neumorphism .auth-block__panel,
 .settings-modal__overlay--neumorphism .settings-modal,
 .history-dashboard__overlay--neumorphism .history-dashboard,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal,
+.logout-confirmation__overlay--neumorphism .logout-confirmation {
   border: 1px solid var(--dashboard-modal-border);
   border-radius: var(--dashboard-modal-radius);
   background: var(--dashboard-modal-surface);
@@ -135,7 +137,8 @@
 .settings-modal__overlay--neumorphism .settings-modal__close,
 .history-dashboard__overlay--neumorphism .history-dashboard__close,
 .history-dashboard__overlay--neumorphism .history-dashboard__week-actions button,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close {
   border: 1px solid var(--dashboard-stroke-soft);
   border-radius: 999px;
   background: var(--dashboard-surface);
@@ -147,7 +150,8 @@
 .settings-modal__overlay--neumorphism .settings-modal__header h2,
 .history-dashboard__overlay--neumorphism .history-dashboard__header h2,
 .history-dashboard__overlay--neumorphism .history-dashboard__panel h3,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__header h2 {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__header h2,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__header h2 {
   color: var(--dashboard-text-dark);
   text-shadow: none;
 }
@@ -171,7 +175,8 @@
 .theme-picker-modal__overlay--neumorphism .theme-picker-modal__intro,
 .theme-picker-modal__overlay--neumorphism .theme-picker-modal__option-state,
 .theme-picker-modal__overlay--neumorphism
-  .theme-picker-modal__option-description {
+  .theme-picker-modal__option-description,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__body p {
   color: var(--dashboard-text-muted);
 }
 
@@ -214,7 +219,8 @@
 }
 
 .auth-block--neumorphism .auth-block__button,
-.settings-modal__overlay--neumorphism .settings-modal__button {
+.settings-modal__overlay--neumorphism .settings-modal__button,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__button {
   border: 1px solid var(--dashboard-stroke-soft);
   border-radius: 999px;
   background: var(--dashboard-surface);
@@ -396,7 +402,8 @@
 .auth-block--neumorphism .auth-block__close,
 .settings-modal__overlay--neumorphism .settings-modal__close,
 .history-dashboard__overlay--neumorphism .history-dashboard__close,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close {
   position: relative;
   display: inline-grid;
   place-items: center;
@@ -410,7 +417,9 @@
 .history-dashboard__overlay--neumorphism .history-dashboard__close::before,
 .history-dashboard__overlay--neumorphism .history-dashboard__close::after,
 .theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::before,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close::before,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close::after {
   content: "";
   position: absolute;
   width: 0.78rem;
@@ -422,14 +431,16 @@
 .auth-block--neumorphism .auth-block__close::before,
 .settings-modal__overlay--neumorphism .settings-modal__close::before,
 .history-dashboard__overlay--neumorphism .history-dashboard__close::before,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::before {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::before,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close::before {
   transform: rotate(45deg);
 }
 
 .auth-block--neumorphism .auth-block__close::after,
 .settings-modal__overlay--neumorphism .settings-modal__close::after,
 .history-dashboard__overlay--neumorphism .history-dashboard__close::after,
-.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after {
+.theme-picker-modal__overlay--neumorphism .theme-picker-modal__close::after,
+.logout-confirmation__overlay--neumorphism .logout-confirmation__close::after {
   transform: rotate(-45deg);
 }
 

@@ -226,6 +226,7 @@ export type SkinProfile = {
   assets: SkinAssets;
   audio: SkinAudio;
   focusAmbienceFadeInMs: number;
+  focusAmbienceOutputGain: number;
   colors: SkinColors;
   typography: SkinTypography;
   layout: SkinLayout;

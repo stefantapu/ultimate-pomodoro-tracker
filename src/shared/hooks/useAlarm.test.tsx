@@ -52,13 +52,16 @@ class MockAudio {
 function AlarmHarness({
   playSignal,
   volume,
+  outputGain = 1,
 }: {
   playSignal: number;
   volume: number;
+  outputGain?: number;
 }) {
   const { play } = useAlarm("/ambience.mp3", volume, {
     loop: true,
     loopOverlapMs: 1000,
+    outputGain,
   });
 
   useEffect(() => {
@@ -72,15 +75,43 @@ function AlarmHarness({
 
 describe("useAlarm", () => {
   const originalAudio = globalThis.Audio;
+  let rafCallbacks: Map<number, FrameRequestCallback>;
+  let rafId: number;
+  let performanceNow: number;
+
+  const runNextAnimationFrame = (timestamp: number) => {
+    const [id, callback] = rafCallbacks.entries().next().value ?? [];
+
+    if (!id || !callback) {
+      throw new Error("Expected a queued animation frame.");
+    }
+
+    rafCallbacks.delete(id);
+    callback(timestamp);
+  };
 
   beforeEach(() => {
     vi.useFakeTimers();
     MockAudio.instances = [];
     globalThis.Audio = MockAudio as unknown as typeof Audio;
+    rafCallbacks = new Map();
+    rafId = 0;
+    performanceNow = 0;
+
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+      rafId += 1;
+      rafCallbacks.set(rafId, callback);
+      return rafId;
+    });
+    vi.spyOn(window, "cancelAnimationFrame").mockImplementation((id) => {
+      rafCallbacks.delete(id);
+    });
+    vi.spyOn(window.performance, "now").mockImplementation(() => performanceNow);
   });
 
   afterEach(() => {
     globalThis.Audio = originalAudio;
+    vi.restoreAllMocks();
     vi.useRealTimers();
   });
 
@@ -99,6 +130,12 @@ describe("useAlarm", () => {
     expect(activeAudio.getAttribute("data-audio-src")).toBe("/ambience.mp3");
   });
 
+  it("applies output gain when native volume is the only available path", () => {
+    render(<AlarmHarness playSignal={1} volume={0.4} outputGain={2} />);
+
+    expect(MockAudio.instances[0].volume).toBe(0.8);
+  });
+
   it("starts the next loop before the current ambience ends", () => {
     render(<AlarmHarness playSignal={1} volume={0.4} />);
 
@@ -108,6 +145,29 @@ describe("useAlarm", () => {
 
     expect(MockAudio.instances).toHaveLength(2);
     expect(MockAudio.instances[1].play).toHaveBeenCalledTimes(1);
+    expect(MockAudio.instances[1].volume).toBe(0);
+  });
+
+  it("fades in the next overlapped loop across the overlap duration", () => {
+    render(<AlarmHarness playSignal={1} volume={0.4} />);
+
+    act(() => {
+      vi.advanceTimersByTime(9000);
+    });
+
+    const nextAudio = MockAudio.instances[1];
+    expect(nextAudio.volume).toBe(0);
+
+    act(() => {
+      runNextAnimationFrame(performanceNow + 500);
+    });
+
+    expect(nextAudio.volume).toBeCloseTo(0.2);
+
+    act(() => {
+      runNextAnimationFrame(performanceNow + 1000);
+    });
+
     expect(MockAudio.instances[1].volume).toBe(0.4);
   });
 });

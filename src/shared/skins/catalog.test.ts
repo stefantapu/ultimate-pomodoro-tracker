@@ -54,6 +54,7 @@ describe("skin catalog contract", () => {
       expect(typeof skin.capabilities.visual.timerPanelArt).toBe("boolean");
       expect(typeof skin.capabilities.visual.toolbarIconArt).toBe("boolean");
       expect(typeof skin.capabilities.visual.customCursors).toBe("boolean");
+      expect(skin.focusAmbienceOutputGain).toBeGreaterThan(0);
     }
   });
 
@@ -83,13 +84,21 @@ describe("skin catalog contract", () => {
     expect(isSkinId("unknown")).toBe(false);
   });
 
-  it("maps expanded audio roles without changing warm and silent neumorphism behavior", () => {
-    expect(getSkinById("warm").audio).toMatchObject({
-      alarm: "/sounds/alarm.mp3",
-      primaryTimerControl: "/sounds/stone_click.mp3",
-      modeControl: "/sounds/stone_click.mp3",
-      toolbarClick: "/sounds/click_on_elements.mp3",
+  it("maps expanded audio roles to theme-owned assets", () => {
+    expect(getSkinById("warm").assets.toolbarThemeIcon).toMatchObject({
+      src: "/assets/red_lava_theme/change_theme_icon.webp",
+      width: 80,
+      height: 81,
     });
+    expect(getSkinById("warm").audio).toMatchObject({
+      alarm: "/assets/red_lava_theme/audio/alarm.mp3",
+      primaryTimerControl: "/assets/red_lava_theme/audio/stone_click.mp3",
+      modeControl: "/assets/red_lava_theme/audio/stone_click.mp3",
+      toolbarClick: "/assets/red_lava_theme/audio/click_on_elements.mp3",
+      focusAmbience:
+        "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+    });
+    expect(getSkinById("warm").focusAmbienceOutputGain).toBeGreaterThan(1);
     expect(getSkinById("neumorphism").audio).toEqual({
       alarm: null,
       primaryTimerControl: null,

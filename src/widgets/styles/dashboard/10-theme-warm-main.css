@@ -139,6 +139,7 @@
   height: var(--top-controls-item-height);
   justify-self: center;
   align-self: center;
+  font-family: "RedLavaTimer", var(--dashboard-button-font-family);
   font-size: 0.8rem;
   border: none;
   background-color: transparent;
@@ -236,6 +237,7 @@
   border: none;
   flex: 0 0 auto;
   overflow: visible;
+  font-family: "RedLavaTimer", var(--dashboard-button-font-family);
   background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
@@ -507,6 +509,13 @@
 .dashboard-shell--warm .notes-panel__status {
   position: relative;
   z-index: 1;
+}
+
+.dashboard-shell--warm .notes-panel__status {
+  color: #3f281a;
+  text-shadow:
+    0 1px 0 rgba(255, 245, 215, 0.72),
+    0 0 0.35rem rgba(83, 46, 23, 0.12);
 }
 
 .dashboard-shell--warm .notes-panel__notepad {

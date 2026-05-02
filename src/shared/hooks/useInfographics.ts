@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
-import { getSupabaseClient } from "../../../utils/supabase";
-import { useAuth } from "../../app/providers/useAuth";
-import { useUIStore } from "../stores/uiStore";
+import { useCallback } from "react";
+import {
+  useAuthenticatedResource,
+  type AuthenticatedResourceLoader,
+} from "./useAuthenticatedResource";
 
 export type InfographicsSummary = {
   today_focus_time: number;
@@ -64,21 +65,9 @@ export function useInfographics(
   anchorDate: string,
   periodMode: InfographicsPeriodMode,
 ) {
-  const { user } = useAuth();
-  const analyticsCounter = useUIStore((state) => state.analyticsCounter);
-  const [data, setData] = useState<InfographicsData | null>(null);
-  const [dataUserId, setDataUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchInfographics = useCallback(async () => {
-    if (!user) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const supabase = await getSupabaseClient();
+  const loadInfographics =
+    useCallback<AuthenticatedResourceLoader<InfographicsData>>(
+      async ({ supabase, user }) => {
       const { data: result, error: rpcError } = await supabase.rpc(
         "get_user_infographics",
         {
@@ -91,34 +80,22 @@ export function useInfographics(
 
       if (rpcError) throw rpcError;
 
-      setData(result as InfographicsData);
-      setDataUserId(user.id);
-    } catch (error: unknown) {
-      console.error("Failed to fetch infographics", error);
-      setError(
-        error instanceof Error
-          ? error
-          : new Error("Failed to fetch infographics"),
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [anchorDate, periodMode, user]);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    queueMicrotask(() => {
-      void fetchInfographics();
-    });
-  }, [analyticsCounter, fetchInfographics, user]);
+      return result as InfographicsData;
+    },
+    [anchorDate, periodMode],
+  );
+  const infographics = useAuthenticatedResource<InfographicsData>({
+    load: loadInfographics,
+    errorMessage: "Failed to fetch infographics",
+    logMessage: "Failed to fetch infographics",
+    refreshOnAnalytics: true,
+    refreshKey: `${anchorDate}:${periodMode}`,
+  });
 
   return {
-    data: user && dataUserId === user.id ? data : null,
-    loading: user ? loading : false,
-    error: user ? error : null,
-    fetchInfographics,
+    data: infographics.data,
+    loading: infographics.loading,
+    error: infographics.error,
+    fetchInfographics: infographics.refetch,
   };
 }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
+import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { getSupabaseClient } from "../../utils/supabase";
@@ -15,13 +16,20 @@ export const AuthBlock = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen);
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
 
+  const closeModal = () => {
+    playToolbarClick();
+    setAuthModalOpen(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    playToolbarClick();
     setLoading(true);
     setError(null);
 
@@ -57,6 +65,17 @@ export const AuthBlock = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    playToolbarClick();
+    setShowPassword((value) => !value);
+  };
+
+  const toggleAuthMode = () => {
+    playToolbarClick();
+    setIsLogin(!isLogin);
+    setShowPassword(false);
+  };
+
   return (
     <div
       className={`auth-block auth-block--${activeSkin.id}`}
@@ -66,7 +85,7 @@ export const AuthBlock = () => {
         <button
           type="button"
           className="auth-block__close"
-          onClick={() => setAuthModalOpen(false)}
+          onClick={closeModal}
           aria-label="Close"
         >
           &times;
@@ -83,7 +102,7 @@ export const AuthBlock = () => {
             <button
               type="button"
               className="auth-block__button auth-block__button--secondary"
-              onClick={() => setAuthModalOpen(false)}
+              onClick={closeModal}
             >
               Back to Timer
             </button>
@@ -121,7 +140,7 @@ export const AuthBlock = () => {
                 <button
                   type="button"
                   className="auth-block__password-toggle"
-                  onClick={() => setShowPassword((value) => !value)}
+                  onClick={togglePasswordVisibility}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                 >
@@ -208,10 +227,7 @@ export const AuthBlock = () => {
               <button
                 type="button"
                 className="auth-block__switch-button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setShowPassword(false);
-                }}
+                onClick={toggleAuthMode}
               >
                 {isLogin ? "Sign Up" : "Log In"}
               </button>

@@ -3,6 +3,10 @@ import {
   readTimerState,
   writeTimerState,
 } from "@shared/lib/timerStorage";
+import {
+  buildSessionPayload,
+  getFinalAccumulatedSeconds,
+} from "@shared/lib/focusSessionAccounting";
 import type {
   Mode,
   TimerSettings,
@@ -42,38 +46,19 @@ export function usePomodoroTimer({
   const checkAndSyncSession = useCallback(
     (finalAccumulatedSeconds?: number) => {
       const currentState = stateRef.current;
-      const duration =
-        currentState.mode === "focus" ? focusDuration : breakDuration;
-
       const accumulated = finalAccumulatedSeconds ?? currentState.accumulatedSeconds;
+      const session = buildSessionPayload(
+        currentState,
+        { focusDuration, breakDuration },
+        accumulated,
+      );
 
-      if (
-        currentState.sessionStartedAt &&
-        accumulated > 0
-      ) {
-        syncSession({
-          mode: currentState.mode,
-          duration_seconds: duration,
-          accumulated_seconds: accumulated,
-          started_at: currentState.sessionStartedAt,
-          finished_at: new Date().toISOString(),
-        });
+      if (session) {
+        syncSession(session);
       }
     },
     [breakDuration, focusDuration, syncSession],
   );
-
-  const getFinalAccumulatedSeconds = useCallback((currentState: TimerState) => {
-    let finalAccum = currentState.accumulatedSeconds;
-    if (currentState.status === "running" && currentState.targetTimestamp) {
-      const remaining = Math.max(
-        0,
-        Math.round((currentState.targetTimestamp - Date.now()) / 1000)
-      );
-      finalAccum += Math.max(0, currentState.timeLeft - remaining);
-    }
-    return finalAccum;
-  }, []);
 
   const handleSessionFinish = useCallback(() => {
     const currentState = stateRef.current;
@@ -105,7 +90,7 @@ export function usePomodoroTimer({
       nextMode,
       nextDuration: nextMode === "focus" ? focusDuration : breakDuration,
     });
-  }, [autoBreak, autoFocus, breakDuration, focusDuration, onSessionComplete, checkAndSyncSession, getFinalAccumulatedSeconds]);
+  }, [autoBreak, autoFocus, breakDuration, focusDuration, onSessionComplete, checkAndSyncSession]);
 
   const start = useCallback(() => {
     const currentState = stateRef.current;
@@ -159,7 +144,7 @@ export function usePomodoroTimer({
       duration:
         currentState.mode === "focus" ? focusDuration : breakDuration,
     });
-  }, [breakDuration, focusDuration, checkAndSyncSession, getFinalAccumulatedSeconds]);
+  }, [breakDuration, focusDuration, checkAndSyncSession]);
 
   const hardReset = useCallback(() => {
     const currentState = stateRef.current;
@@ -183,7 +168,7 @@ export function usePomodoroTimer({
         duration: mode === "focus" ? focusDuration : breakDuration,
       });
     },
-    [breakDuration, focusDuration, checkAndSyncSession, getFinalAccumulatedSeconds],
+    [breakDuration, focusDuration, checkAndSyncSession],
   );
 
   useEffect(() => {
@@ -248,7 +233,7 @@ export function usePomodoroTimer({
       duration:
         currentState.mode === "focus" ? focusDuration : breakDuration,
     });
-  }, [breakDuration, focusDuration, checkAndSyncSession, getFinalAccumulatedSeconds]);
+  }, [breakDuration, focusDuration, checkAndSyncSession]);
 
   return {
     mode: state.mode,
