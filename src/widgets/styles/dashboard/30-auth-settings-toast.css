@@ -390,7 +390,7 @@
 
 .settings-modal {
   position: relative;
-  width: min(30rem, 100%);
+  width: min(27rem, 100%);
   padding: 0;
   border: 1px solid rgba(255, 184, 108, 0.34);
   border-radius: 0;
@@ -409,8 +409,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 1.2rem 1.3rem 0.9rem;
-  border-bottom: 1px solid rgba(255, 184, 108, 0.16);
+  padding: 0.9rem 1.05rem 0.6rem;
+  border-bottom: 0;
 }
 
 .settings-modal__header h2 {
@@ -427,8 +427,8 @@
 }
 
 .settings-modal__close {
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border: 1px solid rgba(255, 182, 104, 0.3);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.02);
@@ -440,15 +440,15 @@
 }
 
 .settings-modal__section {
-  padding: 1rem 1.3rem 1.15rem;
+  padding: 0.65rem 1.05rem 0.75rem;
 }
 
 .settings-modal__section + .settings-modal__section {
-  border-top: 1px solid rgba(255, 184, 108, 0.16);
+  border-top: 0;
 }
 
 .settings-modal__section-title {
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.45rem;
   color: #e9c093;
   font-size: 0.78rem;
   font-weight: 700;
@@ -476,23 +476,23 @@
 
 .settings-modal__toggles {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.45rem;
 }
 
 .settings-modal__audio-grid {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.45rem;
 }
 
 .settings-modal__duration-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .settings-modal__duration-grid .settings-modal__field {
-  gap: 0.32rem;
-  padding: 0.66rem 0.72rem;
+  gap: 0.26rem;
+  padding: 0.52rem 0.6rem;
 }
 
 .settings-modal__duration-grid .settings-modal__field-label {
@@ -501,7 +501,7 @@
 }
 
 .settings-modal__duration-grid .settings-modal__field-input {
-  padding: 0.52rem 0.6rem;
+  padding: 0.42rem 0.5rem;
   font-size: 0.95rem;
 }
 
@@ -514,8 +514,8 @@
 
 .settings-modal__field {
   display: grid;
-  gap: 0.45rem;
-  padding: 0.82rem 0.9rem;
+  gap: 0.35rem;
+  padding: 0.64rem 0.72rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
   border-radius: 0;
   background: rgba(13, 4, 2, 0.16);
@@ -573,7 +573,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.42rem;
 }
 
 .settings-modal__field-input {
@@ -586,7 +586,7 @@
   font: inherit;
   font-size: 1rem;
   line-height: 1.2;
-  padding: 0.72rem 0.8rem;
+  padding: 0.58rem 0.68rem;
   box-sizing: border-box;
   outline: none;
 }
@@ -628,8 +628,8 @@
 .settings-modal__toggle {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.82rem 0.9rem;
+  gap: 0.5rem;
+  padding: 0.58rem 0.72rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
   border-radius: 0;
   background: rgba(13, 4, 2, 0.16);
@@ -660,8 +660,8 @@
 
 .settings-modal__audio-row {
   display: grid;
-  gap: 0.6rem;
-  padding: 0.82rem 0.9rem;
+  gap: 0.42rem;
+  padding: 0.62rem 0.72rem;
   border: 1px solid rgba(255, 180, 101, 0.26);
   border-radius: 0;
   background: rgba(13, 4, 2, 0.16);
@@ -698,13 +698,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 0.62rem;
 }
 
 .settings-modal__audio-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -732,7 +732,7 @@
   font-size: 0.74rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.42rem 0.72rem;
+  padding: 0.34rem 0.58rem;
   cursor: pointer;
   transition:
     border-color 140ms ease,
@@ -756,7 +756,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.62rem;
 }
 
 .settings-modal__audio-slider {
@@ -784,7 +784,7 @@
 .settings-modal__audio-hint {
   margin: 0;
   color: #d7aa77;
-  line-height: 1.45;
+  line-height: 1.32;
 }
 
 .settings-modal__audio-row:not(.is-disabled),
@@ -800,7 +800,7 @@
 
 .settings-modal__contact {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.35rem;
 }
 
 .settings-modal__contact-link {
@@ -821,22 +821,22 @@
 
 .settings-modal__footer {
   display: grid;
-  gap: 0.85rem;
-  padding: 1rem 1.3rem 1.15rem;
-  border-top: 1px solid rgba(255, 184, 108, 0.16);
+  gap: 0.62rem;
+  padding: 0.7rem 1.05rem 0.85rem;
+  border-top: 0;
 }
 
 .settings-modal__actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .settings-modal__button {
   min-width: 0;
   border: 1px solid rgba(255, 184, 108, 0.28);
   border-radius: 0;
-  padding: 0.82rem 0.9rem;
+  padding: 0.62rem 0.75rem;
   background: rgba(255, 255, 255, 0.02);
   color: #f4d0a8;
   font-family: var(--dashboard-button-font-family);
