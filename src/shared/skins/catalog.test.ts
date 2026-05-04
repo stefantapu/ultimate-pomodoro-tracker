@@ -58,6 +58,15 @@ describe("skin catalog contract", () => {
     }
   });
 
+  it("keeps ambient particle counts within the dashboard performance budget", () => {
+    for (const skin of listSkins()) {
+      const ambientCount = skin.capabilities.effects.ambient?.count ?? 0;
+      const foregroundCount = skin.capabilities.effects.foreground?.count ?? 0;
+
+      expect(ambientCount + foregroundCount).toBeLessThanOrEqual(60);
+    }
+  });
+
   it("resolves known ids and falls back unknown ids to default", () => {
     const warm = getSkinById("warm");
     const neumorphism = getSkinById("neumorphism");

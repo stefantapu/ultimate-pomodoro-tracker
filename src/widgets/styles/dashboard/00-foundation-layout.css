@@ -218,16 +218,10 @@
 }
 
 .dashboard-particle--snow {
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.92) 0%,
-    var(--particle-color) 44%,
-    rgba(201, 216, 229, 0.08) 76%,
-    transparent 100%
-  );
-  box-shadow: 0 0 0.35rem rgba(232, 240, 247, 0.18);
-  filter: blur(0.1px);
+  background: var(--particle-color);
+  opacity: var(--particle-opacity);
   transform: translate3d(0, 0, 0) scale(0.88);
+  will-change: transform;
   animation-name: snow-drift;
   animation-duration: var(--particle-duration);
   animation-timing-function: linear;
@@ -267,19 +261,6 @@
 @keyframes snow-drift {
   0% {
     transform: translate3d(0, 0, 0) scale(0.72);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: calc(var(--particle-opacity) * 0.72);
-  }
-
-  44% {
-    opacity: var(--particle-opacity);
-  }
-
-  82% {
-    opacity: calc(var(--particle-opacity) * 0.8);
   }
 
   100% {
@@ -289,7 +270,6 @@
         0
       )
       scale(1.04);
-    opacity: 0;
   }
 }
 

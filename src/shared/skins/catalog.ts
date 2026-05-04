@@ -4,7 +4,7 @@ import type { SkinAmbientEffect, SkinId, SkinProfile } from "./types";
 
 const warmAmbientEffect: SkinAmbientEffect = {
   kind: "embers",
-  count: 100,
+  count: 36,
   seed: 0x1f2e3d4c,
   colors: [
     "rgba(255, 119, 49, 0.92)",
@@ -12,7 +12,7 @@ const warmAmbientEffect: SkinAmbientEffect = {
     "rgba(255, 205, 126, 0.82)",
     "rgba(252, 252, 252, 0.84)",
   ],
-  sizeRangePx: [2.8, 6.2],
+  sizeRangePx: [4.2, 9.3],
   durationRangeSec: [10, 17],
   delayRangeSec: [-17, 0],
   opacityRange: [0.34, 0.82],
@@ -25,7 +25,7 @@ const warmAmbientEffect: SkinAmbientEffect = {
 
 const warmForegroundEffect: SkinAmbientEffect = {
   kind: "embers",
-  count: 44,
+  count: 16,
   seed: 0x2a3b4c5d,
   colors: [
     "rgba(255, 180, 87, 0.78)",
@@ -33,7 +33,7 @@ const warmForegroundEffect: SkinAmbientEffect = {
     "rgba(255, 229, 160, 0.66)",
     "rgba(255, 252, 236, 0.72)",
   ],
-  sizeRangePx: [1.8, 4.8],
+  sizeRangePx: [2.7, 7.2],
   durationRangeSec: [8, 15],
   delayRangeSec: [-15, 0],
   opacityRange: [0.18, 0.5],
@@ -46,7 +46,7 @@ const warmForegroundEffect: SkinAmbientEffect = {
 
 const vikingAmbientEffect: SkinAmbientEffect = {
   kind: "snow",
-  count: 120,
+  count: 42,
   seed: 0x5f6a7b8c,
   colors: [
     "rgba(238, 246, 255, 0.86)",
@@ -54,7 +54,7 @@ const vikingAmbientEffect: SkinAmbientEffect = {
     "rgba(160, 174, 190, 0.58)",
     "rgba(255, 255, 255, 0.76)",
   ],
-  sizeRangePx: [1.4, 4.4],
+  sizeRangePx: [2.1, 6.6],
   durationRangeSec: [17, 34],
   delayRangeSec: [-34, 0],
   opacityRange: [0.18, 0.62],
@@ -67,7 +67,7 @@ const vikingAmbientEffect: SkinAmbientEffect = {
 
 const vikingForegroundEffect: SkinAmbientEffect = {
   kind: "snow",
-  count: 58,
+  count: 18,
   seed: 0x6c7d8e9f,
   colors: [
     "rgba(244, 251, 255, 0.72)",
@@ -75,7 +75,7 @@ const vikingForegroundEffect: SkinAmbientEffect = {
     "rgba(201, 216, 229, 0.5)",
     "rgba(255, 255, 255, 0.66)",
   ],
-  sizeRangePx: [1.2, 3.8],
+  sizeRangePx: [1.8, 5.7],
   durationRangeSec: [13, 27],
   delayRangeSec: [-27, 0],
   opacityRange: [0.14, 0.42],
