@@ -261,6 +261,10 @@
   color: transparent;
 }
 
+.dashboard-shell--viking .toolbar-icon-button--kofi {
+  margin-right: auto;
+}
+
 .dashboard-shell--viking .toolbar-icon-button:focus-visible {
   outline: 2px solid rgba(232, 246, 255, 0.86);
   outline-offset: 0.18rem;
@@ -287,6 +291,12 @@
   background-size: contain;
   filter: drop-shadow(0 0 0 rgba(232, 246, 255, 0));
   transition: filter 150ms ease;
+}
+
+.dashboard-shell--viking
+  .toolbar-icon-button--kofi
+  .toolbar-icon-button__icon::before {
+  background-image: url("/images/ko-fi_icon.webp");
 }
 
 .dashboard-shell--viking

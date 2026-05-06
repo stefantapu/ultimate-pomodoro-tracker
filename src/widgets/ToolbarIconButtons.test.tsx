@@ -8,6 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUIStore } from "@shared/stores/uiStore";
 import { InfographicsButton } from "./InfographicsButton";
+import { KoFiButton } from "./KoFiButton";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
 import { ThemePickerButton } from "./ThemePickerButton";
@@ -111,6 +112,26 @@ describe("Toolbar icon buttons", () => {
 
     expect(playToolbarClickMock).toHaveBeenCalledTimes(1);
     expect(useUIStore.getState().isInfographicsModalOpen).toBe(true);
+  });
+
+  it("keeps Ko-fi as a left toolbar link", () => {
+    render(<KoFiButton />);
+
+    const button = screen.getByRole("link", { name: "Support on Ko-fi" });
+    const label = within(button).getByText("Support on Ko-fi");
+    const icon = button.querySelector(".toolbar-icon-button__icon");
+
+    expect(button).toHaveClass("toolbar-icon-button");
+    expect(button).toHaveClass("toolbar-icon-button--kofi");
+    expect(button).toHaveAttribute("href", "https://ko-fi.com/forgetimerdev");
+    expect(button).toHaveAttribute("target", "_blank");
+    expect(button).toHaveAttribute("rel", "noopener noreferrer");
+    expect(label).toHaveClass("toolbar-icon-button__label");
+    expect(icon).not.toBeNull();
+
+    button.click();
+
+    expect(playToolbarClickMock).toHaveBeenCalledTimes(1);
   });
 
   it("opens a confirmation before logging out", async () => {

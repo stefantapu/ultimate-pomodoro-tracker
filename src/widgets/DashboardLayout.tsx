@@ -10,6 +10,7 @@ import { PanelShell } from "./PanelShell";
 import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
 import { InfographicsButton } from "./InfographicsButton";
+import { KoFiButton } from "./KoFiButton";
 import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
 
@@ -211,6 +212,7 @@ export const DashboardLayout = memo(function DashboardLayout({
       ) : null}
       <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
+          <KoFiButton />
           <InfographicsButton />
           <ThemePickerButton />
           <SettingsButton />

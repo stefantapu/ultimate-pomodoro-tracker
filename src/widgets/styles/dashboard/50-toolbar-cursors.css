@@ -59,6 +59,11 @@
   background-image: var(--skin-settings-button-image);
 }
 
+.dashboard-shell--warm .toolbar-icon-button--kofi {
+  margin-right: auto;
+  background-image: var(--skin-settings-button-image);
+}
+
 .dashboard-shell--warm .toolbar-icon-button--exit {
   background-image: var(--skin-exit-button-image);
 }
@@ -73,6 +78,9 @@
 
 .dashboard-shell--warm
   .toolbar-icon-button--history
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--kofi
   .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--settings
@@ -100,9 +108,18 @@
   .toolbar-icon-button--history
   .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
+  .toolbar-icon-button--kofi
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
   .toolbar-icon-button--settings
   .toolbar-icon-button__icon::before {
   left: 50%;
+}
+
+.dashboard-shell--warm
+  .toolbar-icon-button--kofi
+  .toolbar-icon-button__icon::before {
+  background-image: url("/images/ko-fi_icon.webp");
 }
 
 .dashboard-shell--warm
@@ -128,6 +145,12 @@
   .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--history:focus-visible
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--kofi:hover
+  .toolbar-icon-button__icon::before,
+.dashboard-shell--warm
+  .toolbar-icon-button--kofi:focus-visible
   .toolbar-icon-button__icon::before,
 .dashboard-shell--warm
   .toolbar-icon-button--settings:hover
@@ -218,4 +241,3 @@
 .settings-modal__toggle:not(.is-disabled) * {
   cursor: var(--skin-cursor-pointer, pointer);
 }
-

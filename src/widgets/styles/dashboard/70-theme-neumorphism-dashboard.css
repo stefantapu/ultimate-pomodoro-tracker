@@ -307,6 +307,10 @@
   color: #5a6573;
 }
 
+.dashboard-shell--neumorphism .toolbar-icon-button--kofi {
+  margin-right: auto;
+}
+
 .dashboard-shell--neumorphism .toolbar-icon-button__icon {
   display: block;
   position: absolute;
@@ -321,6 +325,14 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.dashboard-shell--neumorphism
+  .toolbar-icon-button--kofi
+  .toolbar-icon-button__icon::before {
+  width: 25px;
+  height: 25px;
+  background: url("/images/ko-fi_icon.webp") center / contain no-repeat;
 }
 
 .dashboard-shell--neumorphism
@@ -399,4 +411,3 @@
     5px 5px 0 -1px currentColor;
   transform: translate(-10%, -50%);
 }
-
