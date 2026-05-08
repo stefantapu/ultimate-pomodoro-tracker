@@ -8,7 +8,7 @@ The app combines a focus timer, break timer, persistent settings, notes, session
 
 - Focus and break timer with editable durations
 - Local persistence for timer state and user settings
-- Email/password authentication with Supabase Auth
+- Email/password and Google authentication with Supabase Auth
 - Cloud sync for timer settings
 - Notes panel backed by Supabase
 - Session tracking for focus and break runs
@@ -65,7 +65,18 @@ SQL migrations live in [`supabase/migrations/`](./supabase/migrations):
 
 Apply them in your Supabase project before testing authenticated features. If you use the Supabase CLI in your own environment, you can push these migrations from the repository; otherwise, run the SQL manually in the Supabase dashboard.
 
-### 4. Start the app
+### 4. Configure Google OAuth
+
+Google sign-in uses Supabase Auth's Google provider from the existing auth modal. In the Supabase dashboard, enable `Authentication > Providers > Google` and add the Google OAuth client ID and client secret from Google Cloud.
+
+Add both local and production app origins to the Supabase auth redirect allow list, for example:
+
+- `http://localhost:5173`
+- your production origin, such as `https://example.com`
+
+The app derives `redirectTo` from `window.location.origin`, so users return to the root route on the same origin after the OAuth handoff. In Google Cloud, also add the matching JavaScript origins and the Supabase callback URL shown on the Supabase Google provider page.
+
+### 5. Start the app
 
 ```bash
 npm run dev
@@ -100,7 +111,7 @@ Guests can access the main dashboard shell and timer, but several panels are loc
 - streak/progress data
 - long-term XP and level tracking
 
-Authentication is implemented with Supabase email/password auth.
+Authentication is implemented with Supabase email/password auth and Google OAuth.
 
 ### Analytics and Progression
 
