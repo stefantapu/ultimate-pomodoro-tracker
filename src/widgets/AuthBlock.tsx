@@ -6,11 +6,44 @@ import { useSkinStore } from "@shared/stores/skinStore";
 import { getSupabaseClient } from "../../utils/supabase";
 import { useUIStore } from "../shared/stores/uiStore";
 
+const GOOGLE_RECOVERY_HINT = "If you signed up with Google, continue with Google.";
+
+function getAuthErrorMessage(error: unknown) {
+  return typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as AuthError).message === "string"
+    ? (error as AuthError).message
+    : "An error occurred";
+}
+
+const GoogleMark = () => (
+  <svg className="auth-block__google-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path
+      fill="#4285f4"
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"
+    />
+    <path
+      fill="#34a853"
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.98.66-2.24 1.05-3.72 1.05-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"
+    />
+    <path
+      fill="#fbbc05"
+      d="M5.84 14.1A6.61 6.61 0 0 1 5.5 12c0-.73.12-1.43.34-2.1V7.06H2.18A11 11 0 0 0 1 12c0 1.77.42 3.45 1.18 4.94l3.66-2.84z"
+    />
+    <path
+      fill="#ea4335"
+      d="M12 5.37c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06L5.84 9.9C6.71 7.3 9.14 5.37 12 5.37z"
+    />
+  </svg>
+);
+
 export const AuthBlock = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [manualLoading, setManualLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -21,16 +54,48 @@ export const AuthBlock = () => {
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
   );
+  const authActionPending = manualLoading || googleLoading;
 
   const closeModal = () => {
     playToolbarClick();
     setAuthModalOpen(false);
   };
 
+  const startGoogleAuth = async () => {
+    if (authActionPending) {
+      return;
+    }
+
+    playToolbarClick();
+    setGoogleLoading(true);
+    setError(null);
+
+    try {
+      const supabase = await getSupabaseClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: unknown) {
+      setError(getAuthErrorMessage(error));
+      setGoogleLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authActionPending) {
+      return;
+    }
+
     playToolbarClick();
-    setLoading(true);
+    setManualLoading(true);
     setError(null);
 
     try {
@@ -52,16 +117,9 @@ export const AuthBlock = () => {
         setIsSuccess(true);
       }
     } catch (error: unknown) {
-      const message =
-        typeof error === "object" &&
-        error !== null &&
-        "message" in error &&
-        typeof (error as AuthError).message === "string"
-          ? (error as AuthError).message
-          : "An error occurred";
-      setError(message);
+      setError(getAuthErrorMessage(error));
     } finally {
-      setLoading(false);
+      setManualLoading(false);
     }
   };
 
@@ -117,7 +175,37 @@ export const AuthBlock = () => {
               Save your sessions, notes, and long-term progress in the realm.
             </p>
 
-            {error && <div className="auth-block__error">{error}</div>}
+            <button
+              type="button"
+              className="auth-block__button auth-block__button--primary auth-block__button--google"
+              onClick={startGoogleAuth}
+              disabled={authActionPending}
+            >
+              <GoogleMark />
+              <span>{googleLoading ? "Redirecting..." : "Continue with Google"}</span>
+            </button>
+
+            <div className="auth-block__divider" aria-hidden="true">
+              <span>or enter manually</span>
+            </div>
+
+            {error && (
+              <div className="auth-block__error" role="alert">
+                <p>{error}</p>
+                <p className="auth-block__recovery-hint" aria-label={GOOGLE_RECOVERY_HINT}>
+                  If you signed up with{" "}
+                  <button
+                    type="button"
+                    className="auth-block__recovery-action"
+                    onClick={startGoogleAuth}
+                    disabled={authActionPending}
+                  >
+                    Google
+                  </button>
+                  , continue with Google.
+                </p>
+              </div>
+            )}
 
             <form className="auth-block__form" onSubmit={handleSubmit}>
               <input
@@ -211,10 +299,10 @@ export const AuthBlock = () => {
               </div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={authActionPending}
                 className="auth-block__button auth-block__button--primary"
               >
-                {loading
+                {manualLoading
                   ? "Casting..."
                   : isLogin
                     ? "Enter Realm"
