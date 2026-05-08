@@ -591,6 +591,16 @@
   color: #ffe1bf;
 }
 
+.dashboard-shell--warm .heatmap-card__preview-badge {
+  border-color: rgba(255, 184, 108, 0.34);
+  background: rgba(33, 13, 6, 0.78);
+  color: #ffe1bf;
+  text-shadow: 0 1px 1px rgba(12, 4, 1, 0.72);
+  box-shadow:
+    0 0.25rem 0.55rem rgba(12, 4, 1, 0.26),
+    0 0 0.4rem rgba(255, 133, 46, 0.1);
+}
+
 .dashboard-shell--warm .dashboard-lock-wrap--heatmap {
   width: min(100%, 400px);
 }

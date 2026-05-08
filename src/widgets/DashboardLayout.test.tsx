@@ -22,6 +22,10 @@ vi.mock("./TimerBlock", () => ({
   TimerBlock: () => <div>Timer block</div>,
 }));
 
+vi.mock("react-activity-calendar", () => ({
+  ActivityCalendar: () => <div data-testid="activity-calendar" />,
+}));
+
 vi.mock("./SettingsButton", () => ({
   SettingsButton: () => <button type="button">Open settings</button>,
 }));
@@ -54,7 +58,7 @@ afterEach(() => {
 });
 
 describe("DashboardLayout", () => {
-  it("shows guest placeholders and locked overlays when no user is present", () => {
+  it("shows a guest heatmap preview without locking the heatmap panel", () => {
     const LockedOverlayComponent = () => <div>LOCKED</div>;
 
     renderWithProviders(
@@ -62,9 +66,11 @@ describe("DashboardLayout", () => {
     );
 
     expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();
-    expect(screen.getByText("Sign in to view focus history.")).toBeInTheDocument();
+    expect(screen.getByTestId("activity-calendar")).toBeInTheDocument();
+    expect(screen.getByText("Preview data")).toBeInTheDocument();
+    expect(screen.queryByText("Sign in to view focus history.")).not.toBeInTheDocument();
     expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getAllByText("LOCKED")).toHaveLength(4);
+    expect(screen.getAllByText("LOCKED")).toHaveLength(3);
   });
 
   it("renders the authenticated panels when a user is present", async () => {

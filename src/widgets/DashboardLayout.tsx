@@ -13,6 +13,8 @@ import { InfographicsButton } from "./InfographicsButton";
 import { KoFiButton } from "./KoFiButton";
 import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
+import { HeatmapCard } from "./HeatmapCard";
+import { createPreviewHeatmapData } from "./previewHeatmapData";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
   import("./StatsDashboard").then((module) => ({
@@ -105,11 +107,16 @@ function GuestAnalyticsPanels({
 }: {
   LockedOverlayComponent: ComponentType;
 }) {
+  const previewHeatmapData = useMemo(() => createPreviewHeatmapData(), []);
+
   return (
     <>
       <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
-        <PlaceholderHeatmapCard message="Sign in to view focus history." />
-        <LockedOverlayComponent />
+        <HeatmapCard
+          heatmapData={previewHeatmapData}
+          loading={false}
+          previewLabel="Preview data"
+        />
       </div>
 
       <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">

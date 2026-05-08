@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getSkinById } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
+import { screen } from "@testing-library/react";
 import { renderWithProviders } from "../test/testUtils";
 import { HeatmapCard } from "./HeatmapCard";
 
@@ -55,5 +56,25 @@ describe("HeatmapCard", () => {
       light: ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
       dark: ["#d8dee6", "#c1cad4", "#a8b3bf", "#8f9cac", "#6f7d8d"],
     });
+  });
+
+  it("uses viking palette with dark tooltip scheme and renders preview label", () => {
+    useSkinStore.getState().setActiveSkinId("viking");
+
+    renderWithProviders(
+      <HeatmapCard
+        loading={false}
+        previewLabel="Preview data"
+        heatmapData={[{ date: "2026-04-24", value: 3600 }]}
+      />,
+    );
+
+    expect(lastActivityCalendarProps).not.toBeNull();
+    expect(lastActivityCalendarProps?.colorScheme).toBe("dark");
+    expect(lastActivityCalendarProps?.theme).toEqual({
+      light: ["#201f21", "#434449", "#6f7d8d", "#a0aebe", "#e8f0f7"],
+      dark: ["#201f21", "#434449", "#6f7d8d", "#a0aebe", "#e8f0f7"],
+    });
+    expect(screen.getByText("Preview data")).toBeInTheDocument();
   });
 });

@@ -8,6 +8,7 @@ import { PanelShell } from "./PanelShell";
 type HeatmapCardProps = {
   heatmapData: HeatmapData[];
   loading: boolean;
+  previewLabel?: string;
 };
 
 const HEATMAP_WINDOW_DAYS = 183;
@@ -57,6 +58,7 @@ function getCalendarData(heatmapData: HeatmapData[]) {
 export const HeatmapCard = memo(function HeatmapCard({
   heatmapData,
   loading,
+  previewLabel,
 }: HeatmapCardProps) {
   const activeSkinId = useSkinStore((state) => state.activeSkinId);
   const totalFocusedHours = (
@@ -76,6 +78,11 @@ export const HeatmapCard = memo(function HeatmapCard({
 
   return (
     <PanelShell className="heatmap-card" bodyClassName="heatmap-card__content">
+      {previewLabel ? (
+        <div className="heatmap-card__preview-row">
+          <span className="heatmap-card__preview-badge">{previewLabel}</span>
+        </div>
+      ) : null}
       {loading && heatmapData.length === 0 ? (
         <div className="heatmap-card__status">Loading heat map...</div>
       ) : (
