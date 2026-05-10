@@ -320,6 +320,11 @@ export const AuthBlock = () => {
                 {isLogin ? "Sign Up" : "Log In"}
               </button>
             </p>
+            <p className="auth-block__legal">
+              By signing up, you agree to the{" "}
+              <a href="/terms">Terms</a> and acknowledge the{" "}
+              <a href="/privacy">Privacy Policy</a>.
+            </p>
           </>
         )}
       </div>

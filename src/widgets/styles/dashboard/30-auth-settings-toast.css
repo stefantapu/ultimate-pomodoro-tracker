@@ -328,6 +328,20 @@
   text-underline-offset: 0.14rem;
 }
 
+.auth-block__legal {
+  margin: 0.7rem 0 0;
+  color: rgba(207, 165, 127, 0.82);
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.auth-block__legal a {
+  color: #ffcf94;
+  text-decoration: underline;
+  text-underline-offset: 0.14rem;
+}
+
 .settings-modal__overlay {
   z-index: 60;
   font-family: var(--dashboard-button-font-family);
@@ -862,6 +876,20 @@
   gap: 0.35rem;
 }
 
+.settings-modal__legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  color: #d7aa77;
+  font-size: 0.82rem;
+}
+
+.settings-modal__legal-links a {
+  color: #ffe0b3;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
 .settings-modal__contact-link {
   width: fit-content;
   max-width: 100%;
@@ -874,8 +902,31 @@
 }
 
 .settings-modal__contact-link:hover,
-.settings-modal__contact-link:focus-visible {
+.settings-modal__contact-link:focus-visible,
+.settings-modal__legal-links a:hover,
+.settings-modal__legal-links a:focus-visible {
   color: #fff3de;
+}
+
+.settings-modal__deletion {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.settings-modal__muted-copy {
+  margin: 0;
+  color: #d7aa77;
+  font-size: 0.78rem;
+  line-height: 1.42;
+}
+
+.settings-modal__deletion-link {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
 }
 
 .settings-modal__footer {

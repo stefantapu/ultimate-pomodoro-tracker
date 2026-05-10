@@ -1,4 +1,11 @@
 import type { Mode } from "@shared/lib/timerTypes";
+import {
+  ACCOUNT_DELETION_BODY,
+  ACCOUNT_DELETION_SUBJECT,
+  SUPPORT_EMAIL,
+  createSupportMailtoHref,
+} from "@shared/config/support";
+import { useAuth } from "@app/providers/useAuth";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { useUIStore } from "@shared/stores/uiStore";
@@ -282,6 +289,7 @@ export function SettingsModal({
   const isOpen = useUIStore((state) => state.isSettingsModalOpen);
   const setSettingsModalOpen = useUIStore((state) => state.setSettingsModalOpen);
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const { user } = useAuth();
   const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
@@ -319,6 +327,11 @@ export function SettingsModal({
 
     handleCancel();
   };
+
+  const accountDeletionHref = createSupportMailtoHref({
+    subject: ACCOUNT_DELETION_SUBJECT,
+    body: ACCOUNT_DELETION_BODY,
+  });
 
   const modal = (
     <div
@@ -463,14 +476,44 @@ export function SettingsModal({
         </section>
 
         <section className="settings-modal__section settings-modal__contact">
-          <h3 className="settings-modal__section-title">Contact</h3>
+          <h3 className="settings-modal__section-title">App info</h3>
+          <div className="settings-modal__legal-links" aria-label="Legal links">
+            <a href="/privacy">Privacy</a>
+            <span aria-hidden="true">/</span>
+            <a href="/terms">Terms</a>
+          </div>
           <a
             className="settings-modal__contact-link"
-            href="mailto:tapushtefan@gmail.com"
+            href={`mailto:${SUPPORT_EMAIL}`}
           >
-            tapushtefan@gmail.com
+            {SUPPORT_EMAIL}
           </a>
         </section>
+
+        {user ? (
+          <section className="settings-modal__section settings-modal__deletion">
+            <h3 className="settings-modal__section-title">Account</h3>
+            <p className="settings-modal__notice">
+              To delete your account and saved ForgeTimer data, send a deletion
+              request from the email linked to your account.
+            </p>
+            <p className="settings-modal__muted-copy">
+              Deletion can include your profile, notes, focus/break sessions,
+              progress, XP, level, and settings stored in Supabase.
+            </p>
+            <p className="settings-modal__muted-copy">
+              Guest data stored locally in this browser is not deleted by this
+              request. You can clear local browser data from your browser
+              settings.
+            </p>
+            <a
+              className="settings-modal__button settings-modal__button--secondary settings-modal__deletion-link"
+              href={accountDeletionHref}
+            >
+              Request account deletion
+            </a>
+          </section>
+        ) : null}
 
         <footer className="settings-modal__footer">
           {willResetCurrentTimer ? (

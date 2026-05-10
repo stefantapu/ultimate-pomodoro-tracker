@@ -92,6 +92,12 @@ describe("TimerBlock", () => {
       activeSkin: getSkinById("warm"),
       setActiveSkinId: useSkinStore.getState().setActiveSkinId,
     });
+    useUIStore.setState((state) => ({
+      ...state,
+      isSettingsModalOpen: false,
+      isInfographicsModalOpen: false,
+      isThemePickerModalOpen: false,
+    }));
 
     localStorage.setItem(
       USER_SETTINGS_STORAGE_KEY,
@@ -322,6 +328,58 @@ describe("TimerBlock", () => {
 
     expect(previewButtons).toHaveLength(3);
     expect(previewButtons[2]).toBeDisabled();
+  });
+
+  it("shows legal links and hides account deletion for guests", async () => {
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(await screen.findByText("App info")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Privacy" })).toHaveAttribute(
+      "href",
+      "/privacy",
+    );
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute(
+      "href",
+      "/terms",
+    );
+    expect(
+      screen.queryByRole("link", { name: "Request account deletion" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows signed-in users an account deletion request mailto", async () => {
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />, {
+      auth: {
+        user: {
+          id: "user-1",
+          email: "hero@example.com",
+        } as never,
+      },
+    });
+
+    const deletionLink = await screen.findByRole("link", {
+      name: "Request account deletion",
+    });
+
+    expect(
+      screen.getByText(/send a deletion request from the email linked/),
+    ).toBeInTheDocument();
+    expect(deletionLink).toHaveAttribute(
+      "href",
+      expect.stringContaining("mailto:stefantapu@gmail.com?"),
+    );
+    expect(deletionLink).toHaveAttribute(
+      "href",
+      expect.stringContaining("subject=ForgeTimer+account+deletion+request"),
+    );
   });
 
   it("stops ambience previews when another preview runs or settings are saved", async () => {
