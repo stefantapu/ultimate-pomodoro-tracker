@@ -35,6 +35,13 @@ describe("AuthBlock", () => {
 
     expect(screen.getByRole("heading", { name: "Welcome Back" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Continue with Google" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute(
+      "href",
+      "/terms",
+    );
+    expect(
+      screen.getByRole("link", { name: "Privacy Policy" }),
+    ).toHaveAttribute("href", "/privacy");
     expect(screen.getByText("or enter manually")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Sign Up" }));

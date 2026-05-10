@@ -45,6 +45,7 @@ describe("App", () => {
   beforeEach(() => {
     useAuthMock.mockReset();
     shouldSuspendAuthBlock = false;
+    window.history.pushState({}, "", "/");
     useSkinStore.setState({
       activeSkinId: "warm",
       activeSkin: getSkinById("warm"),
@@ -71,6 +72,32 @@ describe("App", () => {
     expect(loadingState).toBeInTheDocument();
     expect(loadingState).toHaveClass("app-loading-state");
     expect(loadingState.getAttribute("style")).toContain("--dashboard-bg");
+  });
+
+  it("renders privacy and terms routes publicly while auth is loading", () => {
+    useAuthMock.mockReturnValue({
+      user: null,
+      loading: true,
+    });
+
+    window.history.pushState({}, "", "/privacy");
+    const { unmount } = render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "Privacy Policy" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/stefantapu@gmail\.com/).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.queryByText("Loading Realm...")).not.toBeInTheDocument();
+
+    unmount();
+    window.history.pushState({}, "", "/terms");
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "Terms of Service" }),
+    ).toBeInTheDocument();
   });
 
   it("renders the dashboard and lazy modals based on store state", async () => {

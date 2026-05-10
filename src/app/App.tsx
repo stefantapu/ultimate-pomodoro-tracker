@@ -9,6 +9,8 @@ import { mapSkinToCssVariables } from "../shared/skins/cssVars";
 import { useSkinStore } from "../shared/stores/skinStore";
 import { setActiveAudioCacheSources } from "../shared/lib/audioAssetCache";
 import { useAuth } from "./providers/useAuth";
+import { LegalPage } from "./LegalPage";
+import { getLegalPageKind } from "./legalRoutes";
 
 const LazyAuthBlock = lazy(() =>
   import("../widgets/AuthBlock").then((module) => ({
@@ -91,6 +93,14 @@ function App() {
   useEffect(() => {
     setActiveAudioCacheSources(activeSkin.audio);
   }, [activeSkin.audio]);
+
+  const pathname =
+    typeof window === "undefined" ? "/" : window.location.pathname;
+  const legalPageKind = getLegalPageKind(pathname);
+
+  if (legalPageKind) {
+    return <LegalPage kind={legalPageKind} />;
+  }
 
   if (loading) {
     return (
