@@ -45,6 +45,8 @@ const IMAGE_ASSET_TO_CSS_VARIABLE: Record<
   toolbarThemeIcon: "--skin-toolbar-theme-icon-image",
   toolbarSettingsIcon: "--skin-toolbar-settings-icon-image",
   toolbarAuthIcon: "--skin-toolbar-auth-icon-image",
+  avatarIdle: "--skin-avatar-idle-image",
+  avatarFocused: "--skin-avatar-focused-image",
 };
 
 const CURSOR_ASSET_TO_CSS_VARIABLE: Record<

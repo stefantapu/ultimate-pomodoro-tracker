@@ -322,20 +322,6 @@
     0 0 0.65rem rgba(255, 205, 118, 0.56);
 }
 
-.dashboard-shell--warm .action-buttons__button--reset {
-  background-image: var(--skin-reset-button-image);
-  color: #f0c2a1;
-}
-
-.dashboard-shell--warm .action-buttons__button--reset:hover,
-.dashboard-shell--warm .action-buttons__button--reset:focus-visible,
-.dashboard-shell--warm .action-buttons__button--reset:active {
-  color: #ffd9be;
-  text-shadow:
-    0 1px 1px rgba(12, 4, 1, 0.9),
-    0 0 0.65rem rgba(255, 153, 84, 0.5);
-}
-
 @keyframes timer-lava-glow {
   from {
     opacity: 0.56;

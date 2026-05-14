@@ -10,16 +10,16 @@ vi.mock("./StatsDashboard", () => ({
   AuthenticatedAnalyticsPanels: () => <div>Authenticated analytics</div>,
 }));
 
-vi.mock("./NotesPanel", () => ({
-  NotesPanel: () => <div>Notes panel</div>,
-}));
-
-vi.mock("./DragonCard", () => ({
-  DragonCard: () => <div>Dragon card</div>,
-}));
-
 vi.mock("./TimerBlock", () => ({
   TimerBlock: () => <div>Timer block</div>,
+}));
+
+vi.mock("./ProfileButton", () => ({
+  ProfileButton: () => <button type="button">Open hero profile</button>,
+}));
+
+vi.mock("./KoFiButton", () => ({
+  KoFiButton: () => <button type="button">Support on Ko-fi</button>,
 }));
 
 vi.mock("react-activity-calendar", () => ({
@@ -30,16 +30,8 @@ vi.mock("./SettingsButton", () => ({
   SettingsButton: () => <button type="button">Open settings</button>,
 }));
 
-vi.mock("./InfographicsButton", () => ({
-  InfographicsButton: () => <button type="button">Open infographics</button>,
-}));
-
 vi.mock("./ThemePickerButton", () => ({
   ThemePickerButton: () => <button type="button">Open theme picker</button>,
-}));
-
-vi.mock("./LogoutButton", () => ({
-  LogoutButton: () => <button type="button">Logout</button>,
 }));
 
 afterEach(() => {
@@ -65,12 +57,15 @@ describe("DashboardLayout", () => {
       <DashboardLayout user={null} LockedOverlayComponent={LockedOverlayComponent} />,
     );
 
+    expect(screen.getByRole("button", { name: "Support on Ko-fi" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open hero profile" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open settings" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();
     expect(screen.getByTestId("activity-calendar")).toBeInTheDocument();
     expect(screen.getByText("Preview data")).toBeInTheDocument();
     expect(screen.queryByText("Sign in to view focus history.")).not.toBeInTheDocument();
     expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getAllByText("LOCKED")).toHaveLength(3);
+    expect(screen.getAllByText("LOCKED")).toHaveLength(1);
   });
 
   it("renders the authenticated panels when a user is present", async () => {
@@ -85,8 +80,8 @@ describe("DashboardLayout", () => {
       expect(screen.getByText("Authenticated analytics")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Notes panel")).toBeInTheDocument();
-    expect(screen.getByText("Dragon card")).toBeInTheDocument();
+    expect(screen.queryByText("Notes panel")).not.toBeInTheDocument();
+    expect(screen.queryByText("Dragon card")).not.toBeInTheDocument();
   });
 
   it("syncs body dashboard skin data attribute for portal-rendered UI", async () => {
@@ -113,7 +108,6 @@ describe("DashboardLayout", () => {
     const expectedClasses = [
       "dashboard-lock-wrap dashboard-lock-wrap--heatmap",
       "dashboard-lock-wrap dashboard-lock-wrap--stats",
-      "dashboard-lock-wrap dashboard-lock-wrap--dragon",
     ];
 
     const renderBottomRowClasses = (skinId: "warm" | "neumorphism") => {
@@ -152,9 +146,8 @@ describe("DashboardLayout", () => {
       "dashboard-bottom-row",
     );
 
-    const notesWrap = container.querySelector(".dashboard-lock-wrap--notes");
-    expect(notesWrap).toHaveClass("dashboard-lock-wrap", "dashboard-lock-wrap--notes");
-    expect(notesWrap).not.toHaveClass("dashboard-notes-wrap");
+    expect(container.querySelector(".dashboard-lock-wrap--notes")).toBeNull();
+    expect(container.querySelector(".dashboard-lock-wrap--dragon")).toBeNull();
 
     expect(container.querySelector(".dashboard-content")).toBeNull();
     expect(container.querySelector(".dashboard-main")).toBeNull();

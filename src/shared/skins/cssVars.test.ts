@@ -65,6 +65,8 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--skin-toolbar-theme-icon-image",
   "--skin-toolbar-settings-icon-image",
   "--skin-toolbar-auth-icon-image",
+  "--skin-avatar-idle-image",
+  "--skin-avatar-focused-image",
   "--skin-cursor-default",
   "--skin-cursor-pointer",
   "--skin-cursor-text",
@@ -118,6 +120,8 @@ const IMAGE_VARIABLE_KEYS = [
   "--skin-toolbar-theme-icon-image",
   "--skin-toolbar-settings-icon-image",
   "--skin-toolbar-auth-icon-image",
+  "--skin-avatar-idle-image",
+  "--skin-avatar-focused-image",
 ] as const;
 
 const CURSOR_VARIABLE_KEYS = [

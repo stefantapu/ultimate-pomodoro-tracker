@@ -1,26 +1,7 @@
 import { memo } from "react";
 import { useProfile } from "@shared/hooks/useProfile";
+import { getLevelProgress } from "@shared/lib/levelProgress";
 import { PanelShell } from "./PanelShell";
-
-function getLevelProgress(totalXp: number, level: number) {
-  const baseXp = Math.pow(level - 1, 2) * 100;
-  const nextLevelXp = Math.pow(level, 2) * 100;
-  const xpInCurrentLevel = totalXp - baseXp;
-  const xpRequiredForNext = nextLevelXp - baseXp;
-  const progressPct =
-    xpRequiredForNext === 0
-      ? 0
-      : Math.min(
-          100,
-          Math.max(0, (xpInCurrentLevel / xpRequiredForNext) * 100),
-        );
-
-  return {
-    xpInCurrentLevel,
-    xpRequiredForNext,
-    progressPct,
-  };
-}
 
 export const DragonCard = memo(function DragonCard() {
   const { profile } = useProfile();

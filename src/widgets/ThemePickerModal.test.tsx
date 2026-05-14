@@ -19,13 +19,10 @@ describe("ThemePickerModal", () => {
     }));
   });
 
-  it("applies neumorphism and persists the selection", () => {
+  it("hides neumorphism from the primary picker", () => {
     render(<ThemePickerModal />);
 
-    fireEvent.click(screen.getByRole("radio", { name: /neumorphism/i }));
-
-    expect(useSkinStore.getState().activeSkinId).toBe("neumorphism");
-    expect(localStorage.getItem("pomodoro-active-skin")).toBe("neumorphism");
+    expect(screen.queryByRole("radio", { name: /neumorphism/i })).not.toBeInTheDocument();
   });
 
   it("applies viking and persists the selection", () => {
@@ -47,10 +44,6 @@ describe("ThemePickerModal", () => {
     expect(screen.getByRole("radio", { name: /warm/i })).toHaveAttribute(
       "aria-checked",
       "true",
-    );
-    expect(screen.getByRole("radio", { name: /neumorphism/i })).toHaveAttribute(
-      "aria-checked",
-      "false",
     );
     expect(screen.getByRole("radio", { name: /viking/i })).toHaveAttribute(
       "aria-checked",

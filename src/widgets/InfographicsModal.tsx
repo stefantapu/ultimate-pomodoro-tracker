@@ -1,8 +1,10 @@
 import {
+  useCallback,
   useMemo,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useProfile } from "@shared/hooks/useProfile";
 import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import {
   getLocalISODate,
@@ -12,10 +14,12 @@ import {
   type InfographicsPeriodBucket,
   type InfographicsPeriodMode,
 } from "@shared/hooks/useInfographics";
+import { getLevelProgress } from "@shared/lib/levelProgress";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import { useAuth } from "@app/providers/useAuth";
+import { getSupabaseClient } from "../../utils/supabase";
 
 function formatHours(seconds: number) {
   if (seconds < 3600) {
@@ -27,6 +31,10 @@ function formatHours(seconds: number) {
 
 function formatCount(value: number) {
   return new Intl.NumberFormat().format(value);
+}
+
+function formatXp(value: number) {
+  return new Intl.NumberFormat().format(Math.max(0, Math.round(value)));
 }
 
 function formatBucketDate(isoDate: string) {
@@ -210,14 +218,17 @@ function SummaryGrid({ items }: { items: { label: string; value: string }[] }) {
 
 export function InfographicsModal() {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const todayISO = useMemo(() => getLocalISODate(new Date()), []);
   const [anchorDate, setAnchorDate] = useState(todayISO);
   const [periodMode, setPeriodMode] = useState<InfographicsPeriodMode>("week");
+  const [isLoggingOut, setLoggingOut] = useState(false);
   const { data, loading, error } = useInfographics(anchorDate, periodMode);
   const isOpen = useUIStore((state) => state.isInfographicsModalOpen);
   const setInfographicsModalOpen = useUIStore(
     (state) => state.setInfographicsModalOpen,
   );
+  const triggerTimerReset = useUIStore((state) => state.triggerTimerReset);
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const playToolbarClick = useToolbarClickSound();
   const skinCssVariables = useMemo(
@@ -225,14 +236,32 @@ export function InfographicsModal() {
     [activeSkin],
   );
 
+  const closeModal = () => {
+    if (isLoggingOut) {
+      return;
+    }
+
+    playToolbarClick();
+    setInfographicsModalOpen(false);
+  };
+  const handleLogout = useCallback(async () => {
+    playToolbarClick();
+    setLoggingOut(true);
+
+    try {
+      triggerTimerReset();
+      const supabase = await getSupabaseClient();
+      await supabase.auth.signOut();
+      setInfographicsModalOpen(false);
+    } finally {
+      setLoggingOut(false);
+    }
+  }, [playToolbarClick, setInfographicsModalOpen, triggerTimerReset]);
+
   if (!isOpen) {
     return null;
   }
 
-  const closeModal = () => {
-    playToolbarClick();
-    setInfographicsModalOpen(false);
-  };
   const selectPeriodMode = (mode: InfographicsPeriodMode) => {
     playToolbarClick();
     setPeriodMode(mode);
@@ -247,6 +276,9 @@ export function InfographicsModal() {
     setAnchorDate(todayISO);
   };
   const canGoForward = data ? data.focus_period.end_date < todayISO : false;
+  const level = profile?.level ?? 1;
+  const totalXp = profile?.total_xp ?? 0;
+  const levelProgress = getLevelProgress(totalXp, level);
   const summaryItems = data
     ? [
         {
@@ -258,7 +290,7 @@ export function InfographicsModal() {
           value: formatHours(data.summary.current_week_focus_time),
         },
         {
-          label: "Cycles",
+          label: "Sessions",
           value: formatCount(data.summary.completed_cycles_count),
         },
         {
@@ -291,14 +323,15 @@ export function InfographicsModal() {
       >
         <header className="history-dashboard__header">
           <div>
-            <p className="history-dashboard__eyebrow">Archive</p>
-            <h2 id="history-dashboard-title">History Dashboard</h2>
+            <p className="history-dashboard__eyebrow">Hero sheet</p>
+            <h2 id="history-dashboard-title">Hero Profile</h2>
           </div>
           <button
             type="button"
             className="history-dashboard__close"
             onClick={closeModal}
-            aria-label="Close history dashboard"
+            aria-label="Close hero profile"
+            disabled={isLoggingOut}
           >
             X
           </button>
@@ -310,14 +343,41 @@ export function InfographicsModal() {
           </div>
         ) : loading && !data ? (
           <div className="history-dashboard__auth-state">
-            Loading focus history...
+            Loading hero profile...
           </div>
         ) : error ? (
           <div className="history-dashboard__auth-state" role="alert">
-            History dashboard could not be loaded.
+            Hero profile could not be loaded.
           </div>
         ) : data ? (
           <div className="history-dashboard__body">
+            <section
+              className="history-dashboard__hero-card"
+              aria-label="Hero progress"
+            >
+              <div className="history-dashboard__hero-avatar" aria-hidden="true">
+                <span className="history-dashboard__hero-avatar-image" />
+              </div>
+              <div className="history-dashboard__hero-copy">
+                <span className="history-dashboard__hero-label">Current rank</span>
+                <strong className="history-dashboard__hero-level">
+                  LVL {profile ? level : "--"}
+                </strong>
+                <div className="history-dashboard__hero-progress">
+                  <span
+                    className="history-dashboard__hero-progress-fill"
+                    style={{ width: `${profile ? levelProgress.progressPct : 0}%` }}
+                  />
+                </div>
+                <span className="history-dashboard__hero-xp">
+                  {profile
+                    ? `${formatXp(levelProgress.xpInCurrentLevel)} / ${formatXp(
+                        levelProgress.xpRequiredForNext,
+                      )} XP`
+                    : "Loading XP..."}
+                </span>
+              </div>
+            </section>
             <SummaryGrid items={summaryItems} />
 
             <section className="history-dashboard__panel history-dashboard__panel--wide">
@@ -374,6 +434,20 @@ export function InfographicsModal() {
               </div>
               <HourlyHistogram items={data.hourly_distribution} />
             </section>
+
+            <footer className="history-dashboard__account">
+              <span className="history-dashboard__account-email">
+                {user.email}
+              </span>
+              <button
+                type="button"
+                className="history-dashboard__logout"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? "Logging out..." : "Log out"}
+              </button>
+            </footer>
           </div>
         ) : null}
       </div>

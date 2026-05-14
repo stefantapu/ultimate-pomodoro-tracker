@@ -31,6 +31,7 @@
 }
 
 .dashboard-shell--warm .toolbar-icon-button {
+  box-sizing: border-box;
   width: 50px;
   height: 50px;
   min-width: 50px;
@@ -46,9 +47,52 @@
   color: transparent;
 }
 
-.dashboard-shell--warm .toolbar-icon-button:focus-visible {
+.dashboard-shell--warm .profile-entry {
+  width: clamp(8.8rem, 15vw, 11rem);
+  height: 50px;
+  min-width: 8.8rem;
+  min-height: 50px;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: var(--skin-focus-mode-button-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: none;
+  color: transparent;
+}
+
+.dashboard-shell--warm .toolbar-icon-button:focus-visible,
+.dashboard-shell--warm .profile-entry:focus-visible {
   outline: 2px solid rgba(255, 183, 102, 0.9);
   outline-offset: 0.18rem;
+}
+
+.dashboard-shell--warm .profile-entry__level {
+  color: #fff2de;
+  text-shadow:
+    0 1px 1px rgba(49, 17, 7, 0.9),
+    0 0 0.35rem rgba(255, 171, 59, 0.62);
+}
+
+.dashboard-shell--warm .profile-entry__xp {
+  border-color: rgba(255, 206, 141, 0.48);
+  background: rgba(49, 17, 7, 0.76);
+}
+
+.dashboard-shell--warm .profile-entry__xp-fill {
+  background: linear-gradient(90deg, #ffdca7, #ff922f 64%, #914121);
+}
+
+.dashboard-shell--warm .profile-entry__avatar {
+  width: 2.05rem;
+  height: 2.05rem;
+  border: 1px solid rgba(255, 206, 141, 0.74);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0.25rem rgba(255, 171, 59, 0.22),
+    inset 0 0 0 1px rgba(49, 17, 7, 0.28);
 }
 
 .dashboard-shell--warm .toolbar-icon-button--settings {

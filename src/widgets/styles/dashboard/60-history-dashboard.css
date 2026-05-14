@@ -70,7 +70,8 @@
 }
 
 .history-dashboard__close,
-.history-dashboard__week-actions button {
+.history-dashboard__week-actions button,
+.history-dashboard__logout {
   border: 1px solid rgba(255, 182, 104, 0.3);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.02);
@@ -90,7 +91,9 @@
 .history-dashboard__close:hover,
 .history-dashboard__close:focus-visible,
 .history-dashboard__week-actions button:not(:disabled):hover,
-.history-dashboard__week-actions button:not(:disabled):focus-visible {
+.history-dashboard__week-actions button:not(:disabled):focus-visible,
+.history-dashboard__logout:not(:disabled):hover,
+.history-dashboard__logout:not(:disabled):focus-visible {
   color: #ffe6c3;
   filter: brightness(1.08);
   box-shadow:
@@ -103,6 +106,101 @@
   grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.85fr);
   gap: 0.62rem;
   padding: 0.72rem 1.05rem 0.95rem;
+}
+
+.history-dashboard__hero-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.78rem;
+  border: 1px solid rgba(255, 180, 101, 0.3);
+  background:
+    radial-gradient(circle at 8% 30%, rgba(255, 185, 98, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(70, 24, 9, 0.34), rgba(18, 6, 3, 0.18)),
+    rgba(10, 3, 1, 0.14);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 224, 185, 0.05),
+    0 0 1rem rgba(255, 120, 39, 0.08);
+}
+
+.history-dashboard__hero-avatar {
+  position: relative;
+  width: 4.4rem;
+  height: 4.4rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 190, 122, 0.36);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255, 205, 142, 0.26), transparent 62%),
+    rgba(20, 7, 3, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 196, 0.12),
+    0 0 0.8rem rgba(255, 120, 39, 0.16);
+}
+
+.history-dashboard__hero-avatar::before {
+  content: "";
+  position: absolute;
+  inset: 27% 31% 29%;
+  border-radius: 45% 45% 34% 34%;
+  background: #ffb35f;
+  opacity: 0.72;
+  box-shadow:
+    0 -0.9rem 0 -0.38rem #ffb35f,
+    0 0 0.65rem rgba(255, 179, 95, 0.34);
+}
+
+.history-dashboard__hero-avatar-image {
+  position: absolute;
+  inset: 0;
+  background: var(--skin-avatar-focused-image) center / cover no-repeat;
+}
+
+.history-dashboard__hero-copy {
+  display: grid;
+  gap: 0.34rem;
+  min-width: 0;
+}
+
+.history-dashboard__hero-label,
+.history-dashboard__hero-xp {
+  color: #d9a873;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.history-dashboard__hero-level {
+  color: #fff0d9;
+  font-size: clamp(1.45rem, 5vw, 2.2rem);
+  line-height: 1;
+  text-shadow:
+    0 1px 1px rgba(12, 4, 1, 0.9),
+    0 0 0.6rem rgba(255, 161, 74, 0.18);
+}
+
+.history-dashboard__hero-progress {
+  width: min(100%, 20rem);
+  height: 0.58rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 184, 108, 0.28);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(10, 3, 1, 0.34), rgba(255, 255, 255, 0.04)),
+    rgba(9, 2, 1, 0.26);
+}
+
+.history-dashboard__hero-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffd08e, #ff812c 54%, #b54d18);
+  box-shadow:
+    0 0 0.45rem rgba(255, 168, 77, 0.36),
+    inset 0 0 0 1px rgba(255, 232, 196, 0.14);
 }
 
 .history-dashboard__summary-grid {
@@ -147,7 +245,8 @@
 .history-dashboard__session-date,
 .history-dashboard__session-duration,
 .history-dashboard__pill,
-.history-dashboard__week-actions button {
+.history-dashboard__week-actions button,
+.history-dashboard__logout {
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -410,6 +509,30 @@
   padding: 1.35rem 1.05rem;
 }
 
+.history-dashboard__account {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-width: 0;
+  padding-top: 0.1rem;
+}
+
+.history-dashboard__account-email {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(217, 168, 115, 0.44);
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-dashboard__logout {
+  min-height: 1.9rem;
+  padding: 0 0.65rem;
+}
+
 @media (max-width: 949px) {
   .history-dashboard__body {
     grid-template-columns: 1fr;
@@ -457,6 +580,21 @@
   .history-dashboard__summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
+  }
+
+  .history-dashboard__hero-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .history-dashboard__hero-progress {
+    width: 100%;
+  }
+
+  .history-dashboard__account {
+    display: grid;
+    justify-items: stretch;
   }
 
   .history-dashboard__summary-card {

@@ -147,7 +147,6 @@ export function TimerBlock() {
     status,
     start,
     pause,
-    reset,
     hardReset,
     switchMode,
   } = usePomodoroTimer({
@@ -311,11 +310,6 @@ export function TimerBlock() {
 
     start();
   }, [pause, playPrimaryButtonClick, start, status]);
-
-  const handleResetTimer = useCallback(() => {
-    playPrimaryButtonClick();
-    reset();
-  }, [playPrimaryButtonClick, reset]);
 
   const handleSelectMode = useCallback(
     (nextMode: Mode) => {
@@ -528,7 +522,6 @@ export function TimerBlock() {
       <ActionButtons
         status={status}
         onPrimaryAction={handlePrimaryAction}
-        onReset={handleResetTimer}
       />
     </div>
   );

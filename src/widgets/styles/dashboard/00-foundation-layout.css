@@ -77,6 +77,8 @@
   --skin-toolbar-theme-icon-image: none;
   --skin-toolbar-settings-icon-image: none;
   --skin-toolbar-auth-icon-image: none;
+  --skin-avatar-idle-image: none;
+  --skin-avatar-focused-image: none;
   --skin-cursor-default: auto;
   --skin-cursor-pointer: pointer;
   --skin-cursor-text: text;
@@ -355,4 +357,109 @@
   min-width: 6.8rem;
   padding: 0 0.9rem;
   text-transform: none;
+}
+
+.profile-entry {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.52rem;
+  width: clamp(8.8rem, 15vw, 11rem);
+  height: 3.2rem;
+  min-width: 8.8rem;
+  min-height: 3.2rem;
+  padding: 0.58rem 0.58rem 0.52rem 0.78rem;
+  overflow: hidden;
+  border-radius: var(--dashboard-button-radius);
+  font-family: var(--dashboard-button-font-family);
+  font-style: var(--dashboard-button-font-style);
+}
+
+.profile-entry--authenticated {
+  min-width: 8.8rem;
+}
+
+.profile-entry__meta {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.34rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.profile-entry__level {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dashboard-button-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.72),
+    0 0 0.3rem color-mix(in srgb, var(--dashboard-accent) 42%, transparent);
+  white-space: nowrap;
+}
+
+.profile-entry__xp {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 4.9rem);
+  height: 0.28rem;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--dashboard-panel-border) 70%, transparent);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.18),
+      rgba(255, 255, 255, 0.06)
+    ),
+    var(--dashboard-track);
+  box-shadow: var(--dashboard-shadow-inset);
+}
+
+.profile-entry__xp-fill {
+  display: block;
+  height: 100%;
+  min-width: 0.12rem;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--dashboard-fill), var(--dashboard-accent));
+  box-shadow: var(--dashboard-shadow-glow);
+}
+
+.profile-entry__avatar {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 2.05rem;
+  height: 2.05rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.profile-entry__avatar::before {
+  content: none;
+}
+
+.profile-entry__avatar-image {
+  position: absolute;
+  inset: 0;
+  background-image: var(--skin-avatar-focused-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.profile-entry:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dashboard-accent) 70%, white);
+  outline-offset: 0.18rem;
 }
