@@ -155,6 +155,8 @@ describe("useAlarm", () => {
     expect(MockAudio.instances).toHaveLength(2);
     expect(MockAudio.instances[1].play).toHaveBeenCalledTimes(1);
     expect(MockAudio.instances[1].volume).toBe(0);
+    expect(MockAudio.instances[0].loop).toBe(false);
+    expect(MockAudio.instances[1].loop).toBe(true);
   });
 
   it("fades in the next overlapped loop across the overlap duration", () => {
@@ -180,11 +182,11 @@ describe("useAlarm", () => {
     expect(MockAudio.instances[1].volume).toBe(0.4);
   });
 
-  it("uses native looping while hidden so background timer throttling cannot stop ambience", () => {
+  it("uses native looping as a safety net so background timer throttling cannot stop ambience", () => {
     render(<AlarmHarness playSignal={1} volume={0.4} />);
 
     const activeAudio = MockAudio.instances[0];
-    expect(activeAudio.loop).toBe(false);
+    expect(activeAudio.loop).toBe(true);
 
     act(() => {
       setDocumentHidden(true);
@@ -204,7 +206,7 @@ describe("useAlarm", () => {
       document.dispatchEvent(new Event("visibilitychange"));
     });
 
-    expect(activeAudio.loop).toBe(false);
+    expect(activeAudio.loop).toBe(true);
 
     act(() => {
       vi.advanceTimersByTime(9000);
