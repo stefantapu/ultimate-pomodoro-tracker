@@ -250,7 +250,7 @@ describe("TimerBlock", () => {
     renderWithProviders(<TimerBlock />);
 
     expect(useAlarmMock).toHaveBeenCalledWith(
-      "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+      "/assets/red_lava_theme/audio/Warm_theme_background_music_loop.ogg",
       0.2,
       {
         loop: true,
@@ -261,7 +261,7 @@ describe("TimerBlock", () => {
       },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
-      "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+      "/assets/red_lava_theme/audio/Warm_theme_background_music_loop.ogg",
       0.2,
       {
         fadeInMs: 250,
@@ -293,7 +293,7 @@ describe("TimerBlock", () => {
       { cacheKey: "mode-control" },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
-      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
+      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.ogg",
       0.2,
       {
         loop: true,
@@ -304,7 +304,7 @@ describe("TimerBlock", () => {
       },
     );
     expect(useAlarmMock).toHaveBeenCalledWith(
-      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.mp3",
+      "/assets/Viking Theme/Sound effects/Storm, Wind, Winter Background Viking Theme Loop.ogg",
       0.2,
       {
         fadeInMs: 250,

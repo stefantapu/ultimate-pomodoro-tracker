@@ -51,8 +51,8 @@ export const useAlarm = (
   ), [shouldOverlapLoop]);
 
   const applyLoopMode = useCallback((a: HTMLAudioElement) => {
-    a.loop = shouldUseNativeLoopFallback() || (!shouldOverlapLoop && loop);
-  }, [loop, shouldOverlapLoop, shouldUseNativeLoopFallback]);
+    a.loop = loop;
+  }, [loop]);
 
   const setupAudioGraph = useCallback((a: HTMLAudioElement) => {
     const existingGraph = audioGraphRef.current.get(a);
@@ -282,6 +282,7 @@ export const useAlarm = (
           playPromise.catch(() => {});
         }
 
+        a.loop = false;
         audioRef.current = nextAudio;
         standbyAudioRef.current = a;
         startFadeIn(nextAudio, loopOverlapMs);
@@ -328,9 +329,8 @@ export const useAlarm = (
         return;
       }
 
-      applyLoopMode(activeAudio);
-
       if (document.hidden) {
+        applyLoopMode(activeAudio);
         cancelLoopTimeout();
         return;
       }
