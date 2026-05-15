@@ -105,7 +105,7 @@ describe("skin catalog contract", () => {
       modeControl: "/assets/red_lava_theme/audio/stone_click.mp3",
       toolbarClick: "/assets/red_lava_theme/audio/click_on_elements.mp3",
       focusAmbience:
-        "/assets/red_lava_theme/audio/Warm_theme_background_music.mp3",
+        "/assets/red_lava_theme/audio/Warm_theme_background_music_loop.ogg",
     });
     expect(getSkinById("warm").focusAmbienceOutputGain).toBeGreaterThan(1);
     expect(getSkinById("neumorphism").audio).toEqual({
