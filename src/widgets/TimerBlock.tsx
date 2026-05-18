@@ -169,6 +169,8 @@ export function TimerBlock() {
     uiVolumeLabel,
     focusAmbienceVolumeLabel,
   } = settingsDerivation;
+  const shouldPlaceModeControlsWithActions =
+    activeSkin.id === "warm" || activeSkin.id === "viking";
 
   const shouldPlayFocusAmbience =
     isFocusAmbienceAvailable &&
@@ -512,17 +514,32 @@ export function TimerBlock() {
           />
         </Suspense>
       ) : null}
-      <TopControls mode={mode} onSelectMode={handleSelectMode} />
+      {shouldPlaceModeControlsWithActions ? null : (
+        <TopControls mode={mode} onSelectMode={handleSelectMode} />
+      )}
       <TimerCard
         mode={mode}
         status={status}
         timeLeft={timeLeft}
         targetTimestamp={targetTimestamp}
       />
-      <ActionButtons
-        status={status}
-        onPrimaryAction={handlePrimaryAction}
-      />
+      {shouldPlaceModeControlsWithActions ? (
+        <TopControls
+          mode={mode}
+          placement="action-row"
+          onSelectMode={handleSelectMode}
+        >
+          <ActionButtons
+            status={status}
+            onPrimaryAction={handlePrimaryAction}
+          />
+        </TopControls>
+      ) : (
+        <ActionButtons
+          status={status}
+          onPrimaryAction={handlePrimaryAction}
+        />
+      )}
     </div>
   );
 }
