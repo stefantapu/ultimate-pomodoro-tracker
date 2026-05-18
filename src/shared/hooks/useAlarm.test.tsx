@@ -49,6 +49,71 @@ class MockAudio {
   }
 }
 
+class MockAudioParam {
+  value = 1;
+  events: Array<{ type: string; value?: number; time: number }> = [];
+
+  cancelScheduledValues = vi.fn((time: number) => {
+    this.events.push({ type: "cancel", time });
+  });
+
+  setValueAtTime = vi.fn((value: number, time: number) => {
+    this.value = value;
+    this.events.push({ type: "set", value, time });
+    return this;
+  });
+
+  linearRampToValueAtTime = vi.fn((value: number, time: number) => {
+    this.value = value;
+    this.events.push({ type: "ramp", value, time });
+    return this;
+  });
+}
+
+class MockGainNode {
+  gain = new MockAudioParam();
+  connect = vi.fn(() => this);
+}
+
+class MockBufferSourceNode {
+  buffer: AudioBuffer | null = null;
+  connect = vi.fn(() => new MockGainNode());
+  start = vi.fn();
+  stop = vi.fn();
+}
+
+class MockAudioContext {
+  static instances: MockAudioContext[] = [];
+
+  currentTime = 100;
+  destination = {};
+  gains: MockGainNode[] = [];
+  sources: MockBufferSourceNode[] = [];
+  state: AudioContextState = "running";
+
+  constructor() {
+    MockAudioContext.instances.push(this);
+  }
+
+  createGain = vi.fn(() => {
+    const gain = new MockGainNode();
+    this.gains.push(gain);
+    return gain;
+  });
+
+  createBufferSource = vi.fn(() => {
+    const source = new MockBufferSourceNode();
+    this.sources.push(source);
+    return source;
+  });
+
+  decodeAudioData = vi.fn(async () => ({
+    duration: 10,
+  }) as AudioBuffer);
+
+  resume = vi.fn(async () => {});
+}
+
 function AlarmHarness({
   playSignal,
   volume,
@@ -75,6 +140,8 @@ function AlarmHarness({
 
 describe("useAlarm", () => {
   const originalAudio = globalThis.Audio;
+  const originalAudioContext = window.AudioContext;
+  const originalFetch = window.fetch;
   let rafCallbacks: Map<number, FrameRequestCallback>;
   let rafId: number;
   let performanceNow: number;
@@ -100,7 +167,9 @@ describe("useAlarm", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     MockAudio.instances = [];
+    MockAudioContext.instances = [];
     globalThis.Audio = MockAudio as unknown as typeof Audio;
+    window.AudioContext = undefined as unknown as typeof AudioContext;
     setDocumentHidden(false);
     rafCallbacks = new Map();
     rafId = 0;
@@ -120,6 +189,8 @@ describe("useAlarm", () => {
   afterEach(() => {
     setDocumentHidden(false);
     globalThis.Audio = originalAudio;
+    window.AudioContext = originalAudioContext;
+    window.fetch = originalFetch;
     vi.restoreAllMocks();
     vi.useRealTimers();
   });
@@ -214,5 +285,48 @@ describe("useAlarm", () => {
 
     expect(MockAudio.instances).toHaveLength(2);
     expect(MockAudio.instances[1].play).toHaveBeenCalledTimes(1);
+  });
+
+  it("schedules overlapped ambience on the Web Audio clock when available", async () => {
+    window.AudioContext =
+      MockAudioContext as unknown as typeof AudioContext;
+    window.fetch = vi.fn(async () => ({
+      arrayBuffer: async () => new ArrayBuffer(8),
+    })) as unknown as typeof fetch;
+
+    render(<AlarmHarness playSignal={1} volume={0.4} />);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const context = MockAudioContext.instances[0];
+    const masterGain = context.gains[0];
+    const firstSource = context.sources[0];
+    const secondSource = context.sources[1];
+    const firstSourceGain = context.gains[1];
+    const secondSourceGain = context.gains[2];
+
+    expect(MockAudio.instances).toHaveLength(0);
+    expect(window.fetch).toHaveBeenCalledWith("/ambience.mp3");
+    expect(context.decodeAudioData).toHaveBeenCalledTimes(1);
+    expect(masterGain.gain.value).toBe(0.4);
+    expect(firstSource.start).toHaveBeenCalledWith(100.03, 0, 10);
+    expect(secondSource.start).toHaveBeenCalledWith(109.03, 0, 10);
+    expect(firstSourceGain.gain.events).toEqual(
+      expect.arrayContaining([
+        { type: "set", value: 1, time: 100.03 },
+        { type: "set", value: 1, time: 109.03 },
+        { type: "ramp", value: 0, time: 110.03 },
+      ]),
+    );
+    expect(secondSourceGain.gain.events).toEqual(
+      expect.arrayContaining([
+        { type: "set", value: 0, time: 109.03 },
+        { type: "ramp", value: 1, time: 110.03 },
+      ]),
+    );
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
