@@ -245,7 +245,7 @@ Use `focusAmbienceFadeInMs` for loops that start abruptly. The fade applies only
 
 Do not reload or rewrite `audio.src` when only the ambience volume changes. Volume changes during playback must update active audio elements in place, otherwise the sound can stop or restart.
 
-For loops with an abrupt file boundary, use an overlap loop instead of relying only on native loop playback. `loopOverlapMs` starts a standby audio element before the active one ends, then alternates between them. Viking focus ambience uses a `1000` ms overlap so the next loop begins one second before the current loop finishes.
+For loops with an abrupt file boundary, use scheduled Web Audio overlap instead of relying only on native loop playback. `loopOverlapMs` schedules decoded buffer sources on the audio clock so the next loop begins before the current loop ends, including while the page is backgrounded. Native `audio.loop` and HTML audio element overlap remain fallback paths for browsers without Web Audio support. Viking focus ambience uses a `1000` ms overlap so the next loop begins one second before the current loop finishes.
 
 Do not wire empty placeholder audio files into a live skin. If files are not real yet, keep the corresponding audio field `null`.
 

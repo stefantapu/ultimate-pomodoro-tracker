@@ -18,6 +18,39 @@ type AudioGraph = {
   gain: GainNode;
 };
 
+type ScheduledLoopNode = {
+  source: AudioBufferSourceNode;
+  gain: GainNode;
+};
+
+type ScheduledLoopGraph = {
+  buffer: AudioBuffer | null;
+  bufferSrc: string | null;
+  context: AudioContext;
+  gain: GainNode;
+  loadingSrc: string | null;
+  nodes: ScheduledLoopNode[];
+  playing: boolean;
+  playingSrc: string | null;
+  token: number;
+};
+
+const SCHEDULED_LOOP_HORIZON_SECONDS = 4 * 60 * 60;
+
+function getAudioContextConstructor() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return (
+    window.AudioContext ??
+    (window as Window & typeof globalThis & {
+      webkitAudioContext?: typeof AudioContext;
+    }).webkitAudioContext ??
+    null
+  );
+}
+
 export const useAlarm = (
   src: string | null = "/assets/red_lava_theme/audio/alarm.mp3",
   volume = 1,
@@ -33,6 +66,7 @@ export const useAlarm = (
   const audioGraphRef = useRef<WeakMap<HTMLAudioElement, AudioGraph>>(
     new WeakMap(),
   );
+  const scheduledLoopGraphRef = useRef<ScheduledLoopGraph | null>(null);
   const scheduleLoopOverlapRef = useRef<(a: HTMLAudioElement) => void>(() => {});
   const {
     loop = false,
@@ -43,6 +77,11 @@ export const useAlarm = (
   } = options;
   const shouldOverlapLoop = loop && loopOverlapMs > 0;
   const normalizedOutputGain = Math.max(0, outputGain);
+  const canUseScheduledLoop =
+    shouldOverlapLoop &&
+    typeof window !== "undefined" &&
+    typeof window.fetch === "function" &&
+    getAudioContextConstructor() !== null;
 
   const shouldUseNativeLoopFallback = useCallback(() => (
     shouldOverlapLoop &&
@@ -105,6 +144,214 @@ export const useAlarm = (
       void graph.context.resume().catch(() => {});
     }
   }, [setupAudioGraph]);
+
+  const getScheduledLoopGraph = useCallback(() => {
+    const existingGraph = scheduledLoopGraphRef.current;
+
+    if (existingGraph) {
+      existingGraph.gain.gain.value =
+        Math.max(0, Math.min(1, volumeRef.current)) * normalizedOutputGain;
+      return existingGraph;
+    }
+
+    const AudioContextConstructor = getAudioContextConstructor();
+
+    if (!AudioContextConstructor) {
+      return null;
+    }
+
+    const context = new AudioContextConstructor();
+    const gain = context.createGain();
+    gain.gain.value =
+      Math.max(0, Math.min(1, volumeRef.current)) * normalizedOutputGain;
+    gain.connect(context.destination);
+
+    const graph: ScheduledLoopGraph = {
+      buffer: null,
+      bufferSrc: null,
+      context,
+      gain,
+      loadingSrc: null,
+      nodes: [],
+      playing: false,
+      playingSrc: null,
+      token: 0,
+    };
+    scheduledLoopGraphRef.current = graph;
+    return graph;
+  }, [normalizedOutputGain]);
+
+  const setScheduledLoopVolume = useCallback((nextVolume: number) => {
+    const graph = scheduledLoopGraphRef.current;
+
+    if (!graph) {
+      return;
+    }
+
+    graph.gain.gain.value =
+      Math.max(0, Math.min(1, nextVolume)) * normalizedOutputGain;
+  }, [normalizedOutputGain]);
+
+  const stopScheduledLoop = useCallback(() => {
+    const graph = scheduledLoopGraphRef.current;
+
+    if (!graph) {
+      return;
+    }
+
+    graph.token += 1;
+    graph.loadingSrc = null;
+    graph.playing = false;
+    graph.playingSrc = null;
+
+    for (const node of graph.nodes) {
+      try {
+        node.source.stop();
+      } catch {
+        // Already-ended Web Audio sources can reject stop().
+      }
+    }
+
+    graph.nodes = [];
+  }, []);
+
+  const scheduleWebAudioLoop = useCallback((graph: ScheduledLoopGraph) => {
+    const buffer = graph.buffer;
+
+    if (!buffer || buffer.duration <= 0) {
+      return;
+    }
+
+    for (const node of graph.nodes) {
+      try {
+        node.source.stop();
+      } catch {
+        // Already-ended Web Audio sources can reject stop().
+      }
+    }
+
+    graph.nodes = [];
+    graph.playing = true;
+
+    const overlapSeconds = Math.min(
+      Math.max(0, loopOverlapMs / 1000),
+      buffer.duration / 2,
+    );
+    const strideSeconds = Math.max(0.05, buffer.duration - overlapSeconds);
+    const startAt = graph.context.currentTime + 0.03;
+    const loopCount = Math.ceil(
+      (SCHEDULED_LOOP_HORIZON_SECONDS + buffer.duration) / strideSeconds,
+    );
+
+    for (let index = 0; index < loopCount; index += 1) {
+      const source = graph.context.createBufferSource();
+      const nodeGain = graph.context.createGain();
+      const sourceStartAt = startAt + index * strideSeconds;
+      const sourceEndsAt = sourceStartAt + buffer.duration;
+      const fadeInSeconds =
+        index === 0 ? Math.max(0, fadeInMs / 1000) : overlapSeconds;
+
+      source.buffer = buffer;
+      source.connect(nodeGain);
+      nodeGain.connect(graph.gain);
+
+      nodeGain.gain.cancelScheduledValues(sourceStartAt);
+
+      if (fadeInSeconds > 0) {
+        nodeGain.gain.setValueAtTime(0, sourceStartAt);
+        nodeGain.gain.linearRampToValueAtTime(
+          1,
+          sourceStartAt + fadeInSeconds,
+        );
+      } else {
+        nodeGain.gain.setValueAtTime(1, sourceStartAt);
+      }
+
+      if (overlapSeconds > 0) {
+        const fadeOutStartsAt = Math.max(
+          sourceStartAt + fadeInSeconds,
+          sourceEndsAt - overlapSeconds,
+        );
+        nodeGain.gain.setValueAtTime(1, fadeOutStartsAt);
+        nodeGain.gain.linearRampToValueAtTime(0, sourceEndsAt);
+      }
+
+      source.start(sourceStartAt, 0, buffer.duration);
+      graph.nodes.push({ source, gain: nodeGain });
+    }
+  }, [fadeInMs, loopOverlapMs]);
+
+  const playScheduledLoop = useCallback((restart: boolean) => {
+    if (!src || !canUseScheduledLoop) {
+      return false;
+    }
+
+    const graph = getScheduledLoopGraph();
+
+    if (!graph) {
+      return false;
+    }
+
+    if (!restart && graph.playing && graph.playingSrc === src) {
+      return true;
+    }
+
+    if (!restart && graph.loadingSrc === src) {
+      return true;
+    }
+
+    stopScheduledLoop();
+    setScheduledLoopVolume(volumeRef.current);
+
+    graph.playingSrc = src;
+    graph.token += 1;
+    const token = graph.token;
+
+    if (graph.buffer && graph.bufferSrc === src) {
+      if (graph.context.state === "suspended") {
+        void graph.context.resume().catch(() => {});
+      }
+      scheduleWebAudioLoop(graph);
+      return true;
+    }
+
+    if (graph.loadingSrc === src) {
+      return true;
+    }
+
+    graph.loadingSrc = src;
+
+    if (graph.context.state === "suspended") {
+      void graph.context.resume().catch(() => {});
+    }
+
+    void window
+      .fetch(resolveCachedAudioSrc(src))
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => graph.context.decodeAudioData(arrayBuffer))
+      .then((decodedBuffer) => {
+        if (scheduledLoopGraphRef.current !== graph || graph.token !== token) {
+          return;
+        }
+
+        graph.buffer = decodedBuffer;
+        graph.bufferSrc = src;
+        graph.loadingSrc = null;
+        scheduleWebAudioLoop(graph);
+      })
+      .catch(() => {
+        graph.loadingSrc = null;
+      });
+
+    return true;
+  }, [
+    canUseScheduledLoop,
+    getScheduledLoopGraph,
+    scheduleWebAudioLoop,
+    setScheduledLoopVolume,
+    src,
+    stopScheduledLoop,
+  ]);
 
   const cancelFade = useCallback(() => {
     if (fadeFrameRef.current !== null) {
@@ -189,9 +436,10 @@ export const useAlarm = (
   const stop = useCallback(() => {
     cancelFade();
     cancelLoopTimeout();
+    stopScheduledLoop();
     resetAudio(audioRef.current);
     resetAudio(standbyAudioRef.current);
-  }, [cancelFade, cancelLoopTimeout, resetAudio]);
+  }, [cancelFade, cancelLoopTimeout, resetAudio, stopScheduledLoop]);
 
   const startFadeIn = useCallback((a: HTMLAudioElement, durationMs: number) => {
     cancelFade();
@@ -352,8 +600,12 @@ export const useAlarm = (
       return;
     }
 
+    if (canUseScheduledLoop) {
+      return;
+    }
+
     primeAudioElementPool(src, cacheKey, shouldOverlapLoop ? 2 : 1);
-  }, [cacheKey, shouldOverlapLoop, src]);
+  }, [cacheKey, canUseScheduledLoop, shouldOverlapLoop, src]);
 
   useEffect(() => {
     volumeRef.current = volume;
@@ -376,9 +628,22 @@ export const useAlarm = (
       applyLoopMode(a);
       setAudioVolume(a, volume);
     }
-  }, [applyLoopMode, setAudioVolume, src, stop, volume]);
+
+    setScheduledLoopVolume(volume);
+  }, [
+    applyLoopMode,
+    setAudioVolume,
+    setScheduledLoopVolume,
+    src,
+    stop,
+    volume,
+  ]);
 
   const play = useCallback((restart = true) => {
+    if (playScheduledLoop(restart)) {
+      return;
+    }
+
     const a = ensureAudio();
 
     if (!a) return;
@@ -411,6 +676,7 @@ export const useAlarm = (
     cancelLoopTimeout,
     ensureAudio,
     fadeInMs,
+    playScheduledLoop,
     resetAudio,
     resumeAudioGraph,
     scheduleLoopOverlap,
