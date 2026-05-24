@@ -332,6 +332,60 @@
   min-height: 50px;
 }
 
+.dashboard-shell .top-controls.top-controls--action-row .themed-button--tab {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 58px;
+  width: 58px;
+  min-width: 58px;
+  max-width: 58px;
+  height: 58px;
+  min-height: 58px;
+  padding: 0;
+  overflow: visible;
+  border: none;
+  color: transparent;
+  font-size: 0;
+}
+
+.top-controls--action-row .themed-button--tab::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: 58%;
+  height: 58%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+  transition: filter 150ms ease;
+}
+
+.top-controls--action-row .themed-button--tab::after {
+  position: absolute;
+  inset-inline: 0.2rem;
+  bottom: 0.42rem;
+  font-size: 0.56rem;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  transition:
+    color 150ms ease,
+    text-shadow 150ms ease;
+}
+
+.top-controls--action-row .top-controls__button--focus::after {
+  content: "Focus";
+}
+
+.top-controls--action-row .top-controls__button--break::after {
+  content: "Break";
+}
+
 .themed-button--action {
   min-height: var(--skin-action-button-min-height);
   font-size: 1.1rem;
@@ -371,7 +425,8 @@
   height: 3.2rem;
   min-width: 8.8rem;
   min-height: 3.2rem;
-  padding: 0.58rem 0.58rem 0.52rem 0.78rem;
+  margin-right: auto;
+  padding: 0.58rem 0.78rem 0.52rem 0.78rem;
   overflow: hidden;
   border-radius: var(--dashboard-button-radius);
   font-family: var(--dashboard-button-font-family);
@@ -386,9 +441,11 @@
   position: relative;
   z-index: 2;
   display: grid;
+  justify-items: start;
   gap: 0.34rem;
   min-width: 0;
   flex: 1 1 auto;
+  text-align: left;
 }
 
 .profile-entry__level {
@@ -444,8 +501,28 @@
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: transparent;
+  background-color: color-mix(in srgb, var(--dashboard-surface-inset) 74%, transparent);
+  background-image:
+    radial-gradient(
+      circle at 50% 34%,
+      color-mix(in srgb, var(--dashboard-accent) 28%, transparent),
+      transparent 68%
+    ),
+    var(--skin-avatar-idle-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   box-shadow: none;
+}
+
+.profile-entry--authenticated .profile-entry__avatar {
+  background-image:
+    radial-gradient(
+      circle at 50% 34%,
+      color-mix(in srgb, var(--dashboard-accent) 28%, transparent),
+      transparent 68%
+    ),
+    var(--skin-avatar-focused-image);
 }
 
 .profile-entry__avatar::before {
@@ -453,12 +530,7 @@
 }
 
 .profile-entry__avatar-image {
-  position: absolute;
-  inset: 0;
-  background-image: var(--skin-avatar-focused-image);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  display: none;
 }
 
 .profile-entry:focus-visible {

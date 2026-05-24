@@ -18,10 +18,6 @@ vi.mock("./ProfileButton", () => ({
   ProfileButton: () => <button type="button">Open hero profile</button>,
 }));
 
-vi.mock("./KoFiButton", () => ({
-  KoFiButton: () => <button type="button">Support on Ko-fi</button>,
-}));
-
 vi.mock("react-activity-calendar", () => ({
   ActivityCalendar: () => <div data-testid="activity-calendar" />,
 }));
@@ -57,7 +53,6 @@ describe("DashboardLayout", () => {
       <DashboardLayout user={null} LockedOverlayComponent={LockedOverlayComponent} />,
     );
 
-    expect(screen.getByRole("button", { name: "Support on Ko-fi" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open hero profile" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open settings" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open theme picker" })).toBeInTheDocument();

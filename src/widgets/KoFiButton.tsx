@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
+import { SUPPORT_KOFI_URL } from "@shared/config/support";
 import toolbarStyles from "./ToolbarIconButton.module.css";
 
 function joinClassNames(...classNames: Array<string | undefined>) {
@@ -30,7 +31,7 @@ export const KoFiButton = memo(function KoFiButton() {
 
   return (
     <a
-      href="https://ko-fi.com/forgetimerdev"
+      href={SUPPORT_KOFI_URL}
       target="_blank"
       rel="noopener noreferrer"
       className={buttonClassName}

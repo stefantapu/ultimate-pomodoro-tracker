@@ -15,7 +15,6 @@ import styles from "./DashboardLayout.module.css";
 import { BackgroundParticles } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
 import { SettingsButton } from "./SettingsButton";
-import { KoFiButton } from "./KoFiButton";
 import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
 import { HeatmapCard } from "./HeatmapCard";
@@ -132,7 +131,6 @@ export const DashboardLayout = memo(function DashboardLayout({
       ) : null}
       <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
-          <KoFiButton />
           <ProfileButton user={user} />
           <SettingsButton />
           <ThemePickerButton />

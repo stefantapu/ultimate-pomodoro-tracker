@@ -346,6 +346,10 @@ describe("TimerBlock", () => {
       "href",
       "/terms",
     );
+    expect(screen.getByRole("link", { name: "Support on Ko-fi" })).toHaveAttribute(
+      "href",
+      "https://ko-fi.com/forgetimerdev",
+    );
     expect(
       screen.queryByRole("link", { name: "Request account deletion" }),
     ).not.toBeInTheDocument();

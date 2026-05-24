@@ -2,6 +2,7 @@ import type { Mode } from "@shared/lib/timerTypes";
 import {
   ACCOUNT_DELETION_BODY,
   ACCOUNT_DELETION_SUBJECT,
+  SUPPORT_KOFI_URL,
   SUPPORT_EMAIL,
   createSupportMailtoHref,
 } from "@shared/config/support";
@@ -509,6 +510,14 @@ export function SettingsModal({
             <span aria-hidden="true">/</span>
             <a href="/terms">Terms</a>
           </div>
+          <a
+            className="settings-modal__contact-link"
+            href={SUPPORT_KOFI_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Support on Ko-fi
+          </a>
           <a
             className="settings-modal__contact-link"
             href={`mailto:${SUPPORT_EMAIL}`}

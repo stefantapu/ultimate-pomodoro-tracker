@@ -54,6 +54,12 @@ export const ProfileButton = memo(function ProfileButton({
       aria-label={label}
       title={label}
     >
+      <span
+        className="profile-entry__avatar"
+        aria-hidden="true"
+      >
+        <span className="profile-entry__avatar-image" />
+      </span>
       <span className="profile-entry__meta">
         <span className="profile-entry__level">{levelLabel}</span>
         <span className="profile-entry__xp" aria-hidden="true">
@@ -62,12 +68,6 @@ export const ProfileButton = memo(function ProfileButton({
             style={{ width: `${progressPct}%` }}
           />
         </span>
-      </span>
-      <span
-        className="profile-entry__avatar"
-        aria-hidden="true"
-      >
-        <span className="profile-entry__avatar-image" />
       </span>
     </ThemedButton>
   );

@@ -1,5 +1,7 @@
 export const SUPPORT_EMAIL = "stefantapu@gmail.com";
 
+export const SUPPORT_KOFI_URL = "https://ko-fi.com/forgetimerdev";
+
 export const ACCOUNT_DELETION_SUBJECT =
   "ForgeTimer account deletion request";
 
