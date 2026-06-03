@@ -144,11 +144,11 @@
 }
 
 .dashboard-shell--viking .top-controls__button--focus {
-  background-image: var(--skin-focus-mode-button-image);
+  background-image: var(--skin-stats-panel-image);
 }
 
 .dashboard-shell--viking .top-controls__button--break {
-  background-image: var(--skin-break-mode-button-image);
+  background-image: var(--skin-stats-panel-image);
 }
 
 .dashboard-shell--viking .top-controls .themed-button--tab:hover,
@@ -172,6 +172,94 @@
   color: #f7fcff;
   filter: brightness(1.12) saturate(1.08)
     drop-shadow(0 0 0.7rem rgba(232, 246, 255, 0.38));
+}
+
+.dashboard-shell--viking .top-controls--action-row {
+  gap: clamp(0.7rem, 2vw, 1rem);
+  width: min(100%, 28rem);
+  margin-inline: auto;
+  flex-wrap: nowrap;
+}
+
+.dashboard-shell--viking .top-controls--action-row .action-buttons {
+  width: auto;
+  margin-inline: 0;
+}
+
+.dashboard-shell--viking .top-controls--action-row .themed-button--tab {
+  background-color: transparent;
+  background-image: var(--skin-stats-panel-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  filter: none;
+}
+
+.dashboard-shell--viking .top-controls--action-row .themed-button--tab::before {
+  filter: drop-shadow(0 0 0 rgba(232, 246, 255, 0));
+}
+
+.dashboard-shell--viking .top-controls--action-row .themed-button--tab::after {
+  color: #f4fbff;
+  font-family: "VikingTimer", var(--dashboard-button-font-family);
+  font-style: normal;
+  text-shadow:
+    0 1px 1px rgba(5, 7, 9, 0.95),
+    0 0 0.28rem rgba(232, 246, 255, 0.5);
+}
+
+.dashboard-shell--viking
+  .top-controls--action-row
+  .top-controls__button--focus::before {
+  background-image: url("/assets/Viking Theme/focus_icon_viking.webp");
+}
+
+.dashboard-shell--viking
+  .top-controls--action-row
+  .top-controls__button--break::before {
+  background-image: url("/assets/Viking Theme/break_viking.webp");
+}
+
+.dashboard-shell--viking .top-controls--action-row .themed-button--tab:hover,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab:focus-visible,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab.is-active {
+  color: transparent;
+  background-color: transparent;
+  background-image: var(--skin-stats-panel-image);
+  filter: none;
+}
+
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab:hover::before,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab:focus-visible::before,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab.is-active::before {
+  filter: drop-shadow(0 0 0.22rem rgba(232, 246, 255, 0.88))
+    drop-shadow(0 0 0.55rem rgba(134, 150, 167, 0.68));
+}
+
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab:hover::after,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab:focus-visible::after,
+.dashboard-shell--viking
+  .top-controls--action-row
+  .themed-button--tab.is-active::after {
+  color: #ffffff;
+  text-shadow:
+    0 1px 1px rgba(5, 7, 9, 0.95),
+    0 0 0.38rem rgba(232, 246, 255, 0.72),
+    0 0 0.72rem rgba(134, 150, 167, 0.45);
 }
 
 .dashboard-shell--viking .action-buttons {
@@ -240,11 +328,8 @@
   background-image: var(--skin-start-button-image);
 }
 
-.dashboard-shell--viking .action-buttons__button--reset {
-  background-image: var(--skin-reset-button-image);
-}
-
 .dashboard-shell--viking .toolbar-icon-button {
+  box-sizing: border-box;
   width: 50px;
   height: 50px;
   min-width: 50px;
@@ -261,13 +346,68 @@
   color: transparent;
 }
 
+.dashboard-shell--viking .profile-entry {
+  width: clamp(8.8rem, 15vw, 11rem);
+  height: 50px;
+  min-width: 8.8rem;
+  min-height: 50px;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: var(--skin-focus-mode-button-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: none;
+  color: transparent;
+}
+
 .dashboard-shell--viking .toolbar-icon-button--kofi {
   margin-right: auto;
 }
 
-.dashboard-shell--viking .toolbar-icon-button:focus-visible {
+.dashboard-shell--viking .toolbar-icon-button--kofi,
+.dashboard-shell--viking .toolbar-icon-button--settings,
+.dashboard-shell--viking .toolbar-icon-button--theme {
+  background-image: var(--skin-stats-panel-image);
+}
+
+.dashboard-shell--viking .toolbar-icon-button:focus-visible,
+.dashboard-shell--viking .profile-entry:focus-visible {
   outline: 2px solid rgba(232, 246, 255, 0.86);
   outline-offset: 0.18rem;
+}
+
+.dashboard-shell--viking .profile-entry__level {
+  color: #f4fbff;
+  font-family: "VikingTimer", var(--dashboard-button-font-family);
+  font-style: normal;
+  text-shadow:
+    0 1px 1px rgba(5, 7, 9, 0.95),
+    0 0 0.4rem rgba(232, 246, 255, 0.58);
+}
+
+.dashboard-shell--viking .profile-entry__xp {
+  border-color: rgba(201, 216, 229, 0.42);
+  background: rgba(12, 14, 16, 0.68);
+  border-radius: 0;
+}
+
+.dashboard-shell--viking .profile-entry__xp-fill {
+  background: linear-gradient(90deg, #f4fbff, #a0aebe 58%, #586372);
+  box-shadow:
+    0 0 0.35rem rgba(232, 246, 255, 0.24),
+    inset 0 0 0 1px rgba(244, 251, 255, 0.14);
+}
+
+.dashboard-shell--viking .profile-entry__avatar {
+  width: 2.05rem;
+  height: 2.05rem;
+  border: 1px solid rgba(201, 216, 229, 0.56);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0.34rem rgba(232, 246, 255, 0.16),
+    inset 0 0 0 1px rgba(12, 14, 16, 0.36);
 }
 
 .dashboard-shell--viking .toolbar-icon-button__icon {
@@ -811,6 +951,8 @@
 .settings-modal__overlay--viking .settings-modal__field-hint,
 .settings-modal__overlay--viking .settings-modal__audio-hint,
 .history-dashboard__overlay--viking .history-dashboard__eyebrow,
+.history-dashboard__overlay--viking .history-dashboard__hero-label,
+.history-dashboard__overlay--viking .history-dashboard__hero-xp,
 .history-dashboard__overlay--viking .history-dashboard__summary-label,
 .history-dashboard__overlay--viking .history-dashboard__panel-header p,
 .history-dashboard__overlay--viking .history-dashboard__week-date,
@@ -833,6 +975,7 @@
 .settings-modal__overlay--viking .settings-modal__field,
 .settings-modal__overlay--viking .settings-modal__toggle,
 .settings-modal__overlay--viking .settings-modal__audio-row,
+.history-dashboard__overlay--viking .history-dashboard__hero-card,
 .history-dashboard__overlay--viking .history-dashboard__summary-card,
 .history-dashboard__overlay--viking .history-dashboard__panel,
 .history-dashboard__overlay--viking .history-dashboard__session-row,
@@ -851,10 +994,76 @@
 .settings-modal__overlay--viking .settings-modal__field,
 .settings-modal__overlay--viking .settings-modal__toggle,
 .settings-modal__overlay--viking .settings-modal__audio-row,
+.history-dashboard__overlay--viking .history-dashboard__hero-card,
 .history-dashboard__overlay--viking .history-dashboard__summary-card,
 .history-dashboard__overlay--viking .history-dashboard__panel {
   border-color: rgba(201, 216, 229, 0.16);
   box-shadow: inset 0 0 0 1px rgba(244, 251, 255, 0.025);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-card {
+  background:
+    radial-gradient(
+      circle at 8% 40%,
+      rgba(232, 246, 255, 0.12),
+      transparent 34%
+    ),
+    linear-gradient(180deg, rgba(67, 68, 73, 0.38), rgba(20, 23, 27, 0.3)),
+    rgba(20, 23, 27, 0.36);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-avatar {
+  border-color: rgba(201, 216, 229, 0.42);
+  background:
+    radial-gradient(
+      circle at 50% 32%,
+      rgba(232, 246, 255, 0.24),
+      transparent 62%
+    ),
+    rgba(12, 14, 16, 0.66);
+  box-shadow:
+    inset 0 1px 0 rgba(244, 251, 255, 0.12),
+    0 0 0.85rem rgba(201, 216, 229, 0.16);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-avatar::before {
+  background: #d7e7f5;
+  opacity: 0.55;
+  box-shadow:
+    0 -0.9rem 0 -0.38rem #d7e7f5,
+    0 0 0.65rem rgba(232, 246, 255, 0.26);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-level {
+  color: #f4fbff;
+  font-family: "VikingTimer", var(--dashboard-button-font-family);
+  font-style: normal;
+  letter-spacing: 0.05em;
+  text-shadow:
+    0 1px 1px rgba(5, 7, 9, 0.92),
+    0 0 0.55rem rgba(232, 246, 255, 0.32);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-progress {
+  border-color: rgba(201, 216, 229, 0.28);
+  background:
+    linear-gradient(180deg, rgba(12, 14, 16, 0.34), rgba(232, 246, 255, 0.035)),
+    rgba(12, 14, 16, 0.3);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__hero-progress-fill {
+  background: linear-gradient(90deg, #f4fbff, #a0aebe 58%, #586372);
+  box-shadow:
+    0 0 0.45rem rgba(232, 246, 255, 0.26),
+    inset 0 0 0 1px rgba(244, 251, 255, 0.14);
+}
+
+.history-dashboard__overlay--viking .history-dashboard__account-email {
+  color: rgba(201, 216, 229, 0.38);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .auth-block--viking .auth-block__input::placeholder {
@@ -942,6 +1151,7 @@
 .settings-modal__overlay--viking .settings-modal__close,
 .history-dashboard__overlay--viking .history-dashboard__close,
 .history-dashboard__overlay--viking .history-dashboard__week-actions button,
+.history-dashboard__overlay--viking .history-dashboard__logout,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close,
 .logout-confirmation__overlay--viking .logout-confirmation__button,
 .logout-confirmation__overlay--viking .logout-confirmation__close {
@@ -959,6 +1169,7 @@
 .auth-block--viking .auth-block__button,
 .settings-modal__overlay--viking .settings-modal__button,
 .history-dashboard__overlay--viking .history-dashboard__week-actions button,
+.history-dashboard__overlay--viking .history-dashboard__logout,
 .logout-confirmation__overlay--viking .logout-confirmation__button {
   font-family: "VikingTimer", var(--dashboard-button-font-family);
   font-style: normal;
@@ -1028,6 +1239,8 @@
 .history-dashboard__overlay--viking
   .history-dashboard__week-actions
   button:not(:disabled):focus-visible,
+.history-dashboard__overlay--viking .history-dashboard__logout:not(:disabled):hover,
+.history-dashboard__overlay--viking .history-dashboard__logout:not(:disabled):focus-visible,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close:hover,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close:focus-visible,
 .logout-confirmation__overlay--viking
@@ -1067,6 +1280,7 @@
 }
 
 .history-dashboard__overlay--viking .history-dashboard__summary-value,
+.history-dashboard__overlay--viking .history-dashboard__hero-level,
 .history-dashboard__overlay--viking .history-dashboard__week-value,
 .history-dashboard__overlay--viking .history-dashboard__session-time,
 .theme-picker-modal__overlay--viking .theme-picker-modal__option-title {

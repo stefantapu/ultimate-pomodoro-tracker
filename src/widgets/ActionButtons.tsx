@@ -12,10 +12,9 @@ import { ThemedButton } from "./ThemedButton";
 type ActionButtonsProps = {
   status: TimerStatus;
   onPrimaryAction: () => void;
-  onReset: () => void;
 };
 
-type StoneButton = "primary" | "reset";
+type StoneButton = "primary";
 
 const STONE_IMPACT_DURATION_MS = 1000;
 
@@ -26,7 +25,6 @@ function joinClassNames(...classNames: Array<string | false | undefined>) {
 export const ActionButtons = memo(function ActionButtons({
   status,
   onPrimaryAction,
-  onReset,
 }: ActionButtonsProps) {
   const [impactButton, setImpactButton] = useState<StoneButton | null>(null);
   const impactTimerRef = useRef<number | null>(null);
@@ -94,20 +92,11 @@ export const ActionButtons = memo(function ActionButtons({
     styles["action-buttons__button--start"],
     "primary",
   );
-  const resetButtonClassName = getStoneButtonClassName(
-    "action-buttons__button--reset",
-    styles["action-buttons__button--reset"],
-    "reset",
-  );
 
   const handlePrimaryPointerDown = (
     event: PointerEvent<HTMLButtonElement>,
   ) => {
     handleStoneImpact(event, "primary");
-  };
-
-  const handleResetPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
-    handleStoneImpact(event, "reset");
   };
 
   return (
@@ -119,14 +108,6 @@ export const ActionButtons = memo(function ActionButtons({
         onPointerDown={handlePrimaryPointerDown}
       >
         {status === "running" ? "Pause" : "Start"}
-      </ThemedButton>
-      <ThemedButton
-        variant="action"
-        className={resetButtonClassName}
-        onClick={onReset}
-        onPointerDown={handleResetPointerDown}
-      >
-        Reset
       </ThemedButton>
     </div>
   );

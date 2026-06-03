@@ -2,11 +2,11 @@ import { memo, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
-import { listSkins } from "@shared/skins/catalog";
+import { listPrimarySkins } from "@shared/skins/catalog";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 
-const skins = listSkins();
+const skins = listPrimarySkins();
 
 export const ThemePickerModal = memo(function ThemePickerModal() {
   const isOpen = useUIStore((state) => state.isThemePickerModalOpen);

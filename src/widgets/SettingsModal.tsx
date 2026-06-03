@@ -2,6 +2,7 @@ import type { Mode } from "@shared/lib/timerTypes";
 import {
   ACCOUNT_DELETION_BODY,
   ACCOUNT_DELETION_SUBJECT,
+  SUPPORT_KOFI_URL,
   SUPPORT_EMAIL,
   createSupportMailtoHref,
 } from "@shared/config/support";
@@ -12,6 +13,7 @@ import { useUIStore } from "@shared/stores/uiStore";
 import { useSkinStore } from "@shared/stores/skinStore";
 import {
   useMemo,
+  useState,
   type ChangeEvent,
   type KeyboardEvent,
 } from "react";
@@ -291,6 +293,10 @@ export function SettingsModal({
   const activeSkin = useSkinStore((state) => state.activeSkin);
   const { user } = useAuth();
   const playToolbarClick = useToolbarClickSound();
+  const [isDeletionRequestOpen, setDeletionRequestOpen] = useState(false);
+  const [deletionCopyStatus, setDeletionCopyStatus] = useState<
+    "idle" | "copied" | "unavailable"
+  >("idle");
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -332,6 +338,28 @@ export function SettingsModal({
     subject: ACCOUNT_DELETION_SUBJECT,
     body: ACCOUNT_DELETION_BODY,
   });
+  const accountDeletionRequestText = [
+    `To: ${SUPPORT_EMAIL}`,
+    `Subject: ${ACCOUNT_DELETION_SUBJECT}`,
+    "",
+    ACCOUNT_DELETION_BODY,
+  ].join("\n");
+
+  const handleShowDeletionRequest = () => {
+    playToolbarClick();
+    setDeletionRequestOpen(true);
+    setDeletionCopyStatus("idle");
+  };
+
+  const handleCopyDeletionRequest = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setDeletionCopyStatus("unavailable");
+      return;
+    }
+
+    await navigator.clipboard.writeText(accountDeletionRequestText);
+    setDeletionCopyStatus("copied");
+  };
 
   const modal = (
     <div
@@ -484,6 +512,14 @@ export function SettingsModal({
           </div>
           <a
             className="settings-modal__contact-link"
+            href={SUPPORT_KOFI_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Support on Ko-fi
+          </a>
+          <a
+            className="settings-modal__contact-link"
             href={`mailto:${SUPPORT_EMAIL}`}
           >
             {SUPPORT_EMAIL}
@@ -506,12 +542,73 @@ export function SettingsModal({
               request. You can clear local browser data from your browser
               settings.
             </p>
-            <a
-              className="settings-modal__button settings-modal__button--secondary settings-modal__deletion-link"
-              href={accountDeletionHref}
+            <button
+              type="button"
+              className="settings-modal__button settings-modal__button--secondary"
+              aria-expanded={isDeletionRequestOpen}
+              onClick={handleShowDeletionRequest}
             >
               Request account deletion
-            </a>
+            </button>
+            {isDeletionRequestOpen ? (
+              <div
+                className="settings-modal__deletion-request"
+                role="region"
+                aria-label="Account deletion email details"
+              >
+                <p className="settings-modal__muted-copy">
+                  Your browser may need a configured email app for the link to
+                  open. If nothing opens, copy these details into your email
+                  client.
+                </p>
+                <dl className="settings-modal__request-details">
+                  <div>
+                    <dt>To</dt>
+                    <dd>
+                      <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Subject</dt>
+                    <dd>{ACCOUNT_DELETION_SUBJECT}</dd>
+                  </div>
+                </dl>
+                <label className="settings-modal__request-message">
+                  <span>Message</span>
+                  <textarea
+                    readOnly
+                    value={ACCOUNT_DELETION_BODY}
+                    aria-label="Account deletion request message"
+                  />
+                </label>
+                <div className="settings-modal__request-actions">
+                  <a
+                    className="settings-modal__button settings-modal__button--primary settings-modal__deletion-link"
+                    href={accountDeletionHref}
+                  >
+                    Open email app
+                  </a>
+                  <button
+                    type="button"
+                    className="settings-modal__button settings-modal__button--secondary"
+                    onClick={handleCopyDeletionRequest}
+                  >
+                    Copy request details
+                  </button>
+                </div>
+                {deletionCopyStatus === "copied" ? (
+                  <p className="settings-modal__copy-status" role="status">
+                    Request details copied.
+                  </p>
+                ) : null}
+                {deletionCopyStatus === "unavailable" ? (
+                  <p className="settings-modal__copy-status" role="status">
+                    Copy is unavailable in this browser. Select the message text
+                    manually.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </section>
         ) : null}
 

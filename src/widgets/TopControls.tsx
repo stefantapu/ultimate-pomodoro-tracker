@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ReactNode,
   type PointerEvent,
 } from "react";
 import styles from "./TopControls.module.css";
@@ -11,6 +12,8 @@ import { ThemedButton } from "./ThemedButton";
 
 type TopControlsProps = {
   mode: Mode;
+  children?: ReactNode;
+  placement?: "standalone" | "action-row";
   onSelectMode: (mode: Mode) => void;
 };
 
@@ -22,6 +25,8 @@ function joinClassNames(...classNames: Array<string | undefined>) {
 
 export const TopControls = memo(function TopControls({
   mode,
+  children,
+  placement = "standalone",
   onSelectMode,
 }: TopControlsProps) {
   const [impactMode, setImpactMode] = useState<Mode | null>(null);
@@ -80,8 +85,14 @@ export const TopControls = memo(function TopControls({
       impactMode === nextMode ? "is-stone-impacting" : undefined,
     );
 
+  const rootClassName = joinClassNames(
+    styles["top-controls"],
+    "top-controls",
+    placement === "action-row" ? "top-controls--action-row" : undefined,
+  );
+
   return (
-    <div className={joinClassNames(styles["top-controls"], "top-controls")}>
+    <div className={rootClassName}>
       <ThemedButton
         variant="tab"
         active={mode === "focus"}
@@ -91,6 +102,7 @@ export const TopControls = memo(function TopControls({
       >
         Focus
       </ThemedButton>
+      {children}
       <ThemedButton
         variant="tab"
         active={mode === "break"}

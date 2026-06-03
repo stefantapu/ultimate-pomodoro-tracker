@@ -3,6 +3,7 @@ import {
   DEFAULT_SKIN_ID,
   getSkinById,
   isSkinId,
+  listPrimarySkins,
   listSkins,
 } from "./catalog";
 import {
@@ -18,6 +19,13 @@ describe("skin catalog contract", () => {
 
     expect(ids).toEqual(["warm", "neumorphism", "viking"]);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("keeps neumorphism out of the primary picker list", () => {
+    expect(listPrimarySkins().map((skin) => skin.id)).toEqual([
+      "warm",
+      "viking",
+    ]);
   });
 
   it("ensures each skin entry exposes all required contract sections", () => {
@@ -99,6 +107,12 @@ describe("skin catalog contract", () => {
       width: 80,
       height: 81,
     });
+    expect(getSkinById("warm").assets.avatarIdle).toMatchObject({
+      src: "/assets/red_lava_theme/avatar-idle.webp",
+    });
+    expect(getSkinById("warm").assets.avatarFocused).toMatchObject({
+      src: "/assets/red_lava_theme/avatar-focused.webp",
+    });
     expect(getSkinById("warm").audio).toMatchObject({
       alarm: "/assets/red_lava_theme/audio/alarm.mp3",
       primaryTimerControl: "/assets/red_lava_theme/audio/stone_click.mp3",
@@ -114,6 +128,14 @@ describe("skin catalog contract", () => {
       modeControl: null,
       toolbarClick: null,
       focusAmbience: null,
+    });
+    expect(getSkinById("neumorphism").assets.avatarIdle).toBeNull();
+    expect(getSkinById("neumorphism").assets.avatarFocused).toBeNull();
+    expect(getSkinById("viking").assets.avatarIdle).toMatchObject({
+      src: "/assets/Viking Theme/avatar-idle.webp",
+    });
+    expect(getSkinById("viking").assets.avatarFocused).toMatchObject({
+      src: "/assets/Viking Theme/avatar-focused.webp",
     });
     expect(getSkinById("viking").audio).toMatchObject({
       alarm:

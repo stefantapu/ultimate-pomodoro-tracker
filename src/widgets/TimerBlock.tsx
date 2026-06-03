@@ -147,7 +147,6 @@ export function TimerBlock() {
     status,
     start,
     pause,
-    reset,
     hardReset,
     switchMode,
   } = usePomodoroTimer({
@@ -170,6 +169,8 @@ export function TimerBlock() {
     uiVolumeLabel,
     focusAmbienceVolumeLabel,
   } = settingsDerivation;
+  const shouldPlaceModeControlsWithActions =
+    activeSkin.id === "warm" || activeSkin.id === "viking";
 
   const shouldPlayFocusAmbience =
     isFocusAmbienceAvailable &&
@@ -311,11 +312,6 @@ export function TimerBlock() {
 
     start();
   }, [pause, playPrimaryButtonClick, start, status]);
-
-  const handleResetTimer = useCallback(() => {
-    playPrimaryButtonClick();
-    reset();
-  }, [playPrimaryButtonClick, reset]);
 
   const handleSelectMode = useCallback(
     (nextMode: Mode) => {
@@ -518,18 +514,32 @@ export function TimerBlock() {
           />
         </Suspense>
       ) : null}
-      <TopControls mode={mode} onSelectMode={handleSelectMode} />
+      {shouldPlaceModeControlsWithActions ? null : (
+        <TopControls mode={mode} onSelectMode={handleSelectMode} />
+      )}
       <TimerCard
         mode={mode}
         status={status}
         timeLeft={timeLeft}
         targetTimestamp={targetTimestamp}
       />
-      <ActionButtons
-        status={status}
-        onPrimaryAction={handlePrimaryAction}
-        onReset={handleResetTimer}
-      />
+      {shouldPlaceModeControlsWithActions ? (
+        <TopControls
+          mode={mode}
+          placement="action-row"
+          onSelectMode={handleSelectMode}
+        >
+          <ActionButtons
+            status={status}
+            onPrimaryAction={handlePrimaryAction}
+          />
+        </TopControls>
+      ) : (
+        <ActionButtons
+          status={status}
+          onPrimaryAction={handlePrimaryAction}
+        />
+      )}
     </div>
   );
 }

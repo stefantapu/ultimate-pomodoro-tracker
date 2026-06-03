@@ -1,4 +1,11 @@
-import { memo, Suspense, lazy, useEffect, useMemo, type ComponentType } from "react";
+import {
+  memo,
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  type ComponentType,
+} from "react";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
@@ -7,30 +14,16 @@ import "./dashboard.css";
 import styles from "./DashboardLayout.module.css";
 import { BackgroundParticles } from "./BackgroundEmbers";
 import { PanelShell } from "./PanelShell";
-import { LogoutButton } from "./LogoutButton";
 import { SettingsButton } from "./SettingsButton";
-import { InfographicsButton } from "./InfographicsButton";
-import { KoFiButton } from "./KoFiButton";
 import { ThemePickerButton } from "./ThemePickerButton";
 import { TimerBlock } from "./TimerBlock";
 import { HeatmapCard } from "./HeatmapCard";
 import { createPreviewHeatmapData } from "./previewHeatmapData";
+import { ProfileButton } from "./ProfileButton";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
   import("./StatsDashboard").then((module) => ({
     default: module.AuthenticatedAnalyticsPanels,
-  })),
-);
-
-const LazyNotesPanel = lazy(() =>
-  import("./NotesPanel").then((module) => ({
-    default: module.NotesPanel,
-  })),
-);
-
-const LazyDragonCard = lazy(() =>
-  import("./DragonCard").then((module) => ({
-    default: module.DragonCard,
   })),
 );
 
@@ -77,31 +70,6 @@ function PlaceholderStatsCard({ message }: PanelFallbackProps) {
   );
 }
 
-function PlaceholderNotesPanel({ message }: PanelFallbackProps) {
-  return (
-    <PanelShell
-      className="notes-panel"
-      bodyClassName="notes-panel__body notes-panel__body--notepad"
-    >
-      <p className="notes-panel__status">{message}</p>
-    </PanelShell>
-  );
-}
-
-function PlaceholderDragonCard({ message }: PanelFallbackProps) {
-  return (
-    <PanelShell className="dragon-card">
-      <div className="dragon-card__display">Lvl --</div>
-      <div className="dragon-card__level-row">
-        <span className="dragon-card__level-value">{message}</span>
-      </div>
-      <div className="dragon-card__progress">
-        <div className="dragon-card__progress-fill" style={{ width: "0%" }} />
-      </div>
-    </PanelShell>
-  );
-}
-
 function GuestAnalyticsPanels({
   LockedOverlayComponent,
 }: {
@@ -124,62 +92,6 @@ function GuestAnalyticsPanels({
         <LockedOverlayComponent />
       </div>
     </>
-  );
-}
-
-function GuestNotesPanel({
-  LockedOverlayComponent,
-}: {
-  LockedOverlayComponent: ComponentType;
-}) {
-  return (
-    <div
-      className={joinClassNames(
-        styles["dashboard-notes-wrap"],
-        "dashboard-lock-wrap dashboard-lock-wrap--notes",
-      )}
-    >
-      <PlaceholderNotesPanel message="Sign in to save notes." />
-      <LockedOverlayComponent />
-    </div>
-  );
-}
-
-function GuestDragonPanel({
-  LockedOverlayComponent,
-}: {
-  LockedOverlayComponent: ComponentType;
-}) {
-  return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-      <PlaceholderDragonCard message="Sign in to track your level." />
-      <LockedOverlayComponent />
-    </div>
-  );
-}
-
-function AuthenticatedNotesPanel() {
-  return (
-    <div
-      className={joinClassNames(
-        styles["dashboard-notes-wrap"],
-        "dashboard-lock-wrap dashboard-lock-wrap--notes",
-      )}
-    >
-      <Suspense fallback={<PlaceholderNotesPanel message="Loading notes..." />}>
-        <LazyNotesPanel />
-      </Suspense>
-    </div>
-  );
-}
-
-function AuthenticatedDragonPanel() {
-  return (
-    <div className="dashboard-lock-wrap dashboard-lock-wrap--dragon">
-      <Suspense fallback={<PlaceholderDragonCard message="Loading progress..." />}>
-        <LazyDragonCard />
-      </Suspense>
-    </div>
   );
 }
 
@@ -219,11 +131,9 @@ export const DashboardLayout = memo(function DashboardLayout({
       ) : null}
       <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
-          <KoFiButton />
-          <InfographicsButton />
-          <ThemePickerButton />
+          <ProfileButton user={user} />
           <SettingsButton />
-          <LogoutButton />
+          <ThemePickerButton />
         </div>
 
         <section className="visually-hidden" aria-labelledby="dashboard-seo-title">
@@ -231,7 +141,7 @@ export const DashboardLayout = memo(function DashboardLayout({
             <h1 id="dashboard-seo-title">Forge Timer</h1>
             <p>
               A free gamified Pomodoro timer for focused work, study sessions,
-              breaks, notes, streaks, and progress tracking.
+              breaks, streaks, and progress tracking.
             </p>
           </div>
           <div aria-label="What you can do">
@@ -239,7 +149,6 @@ export const DashboardLayout = memo(function DashboardLayout({
             <ul>
               <li>Run focus and break timers.</li>
               <li>Edit focus and break durations.</li>
-              <li>Save quick notes while you work.</li>
               <li>Track analytics, streaks, and progress when signed in.</li>
               <li>Sync timer settings through your account.</li>
             </ul>
@@ -254,19 +163,6 @@ export const DashboardLayout = memo(function DashboardLayout({
             )}
           >
             <TimerBlock />
-          </section>
-
-          <section
-            className={joinClassNames(
-              styles["dashboard-section"],
-              styles["dashboard-section--secondary"],
-            )}
-          >
-            {user ? (
-              <AuthenticatedNotesPanel />
-            ) : (
-              <GuestNotesPanel LockedOverlayComponent={LockedOverlayComponent} />
-            )}
           </section>
 
           <section
@@ -292,17 +188,11 @@ export const DashboardLayout = memo(function DashboardLayout({
                   >
                     <LazyAuthenticatedAnalyticsPanels />
                   </Suspense>
-                  <AuthenticatedDragonPanel />
                 </>
               ) : (
-                <>
-                  <GuestAnalyticsPanels
-                    LockedOverlayComponent={LockedOverlayComponent}
-                  />
-                  <GuestDragonPanel
-                    LockedOverlayComponent={LockedOverlayComponent}
-                  />
-                </>
+                <GuestAnalyticsPanels
+                  LockedOverlayComponent={LockedOverlayComponent}
+                />
               )}
             </div>
           </section>

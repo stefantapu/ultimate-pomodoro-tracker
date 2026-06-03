@@ -199,6 +199,14 @@ const warmSkin = createSkinProfile({
     toolbarThemeIcon: redLavaThemeIcon,
     toolbarSettingsIcon: redLavaSettingsIcon,
     toolbarAuthIcon: redLavaExitIcon,
+    avatarIdle: buildImageAsset("/assets/red_lava_theme/avatar-idle.webp", {
+      width: 512,
+      height: 512,
+    }),
+    avatarFocused: buildImageAsset(
+      "/assets/red_lava_theme/avatar-focused.webp",
+      { width: 512, height: 512 },
+    ),
     cursorDefault: {
       src: "/assets/red_lava_theme/cursors/diablo/DII.cur",
       hotspotX: 0,
@@ -465,6 +473,14 @@ const vikingSkin = createSkinProfile({
       "/assets/Viking Theme/Login Logout icon.webp",
       { width: 74, height: 86 },
     ),
+    avatarIdle: buildImageAsset("/assets/Viking Theme/avatar-idle.webp", {
+      width: 512,
+      height: 512,
+    }),
+    avatarFocused: buildImageAsset("/assets/Viking Theme/avatar-focused.webp", {
+      width: 512,
+      height: 512,
+    }),
     cursorDefault: {
       src: "/assets/Viking Theme/Cursor/d4-normal-select.cur",
       hotspotX: 0,
@@ -564,6 +580,11 @@ const skins: readonly SkinProfile[] = [
   skinCatalog.viking,
 ];
 
+const primarySkins: readonly SkinProfile[] = [
+  skinCatalog.warm,
+  skinCatalog.viking,
+];
+
 const skinById = new Map<SkinId, SkinProfile>([
   ["warm", skinCatalog.warm],
   ["neumorphism", skinCatalog.neumorphism],
@@ -576,6 +597,10 @@ export const DEFAULT_SKIN_ID: SkinId = "viking";
 
 export function listSkins(): readonly SkinProfile[] {
   return skins;
+}
+
+export function listPrimarySkins(): readonly SkinProfile[] {
+  return primarySkins;
 }
 
 export function getSkinById(skinId: string): SkinProfile {

@@ -40,6 +40,8 @@ export const SKIN_IMAGE_ASSET_KEYS = [
   "toolbarThemeIcon",
   "toolbarSettingsIcon",
   "toolbarAuthIcon",
+  "avatarIdle",
+  "avatarFocused",
 ] as const;
 
 export type SkinImageAssetKey = (typeof SKIN_IMAGE_ASSET_KEYS)[number];

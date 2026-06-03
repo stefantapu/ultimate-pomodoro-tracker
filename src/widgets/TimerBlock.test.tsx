@@ -346,12 +346,16 @@ describe("TimerBlock", () => {
       "href",
       "/terms",
     );
+    expect(screen.getByRole("link", { name: "Support on Ko-fi" })).toHaveAttribute(
+      "href",
+      "https://ko-fi.com/forgetimerdev",
+    );
     expect(
       screen.queryByRole("link", { name: "Request account deletion" }),
     ).not.toBeInTheDocument();
   });
 
-  it("shows signed-in users an account deletion request mailto", async () => {
+  it("shows signed-in users account deletion request options", async () => {
     act(() => {
       useUIStore.getState().setSettingsModalOpen(true);
     });
@@ -365,21 +369,76 @@ describe("TimerBlock", () => {
       },
     });
 
-    const deletionLink = await screen.findByRole("link", {
+    const deletionButton = await screen.findByRole("button", {
       name: "Request account deletion",
     });
 
     expect(
       screen.getByText(/send a deletion request from the email linked/),
     ).toBeInTheDocument();
-    expect(deletionLink).toHaveAttribute(
+    expect(
+      screen.queryByRole("region", {
+        name: "Account deletion email details",
+      }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(deletionButton);
+
+    expect(
+      screen.getByRole("region", {
+        name: "Account deletion email details",
+      }),
+    ).toBeInTheDocument();
+    const emailAppLink = screen.getByRole("link", { name: "Open email app" });
+    expect(emailAppLink).toHaveAttribute(
       "href",
       expect.stringContaining("mailto:stefantapu@gmail.com?"),
     );
-    expect(deletionLink).toHaveAttribute(
+    expect(emailAppLink).toHaveAttribute(
       "href",
       expect.stringContaining("subject=ForgeTimer+account+deletion+request"),
     );
+    expect(
+      screen.getByLabelText("Account deletion request message"),
+    ).toHaveValue(
+      "Please delete my ForgeTimer account and saved app data. I am sending this request from the email linked to my account.",
+    );
+  });
+
+  it("copies account deletion request details when clipboard is available", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText,
+      },
+    });
+
+    act(() => {
+      useUIStore.getState().setSettingsModalOpen(true);
+    });
+
+    renderWithProviders(<TimerBlock />, {
+      auth: {
+        user: {
+          id: "user-1",
+          email: "hero@example.com",
+        } as never,
+      },
+    });
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Request account deletion",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Copy request details" }));
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith(
+        expect.stringContaining("Subject: ForgeTimer account deletion request"),
+      );
+    });
+    expect(await screen.findByText("Request details copied.")).toBeInTheDocument();
   });
 
   it("stops ambience previews when another preview runs or settings are saved", async () => {

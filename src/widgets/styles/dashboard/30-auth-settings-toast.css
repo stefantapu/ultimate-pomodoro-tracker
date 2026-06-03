@@ -923,10 +923,83 @@
 .settings-modal__deletion-link {
   display: inline-flex;
   justify-content: center;
-  width: 100%;
   box-sizing: border-box;
   text-align: center;
   text-decoration: none;
+}
+
+.settings-modal__deletion-request {
+  display: grid;
+  gap: 0.62rem;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid rgba(255, 180, 101, 0.22);
+  background: rgba(7, 2, 1, 0.2);
+}
+
+.settings-modal__request-details {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+}
+
+.settings-modal__request-details div {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.settings-modal__request-details dt,
+.settings-modal__request-message span,
+.settings-modal__copy-status {
+  color: #e9c093;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-modal__request-details dd {
+  margin: 0;
+  color: #ffe0b3;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.settings-modal__request-details a {
+  color: #ffe0b3;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
+.settings-modal__request-message {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.settings-modal__request-message textarea {
+  min-height: 5.6rem;
+  resize: vertical;
+  border: 1px solid rgba(255, 190, 120, 0.24);
+  border-radius: 0;
+  background: rgba(13, 4, 2, 0.22);
+  color: #fff0dd;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding: 0.62rem 0.68rem;
+}
+
+.settings-modal__request-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.settings-modal__copy-status {
+  margin: 0;
+  color: #ffd59e;
+  line-height: 1.4;
+  text-transform: none;
 }
 
 .settings-modal__footer {
