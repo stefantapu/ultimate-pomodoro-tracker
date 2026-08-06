@@ -22,6 +22,8 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--dashboard-track",
   "--dashboard-fill",
   "--dashboard-accent",
+  "--dashboard-timeline-focus",
+  "--dashboard-timeline-break",
   "--dashboard-toolbar-bg",
   "--dashboard-toolbar-border",
   "--dashboard-modal-overlay",
@@ -141,6 +143,20 @@ describe("mapSkinToCssVariables contract", () => {
     expect(Object.keys(warmVars).sort()).toEqual(expected);
     expect(Object.keys(neumorphismVars).sort()).toEqual(expected);
     expect(Object.keys(vikingVars).sort()).toEqual(expected);
+    expect(
+      new Set([
+        warmVars["--dashboard-timeline-focus"],
+        neumorphismVars["--dashboard-timeline-focus"],
+        vikingVars["--dashboard-timeline-focus"],
+      ]).size,
+    ).toBe(3);
+    expect(
+      new Set([
+        warmVars["--dashboard-timeline-break"],
+        neumorphismVars["--dashboard-timeline-break"],
+        vikingVars["--dashboard-timeline-break"],
+      ]).size,
+    ).toBe(3);
   });
 
   it("maps warm skin with concrete asset and cursor URLs", () => {

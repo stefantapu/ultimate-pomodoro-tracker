@@ -159,6 +159,8 @@ export function mapSkinToCssVariables(skin: SkinProfile): SkinCSSVariables {
     "--dashboard-track": skin.colors.track,
     "--dashboard-fill": skin.colors.fill,
     "--dashboard-accent": skin.colors.accent,
+    "--dashboard-timeline-focus": skin.colors.timelineFocus,
+    "--dashboard-timeline-break": skin.colors.timelineBreak,
     "--dashboard-toolbar-bg": skin.colors.toolbarBg,
     "--dashboard-toolbar-border": skin.colors.toolbarBorder,
     "--dashboard-modal-overlay": skin.colors.modalOverlay,

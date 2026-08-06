@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetAudioAssetCacheForTests } from "@shared/lib/audioAssetCache";
 import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
@@ -7,6 +7,14 @@ import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import { renderWithProviders } from "../test/testUtils";
 import { TimerBlock } from "./TimerBlock";
+
+const { getSupabaseClientMock } = vi.hoisted(() => ({
+  getSupabaseClientMock: vi.fn(),
+}));
+
+vi.mock("../../utils/supabase", () => ({
+  getSupabaseClient: getSupabaseClientMock,
+}));
 
 const syncSessionMock = vi.fn();
 const pushSettingsToCloudMock = vi.fn();
@@ -77,6 +85,20 @@ describe("TimerBlock", () => {
     syncSessionMock.mockReset();
     pushSettingsToCloudMock.mockReset();
     useAlarmMock.mockReset();
+    getSupabaseClientMock.mockReset();
+    getSupabaseClientMock.mockResolvedValue({
+      from: vi.fn(() => {
+        const query = {
+          select: vi.fn(() => query),
+          eq: vi.fn(() => query),
+          lt: vi.fn(() => query),
+          gt: vi.fn(() => query),
+          order: vi.fn().mockResolvedValue({ data: [], error: null }),
+        };
+
+        return query;
+      }),
+    });
     useAlarmReturns = [];
     useAlarmMock.mockImplementation(() => {
       const controls = {
@@ -144,6 +166,322 @@ describe("TimerBlock", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));
     expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
+  });
+
+  it("shows the complete local-day scale and current time to guests", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 3, 15, 12, 34, 0));
+
+    renderWithProviders(<TimerBlock />);
+
+    const timeline = screen.getByRole("group", {
+      name: "Today's focus session timeline",
+    });
+
+    expect(timeline).toBeInTheDocument();
+    expect(screen.getByText("12:34")).toBeInTheDocument();
+    expect(screen.getAllByTestId("timeline-hour-division")).toHaveLength(24);
+    expect(
+      screen.getAllByTestId("timeline-hour-label").map((label) => label.textContent),
+    ).toEqual(["00", "06", "12", "18", "21"]);
+    expect(screen.queryByTestId("timeline-session-segment")).toBeNull();
+    expect(screen.queryByText(/nothing recorded/i)).toBeNull();
+  });
+
+  it("shows authenticated focus and break sessions with clipped proportional geometry", async () => {
+    vi.useFakeTimers();
+    const now = new Date(2026, 3, 15, 12, 34, 0);
+    const dayStart = new Date(2026, 3, 15, 0, 0, 0);
+    const dayEnd = new Date(2026, 3, 16, 0, 0, 0);
+    vi.setSystemTime(now);
+
+    const query = {
+      select: vi.fn(),
+      eq: vi.fn(),
+      lt: vi.fn(),
+      gt: vi.fn(),
+      order: vi.fn(),
+    };
+    query.select.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    query.lt.mockReturnValue(query);
+    query.gt.mockReturnValue(query);
+    query.order.mockResolvedValue({
+      data: [
+        {
+          id: "focus-crossing-midnight",
+          mode: "focus",
+          started_at: new Date(2026, 3, 14, 23, 30).toISOString(),
+          finished_at: new Date(2026, 3, 15, 1, 0).toISOString(),
+        },
+        {
+          id: "midday-break",
+          mode: "break",
+          started_at: new Date(2026, 3, 15, 12, 0).toISOString(),
+          finished_at: new Date(2026, 3, 15, 12, 30).toISOString(),
+        },
+        {
+          id: "break-crossing-next-midnight",
+          mode: "break",
+          started_at: new Date(2026, 3, 15, 23, 0).toISOString(),
+          finished_at: new Date(2026, 3, 16, 0, 30).toISOString(),
+        },
+      ],
+      error: null,
+    });
+    getSupabaseClientMock.mockResolvedValue({ from: vi.fn(() => query) });
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    const segments = screen.getAllByTestId("timeline-session-segment");
+    const focusSegment = segments.find(
+      (segment) => segment.dataset.mode === "focus",
+    );
+    const breakSegment = segments.find(
+      (segment) => segment.dataset.sessionId === "midday-break",
+    );
+    const endClippedSegment = segments.find(
+      (segment) =>
+        segment.dataset.sessionId === "break-crossing-next-midnight",
+    );
+
+    expect(focusSegment).toHaveAttribute("aria-label", "Focus session");
+    expect(parseFloat(focusSegment?.style.left ?? "NaN")).toBeCloseTo(0);
+    expect(parseFloat(focusSegment?.style.width ?? "NaN")).toBeCloseTo(
+      100 / 24,
+    );
+    expect(breakSegment).toHaveAttribute("aria-label", "Break session");
+    expect(parseFloat(breakSegment?.style.left ?? "NaN")).toBeCloseTo(50);
+    expect(parseFloat(breakSegment?.style.width ?? "NaN")).toBeCloseTo(
+      50 / 24,
+    );
+    expect(parseFloat(endClippedSegment?.style.left ?? "NaN")).toBeCloseTo(
+      (23 / 24) * 100,
+    );
+    expect(parseFloat(endClippedSegment?.style.width ?? "NaN")).toBeCloseTo(
+      100 / 24,
+    );
+    expect(query.eq).toHaveBeenCalledWith("user_id", "user-1");
+    expect(query.lt).toHaveBeenCalledWith("started_at", dayEnd.toISOString());
+    expect(query.gt).toHaveBeenCalledWith("finished_at", dayStart.toISOString());
+  });
+
+  it("grows the active run, freezes it on pause, and starts a new segment on resume", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 3, 15, 10, 0, 0));
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+
+    let segments = screen.getAllByTestId("timeline-session-segment");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toHaveAttribute("data-active", "true");
+    expect(segments[0].style.minWidth).toBe("3px");
+
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+
+    segments = screen.getAllByTestId("timeline-session-segment");
+    expect(parseFloat(segments[0].style.width)).toBeCloseTo(100 / 1440);
+
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+
+    segments = screen.getAllByTestId("timeline-session-segment");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toHaveAttribute("data-active", "false");
+    expect(segments[0].style.minWidth).toBe("");
+
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+
+    segments = screen.getAllByTestId("timeline-session-segment");
+    expect(segments).toHaveLength(2);
+    expect(
+      segments.filter((segment) => segment.dataset.active === "true"),
+    ).toHaveLength(1);
+  });
+
+  it("reveals the Focus and Break legend through pointer and keyboard interaction", () => {
+    const { container } = renderWithProviders(<TimerBlock />);
+    const timeline = screen.getByRole("group", {
+      name: "Today's focus session timeline",
+    });
+
+    expect(timeline).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("tooltip")).toBeNull();
+
+    fireEvent.mouseEnter(timeline);
+    const legend = screen.getByRole("tooltip");
+    expect(timeline).toHaveAttribute(
+      "aria-describedby",
+      "daily-session-timeline-legend",
+    );
+    expect(within(legend).getByText("Focus")).toBeInTheDocument();
+    expect(within(legend).getByText("Break")).toBeInTheDocument();
+
+    fireEvent.mouseLeave(timeline);
+    expect(screen.queryByRole("tooltip")).toBeNull();
+
+    fireEvent.focus(timeline);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    fireEvent.blur(timeline);
+    expect(screen.queryByRole("tooltip")).toBeNull();
+
+    fireEvent.click(timeline);
+    expect(timeline).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+
+    fireEvent.pointerDown(container.ownerDocument.body);
+    expect(timeline).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("tooltip")).toBeNull();
+  });
+
+  it("exposes the active skin and reduced-motion state on a live segment", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 3, 15, 10, 0, 0));
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+
+    const timeline = screen.getByRole("group", {
+      name: "Today's focus session timeline",
+    });
+    const activeSegment = screen.getByTestId("timeline-session-segment");
+    expect(timeline).toHaveAttribute("data-skin", "warm");
+    expect(activeSegment).toHaveAttribute("data-motion", "reduced");
+
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("viking");
+    });
+    expect(timeline).toHaveAttribute("data-skin", "viking");
+
+    act(() => {
+      useSkinStore.getState().setActiveSkinId("neumorphism");
+    });
+    expect(timeline).toHaveAttribute("data-skin", "neumorphism");
+  });
+
+  it("clamps the time label and refreshes authenticated history at local-day rollover", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 3, 15, 23, 59, 59));
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    expect(screen.getByText("23:59")).toHaveAttribute("data-edge", "end");
+    expect(getSupabaseClientMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      vi.advanceTimersByTime(2_000);
+      await vi.runAllTicks();
+    });
+
+    expect(screen.getByText("00:00")).toHaveAttribute("data-edge", "start");
+    expect(getSupabaseClientMock.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("aligns civil-hour divisions with session geometry on a local DST day", async () => {
+    const year = new Date().getFullYear();
+    let dstDay: Date | null = null;
+
+    for (let dayOffset = 0; dayOffset < 730; dayOffset += 1) {
+      const candidate = new Date(year, 0, 1 + dayOffset);
+      const nextDay = new Date(
+        candidate.getFullYear(),
+        candidate.getMonth(),
+        candidate.getDate() + 1,
+      );
+
+      if (nextDay.getTime() - candidate.getTime() !== 86_400_000) {
+        dstDay = candidate;
+        break;
+      }
+    }
+
+    if (!dstDay) {
+      return;
+    }
+
+    vi.useFakeTimers();
+    const sixOClock = new Date(
+      dstDay.getFullYear(),
+      dstDay.getMonth(),
+      dstDay.getDate(),
+      6,
+    );
+    vi.setSystemTime(sixOClock);
+    const query = {
+      select: vi.fn(),
+      eq: vi.fn(),
+      lt: vi.fn(),
+      gt: vi.fn(),
+      order: vi.fn(),
+    };
+    query.select.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    query.lt.mockReturnValue(query);
+    query.gt.mockReturnValue(query);
+    query.order.mockResolvedValue({
+      data: [
+        {
+          id: "six-am-focus",
+          mode: "focus",
+          started_at: sixOClock.toISOString(),
+          finished_at: new Date(sixOClock.getTime() + 30 * 60_000).toISOString(),
+        },
+      ],
+      error: null,
+    });
+    getSupabaseClientMock.mockResolvedValue({ from: vi.fn(() => query) });
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    const sixHourDivision = screen
+      .getAllByTestId("timeline-hour-division")
+      .find((division) => division.dataset.hour === "6");
+    const segment = screen.getByTestId("timeline-session-segment");
+    expect(parseFloat(segment.style.left)).toBeCloseTo(
+      parseFloat(sixHourDivision?.style.left ?? "NaN"),
+    );
   });
 
   it("shows validation errors and disables saving invalid durations", async () => {

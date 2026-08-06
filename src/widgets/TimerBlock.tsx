@@ -1,4 +1,5 @@
 import { useAlarm } from "@shared/hooks/useAlarm";
+import { useAuth } from "@app/providers/useAuth";
 import { usePomodoroTimer } from "@shared/hooks/usePomodoroTimer";
 import { useTimerSettingsController } from "@shared/hooks/useTimerSettingsController";
 import { mapSkinToCssVariables } from "@shared/skins/cssVars";
@@ -7,6 +8,7 @@ import {
   USER_SETTINGS_STORAGE_KEY,
 } from "@shared/lib/timerStorage";
 import type { Mode } from "@shared/lib/timerTypes";
+import type { SessionPayload } from "@shared/hooks/useSyncSession";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
 import {
@@ -18,6 +20,7 @@ import {
   useState,
 } from "react";
 import { ActionButtons } from "./ActionButtons";
+import { DailySessionTimeline } from "./DailySessionTimeline";
 import { TimerCard } from "./TimerCard";
 import { TopControls } from "./TopControls";
 import {
@@ -59,7 +62,12 @@ function SettingsModalFallback({
 }
 
 export function TimerBlock() {
+  const { user } = useAuth();
+  const authenticatedUserId = user?.id;
   const activeSkin = useSkinStore((state) => state.activeSkin);
+  const [recentSessions, setRecentSessions] = useState<
+    Array<SessionPayload & { id: string; userId: string }>
+  >([]);
   const skinCssVariables = useMemo(
     () => mapSkinToCssVariables(activeSkin),
     [activeSkin],
@@ -140,10 +148,29 @@ export function TimerBlock() {
     },
   );
 
+  const handleSessionRecorded = useCallback(
+    (session: SessionPayload) => {
+      if (!authenticatedUserId) {
+        return;
+      }
+
+      setRecentSessions((current) => [
+        ...current,
+        {
+          ...session,
+          id: `recent-${session.started_at}`,
+          userId: authenticatedUserId,
+        },
+      ]);
+    },
+    [authenticatedUserId],
+  );
+
   const {
     mode,
     timeLeft,
     targetTimestamp,
+    sessionStartedAt,
     status,
     start,
     pause,
@@ -154,6 +181,7 @@ export function TimerBlock() {
     stateStorageKey: STATE_STORAGE_KEY,
     onSessionComplete:
       alarmEnabled && alarmVolume > 0 ? playAlarm : undefined,
+    onSessionRecorded: handleSessionRecorded,
   });
   const resetTimerTrigger = useUIStore((state) => state.resetTimerTrigger);
 
@@ -522,6 +550,13 @@ export function TimerBlock() {
         status={status}
         timeLeft={timeLeft}
         targetTimestamp={targetTimestamp}
+      />
+      <DailySessionTimeline
+        mode={mode}
+        recentSessions={recentSessions}
+        sessionStartedAt={sessionStartedAt}
+        skinId={activeSkin.id}
+        status={status}
       />
       {shouldPlaceModeControlsWithActions ? (
         <TopControls
