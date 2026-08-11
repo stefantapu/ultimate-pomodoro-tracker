@@ -27,6 +27,7 @@ export function buildSessionPayload(
   currentState: TimerState,
   durations: TimerDurations,
   accumulatedSeconds: number,
+  finishedAt = new Date(),
 ): SessionPayload | null {
   if (!currentState.sessionStartedAt || accumulatedSeconds <= 0) {
     return null;
@@ -40,6 +41,6 @@ export function buildSessionPayload(
         : durations.breakDuration,
     accumulated_seconds: accumulatedSeconds,
     started_at: currentState.sessionStartedAt,
-    finished_at: new Date().toISOString(),
+    finished_at: finishedAt.toISOString(),
   };
 }

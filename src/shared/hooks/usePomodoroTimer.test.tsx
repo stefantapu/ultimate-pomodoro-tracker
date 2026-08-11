@@ -101,6 +101,45 @@ describe("usePomodoroTimer", () => {
     );
   });
 
+  it("records an expired restored timer at its scheduled finish time", async () => {
+    localStorage.setItem(
+      "timer-state",
+      JSON.stringify({
+        mode: "focus",
+        status: "running",
+        timeLeft: 10,
+        targetTimestamp: new Date("2026-04-15T12:00:10.000Z").getTime(),
+        sessionStartedAt: "2026-04-15T12:00:00.000Z",
+        accumulatedSeconds: 0,
+      }),
+    );
+    vi.setSystemTime(new Date("2026-04-16T09:00:00.000Z"));
+
+    renderHook(() =>
+      usePomodoroTimer({
+        settings: {
+          focusDuration: 10,
+          breakDuration: 5,
+          autoBreak: false,
+          autoFocus: false,
+        },
+        stateStorageKey: "timer-state",
+      }),
+    );
+
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    expect(syncSessionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accumulated_seconds: 10,
+        started_at: "2026-04-15T12:00:00.000Z",
+        finished_at: "2026-04-15T12:00:10.000Z",
+      }),
+    );
+  });
+
   it("does not sync when hard reset is used", () => {
     const { result } = renderHook(() =>
       usePomodoroTimer({

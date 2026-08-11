@@ -47,13 +47,14 @@ export function usePomodoroTimer({
   }, [state]);
 
   const checkAndSyncSession = useCallback(
-    (finalAccumulatedSeconds?: number) => {
+    (finalAccumulatedSeconds?: number, finishedAt?: Date) => {
       const currentState = stateRef.current;
       const accumulated = finalAccumulatedSeconds ?? currentState.accumulatedSeconds;
       const session = buildSessionPayload(
         currentState,
         { focusDuration, breakDuration },
         accumulated,
+        finishedAt,
       );
 
       if (session) {
@@ -73,7 +74,12 @@ export function usePomodoroTimer({
       completedMode === "focus" ? autoBreak : autoFocus;
 
     onSessionComplete?.();
-    checkAndSyncSession(finalAccum);
+    checkAndSyncSession(
+      finalAccum,
+      currentState.targetTimestamp
+        ? new Date(currentState.targetTimestamp)
+        : undefined,
+    );
 
     if (shouldAutoStartNext) {
       const nextDuration =
