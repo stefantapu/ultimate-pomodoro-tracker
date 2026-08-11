@@ -4,6 +4,7 @@
 @import "./styles/dashboard/30-auth-settings-toast.css";
 @import "./styles/dashboard/40-responsive-dashboard-auth-settings.css";
 @import "./styles/dashboard/50-toolbar-cursors.css";
+@import "./styles/dashboard/55-daily-session-timeline.css";
 @import "./styles/dashboard/60-history-dashboard.css";
 @import "./styles/dashboard/70-theme-neumorphism-dashboard.css";
 @import "./styles/dashboard/80-theme-picker-and-neumorphism-overrides.css";

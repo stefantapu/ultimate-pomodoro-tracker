@@ -12,6 +12,7 @@ import type {
   TimerSettings,
   TimerState,
 } from "@shared/lib/timerTypes";
+import type { SessionPayload } from "./useSyncSession";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useSyncSession } from "./useSyncSession";
 
@@ -19,12 +20,14 @@ type UsePomodoroTimerParams = {
   settings: TimerSettings;
   stateStorageKey: string;
   onSessionComplete?: () => void;
+  onSessionRecorded?: (session: SessionPayload) => void;
 };
 
 export function usePomodoroTimer({
   settings,
   stateStorageKey,
   onSessionComplete,
+  onSessionRecorded,
 }: UsePomodoroTimerParams) {
   const { focusDuration, breakDuration, autoBreak, autoFocus } = settings;
   const [state, dispatch] = useReducer(
@@ -44,20 +47,22 @@ export function usePomodoroTimer({
   }, [state]);
 
   const checkAndSyncSession = useCallback(
-    (finalAccumulatedSeconds?: number) => {
+    (finalAccumulatedSeconds?: number, finishedAt?: Date) => {
       const currentState = stateRef.current;
       const accumulated = finalAccumulatedSeconds ?? currentState.accumulatedSeconds;
       const session = buildSessionPayload(
         currentState,
         { focusDuration, breakDuration },
         accumulated,
+        finishedAt,
       );
 
       if (session) {
+        onSessionRecorded?.(session);
         syncSession(session);
       }
     },
-    [breakDuration, focusDuration, syncSession],
+    [breakDuration, focusDuration, onSessionRecorded, syncSession],
   );
 
   const handleSessionFinish = useCallback(() => {
@@ -69,7 +74,12 @@ export function usePomodoroTimer({
       completedMode === "focus" ? autoBreak : autoFocus;
 
     onSessionComplete?.();
-    checkAndSyncSession(finalAccum);
+    checkAndSyncSession(
+      finalAccum,
+      currentState.targetTimestamp
+        ? new Date(currentState.targetTimestamp)
+        : undefined,
+    );
 
     if (shouldAutoStartNext) {
       const nextDuration =
@@ -240,6 +250,7 @@ export function usePomodoroTimer({
     status: state.status,
     timeLeft: state.timeLeft,
     targetTimestamp: state.targetTimestamp,
+    sessionStartedAt: state.sessionStartedAt,
     start,
     pause,
     reset,

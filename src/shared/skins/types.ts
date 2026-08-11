@@ -111,6 +111,8 @@ export type SkinColors = {
   track: string;
   fill: string;
   accent: string;
+  timelineFocus: string;
+  timelineBreak: string;
   toolbarBg: string;
   toolbarBorder: string;
   modalOverlay: string;
