@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetAudioAssetCacheForTests } from "@shared/lib/audioAssetCache";
 import { USER_SETTINGS_STORAGE_KEY } from "@shared/lib/timerStorage";
@@ -180,15 +180,16 @@ describe("TimerBlock", () => {
 
     expect(timeline).toBeInTheDocument();
     expect(screen.getByText("12:34")).toBeInTheDocument();
-    expect(screen.getAllByTestId("timeline-hour-division")).toHaveLength(24);
+    expect(screen.queryByTestId("timeline-hour-division")).toBeNull();
     expect(
       screen.getAllByTestId("timeline-hour-label").map((label) => label.textContent),
-    ).toEqual(["00", "06", "12", "18", "21"]);
+    ).toEqual(["00", "06", "09", "12", "15", "18", "24"]);
+    expect(screen.getByTestId("timeline-now-marker")).toBeInTheDocument();
     expect(screen.queryByTestId("timeline-session-segment")).toBeNull();
     expect(screen.queryByText(/nothing recorded/i)).toBeNull();
   });
 
-  it("shows authenticated focus and break sessions with clipped proportional geometry", async () => {
+  it("shows only authenticated focus sessions with clipped proportional geometry", async () => {
     vi.useFakeTimers();
     const now = new Date(2026, 3, 15, 12, 34, 0);
     const dayStart = new Date(2026, 3, 15, 0, 0, 0);
@@ -243,30 +244,15 @@ describe("TimerBlock", () => {
     const focusSegment = segments.find(
       (segment) => segment.dataset.mode === "focus",
     );
-    const breakSegment = segments.find(
-      (segment) => segment.dataset.sessionId === "midday-break",
-    );
-    const endClippedSegment = segments.find(
-      (segment) =>
-        segment.dataset.sessionId === "break-crossing-next-midnight",
-    );
-
+    expect(segments).toHaveLength(1);
     expect(focusSegment).toHaveAttribute("aria-label", "Focus session");
     expect(parseFloat(focusSegment?.style.left ?? "NaN")).toBeCloseTo(0);
     expect(parseFloat(focusSegment?.style.width ?? "NaN")).toBeCloseTo(
       100 / 24,
     );
-    expect(breakSegment).toHaveAttribute("aria-label", "Break session");
-    expect(parseFloat(breakSegment?.style.left ?? "NaN")).toBeCloseTo(50);
-    expect(parseFloat(breakSegment?.style.width ?? "NaN")).toBeCloseTo(
-      50 / 24,
-    );
-    expect(parseFloat(endClippedSegment?.style.left ?? "NaN")).toBeCloseTo(
-      (23 / 24) * 100,
-    );
-    expect(parseFloat(endClippedSegment?.style.width ?? "NaN")).toBeCloseTo(
-      100 / 24,
-    );
+    expect(
+      segments.some((segment) => segment.dataset.mode === "break"),
+    ).toBe(false);
     expect(query.eq).toHaveBeenCalledWith("user_id", "user-1");
     expect(query.lt).toHaveBeenCalledWith("started_at", dayEnd.toISOString());
     expect(query.gt).toHaveBeenCalledWith("finished_at", dayStart.toISOString());
@@ -289,7 +275,7 @@ describe("TimerBlock", () => {
     let segments = screen.getAllByTestId("timeline-session-segment");
     expect(segments).toHaveLength(1);
     expect(segments[0]).toHaveAttribute("data-active", "true");
-    expect(segments[0].style.minWidth).toBe("3px");
+    expect(segments[0].style.minWidth).toBe("4px");
 
     act(() => {
       vi.advanceTimersByTime(60_000);
@@ -317,52 +303,54 @@ describe("TimerBlock", () => {
     ).toHaveLength(1);
   });
 
-  it("reveals the Focus and Break legend through pointer and keyboard interaction", () => {
-    const { container } = renderWithProviders(<TimerBlock />);
+  it("renders as a static information group without a legend", () => {
+    renderWithProviders(<TimerBlock />);
     const timeline = screen.getByRole("group", {
       name: "Today's focus session timeline",
     });
 
-    expect(timeline).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("tooltip")).toBeNull();
-
-    fireEvent.mouseEnter(timeline);
-    const legend = screen.getByRole("tooltip");
-    expect(timeline).toHaveAttribute(
-      "aria-describedby",
-      "daily-session-timeline-legend",
-    );
-    expect(within(legend).getByText("Focus")).toBeInTheDocument();
-    expect(within(legend).getByText("Break")).toBeInTheDocument();
-
-    fireEvent.mouseLeave(timeline);
-    expect(screen.queryByRole("tooltip")).toBeNull();
-
-    fireEvent.focus(timeline);
-    expect(screen.getByRole("tooltip")).toBeInTheDocument();
-    fireEvent.blur(timeline);
-    expect(screen.queryByRole("tooltip")).toBeNull();
-
-    fireEvent.click(timeline);
-    expect(timeline).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("tooltip")).toBeInTheDocument();
-
-    fireEvent.pointerDown(container.ownerDocument.body);
-    expect(timeline).toHaveAttribute("aria-expanded", "false");
+    expect(timeline).not.toHaveAttribute("tabindex");
+    expect(timeline).not.toHaveAttribute("aria-expanded");
+    expect(timeline).not.toHaveAttribute("aria-describedby");
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
 
-  it("exposes the active skin and reduced-motion state on a live segment", async () => {
+  it("pulses the current-time marker during a running break without drawing a break segment", async () => {
+    vi.useFakeTimers();
+    const now = new Date(2026, 3, 15, 10, 0, 0);
+    vi.setSystemTime(now);
+    localStorage.setItem(
+      "pomodoro-timer-state",
+      JSON.stringify({
+        mode: "break",
+        status: "running",
+        timeLeft: 300,
+        targetTimestamp: now.getTime() + 300_000,
+        sessionStartedAt: now.toISOString(),
+        accumulatedSeconds: 0,
+      }),
+    );
+
+    renderWithProviders(<TimerBlock />, {
+      auth: { user: { id: "user-1" } as never },
+    });
+
+    await act(async () => {
+      await vi.runAllTicks();
+    });
+
+    expect(
+      screen.getByRole("group", {
+        name: "Today's focus session timeline",
+      }),
+    ).toHaveAttribute("data-running", "true");
+    expect(screen.getByTestId("timeline-now-marker")).toBeInTheDocument();
+    expect(screen.queryByTestId("timeline-session-segment")).toBeNull();
+  });
+
+  it("exposes the active skin and running state on the timeline", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 10, 0, 0));
-    vi.stubGlobal(
-      "matchMedia",
-      vi.fn(() => ({
-        matches: true,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      })),
-    );
 
     renderWithProviders(<TimerBlock />, {
       auth: { user: { id: "user-1" } as never },
@@ -376,9 +364,12 @@ describe("TimerBlock", () => {
     const timeline = screen.getByRole("group", {
       name: "Today's focus session timeline",
     });
-    const activeSegment = screen.getByTestId("timeline-session-segment");
     expect(timeline).toHaveAttribute("data-skin", "warm");
-    expect(activeSegment).toHaveAttribute("data-motion", "reduced");
+    expect(timeline).toHaveAttribute("data-running", "true");
+    expect(screen.getByTestId("timeline-session-segment")).toHaveAttribute(
+      "data-active",
+      "true",
+    );
 
     act(() => {
       useSkinStore.getState().setActiveSkinId("viking");
@@ -475,12 +466,12 @@ describe("TimerBlock", () => {
       await vi.runAllTicks();
     });
 
-    const sixHourDivision = screen
-      .getAllByTestId("timeline-hour-division")
-      .find((division) => division.dataset.hour === "6");
+    const sixHourLabel = screen
+      .getAllByTestId("timeline-hour-label")
+      .find((label) => label.textContent === "06");
     const segment = screen.getByTestId("timeline-session-segment");
     expect(parseFloat(segment.style.left)).toBeCloseTo(
-      parseFloat(sixHourDivision?.style.left ?? "NaN"),
+      parseFloat(sixHourLabel?.style.left ?? "NaN"),
     );
   });
 
