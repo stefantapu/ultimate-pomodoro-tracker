@@ -54,6 +54,7 @@
 @media (max-width: 949px) {
   .dashboard-bottom-row {
     grid-template-columns: 1fr;
+    justify-items: center;
     width: 100%;
     margin-inline: 0;
   }
