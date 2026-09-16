@@ -1,4 +1,36 @@
 {
+  "redirects": [
+    {
+      "source": "/pomodoro-timer",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pomodoro-timer/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/focus-timer",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/focus-timer/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/study-timer",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/study-timer/",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/privacy",
