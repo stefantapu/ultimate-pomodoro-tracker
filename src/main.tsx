@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./app/App.tsx";
 import { AuthProvider } from "./app/providers/AuthProvider.tsx";
 import { HomepageContent } from "./seo/HomepageContent.tsx";
+import { hasPrerenderedHomepageContent } from "./seo/homepageHydration.ts";
 import { shouldRenderHomepageContent } from "./seo/homepageRoute.ts";
 
 createRoot(document.getElementById("root")!).render(
@@ -26,7 +27,7 @@ if (homepageContentRoot) {
       </StrictMode>
     );
 
-    if (homepageContentRoot.hasChildNodes()) {
+    if (hasPrerenderedHomepageContent(homepageContentRoot)) {
       hydrateRoot(homepageContentRoot, homepageContent);
     } else {
       createRoot(homepageContentRoot).render(homepageContent);
