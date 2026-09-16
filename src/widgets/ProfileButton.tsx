@@ -3,6 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { useProfile } from "@shared/hooks/useProfile";
 import { useToolbarClickSound } from "@shared/hooks/useToolbarClickSound";
 import { getLevelProgress } from "@shared/lib/levelProgress";
+import { trackProductEvent } from "@shared/lib/productAnalytics";
 import { useUIStore } from "@shared/stores/uiStore";
 import { ThemedButton } from "./ThemedButton";
 
@@ -32,6 +33,7 @@ export const ProfileButton = memo(function ProfileButton({
     playToolbarClick();
 
     if (!user) {
+      trackProductEvent({ name: "signup_start", source: "profile_control" });
       setAuthModalOpen(true);
       return;
     }

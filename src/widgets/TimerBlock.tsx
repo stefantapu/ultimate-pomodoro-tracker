@@ -11,6 +11,7 @@ import type { Mode } from "@shared/lib/timerTypes";
 import type { SessionPayload } from "@shared/hooks/useSyncSession";
 import { useSkinStore } from "@shared/stores/skinStore";
 import { useUIStore } from "@shared/stores/uiStore";
+import { trackProductEvent } from "@shared/lib/productAnalytics";
 import {
   Suspense,
   lazy,
@@ -338,8 +339,15 @@ export function TimerBlock() {
       return;
     }
 
+    if (mode === "focus") {
+      trackProductEvent({
+        name: "timer_start",
+        source: "primary_timer_control",
+      });
+    }
+
     start();
-  }, [pause, playPrimaryButtonClick, start, status]);
+  }, [mode, pause, playPrimaryButtonClick, start, status]);
 
   const handleSelectMode = useCallback(
     (nextMode: Mode) => {

@@ -1,4 +1,5 @@
 import { useToolbarClickSound } from "../shared/hooks/useToolbarClickSound";
+import { trackProductEvent } from "../shared/lib/productAnalytics";
 import { useUIStore } from "../shared/stores/uiStore";
 
 export function LockedOverlay() {
@@ -6,6 +7,7 @@ export function LockedOverlay() {
   const playToolbarClick = useToolbarClickSound();
   const openAuthModal = () => {
     playToolbarClick();
+    trackProductEvent({ name: "signup_start", source: "locked_feature" });
     setAuthModalOpen(true);
   };
 

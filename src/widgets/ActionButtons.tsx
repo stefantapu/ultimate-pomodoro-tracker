@@ -102,6 +102,7 @@ export const ActionButtons = memo(function ActionButtons({
   return (
     <div className={joinClassNames(styles["action-buttons"], "action-buttons")}>
       <ThemedButton
+        id="forge-timer-primary-action"
         variant="action"
         className={primaryButtonClassName}
         onClick={onPrimaryAction}

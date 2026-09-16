@@ -12,8 +12,16 @@ const { getSupabaseClientMock } = vi.hoisted(() => ({
   getSupabaseClientMock: vi.fn(),
 }));
 
+const { trackProductEventMock } = vi.hoisted(() => ({
+  trackProductEventMock: vi.fn(),
+}));
+
 vi.mock("../../utils/supabase", () => ({
   getSupabaseClient: getSupabaseClientMock,
+}));
+
+vi.mock("@shared/lib/productAnalytics", () => ({
+  trackProductEvent: trackProductEventMock,
 }));
 
 const syncSessionMock = vi.fn();
@@ -86,6 +94,7 @@ describe("TimerBlock", () => {
     pushSettingsToCloudMock.mockReset();
     useAlarmMock.mockReset();
     getSupabaseClientMock.mockReset();
+    trackProductEventMock.mockReset();
     getSupabaseClientMock.mockResolvedValue({
       from: vi.fn(() => {
         const query = {
@@ -166,6 +175,85 @@ describe("TimerBlock", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));
     expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
+  });
+
+  it("tracks only user-initiated focus starts", () => {
+    renderWithProviders(<TimerBlock />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(trackProductEventMock).toHaveBeenCalledTimes(1);
+    expect(trackProductEventMock).toHaveBeenCalledWith({
+      name: "timer_start",
+      source: "primary_timer_control",
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(trackProductEventMock).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Break" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(trackProductEventMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not track a restored running focus timer", () => {
+    localStorage.setItem(
+      "pomodoro-timer-state",
+      JSON.stringify({
+        mode: "focus",
+        status: "running",
+        timeLeft: 120,
+        targetTimestamp: Date.now() + 120_000,
+        sessionStartedAt: new Date().toISOString(),
+        accumulatedSeconds: 0,
+      }),
+    );
+
+    renderWithProviders(<TimerBlock />);
+
+    expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+    expect(trackProductEventMock).not.toHaveBeenCalled();
+  });
+
+  it("does not track an automatically started focus timer", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-16T12:00:00.000Z"));
+    localStorage.setItem(
+      USER_SETTINGS_STORAGE_KEY,
+      JSON.stringify({
+        focusDuration: 1500,
+        breakDuration: 300,
+        autoBreak: false,
+        autoFocus: true,
+        alarmEnabled: true,
+        alarmVolume: 1,
+        uiSoundsEnabled: true,
+        uiVolume: 0.5,
+        focusAmbienceEnabled: false,
+        focusAmbienceVolume: 0.2,
+      }),
+    );
+    localStorage.setItem(
+      "pomodoro-timer-state",
+      JSON.stringify({
+        mode: "break",
+        status: "running",
+        timeLeft: 1,
+        targetTimestamp: Date.now() + 1_000,
+        sessionStartedAt: new Date().toISOString(),
+        accumulatedSeconds: 0,
+      }),
+    );
+
+    renderWithProviders(<TimerBlock />);
+    act(() => {
+      vi.advanceTimersByTime(1_000);
+    });
+
+    expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Focus" })).toHaveClass(
+      "is-active",
+    );
+    expect(trackProductEventMock).not.toHaveBeenCalled();
   });
 
   it("shows the complete local-day scale and current time to guests", () => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { trackProductEvent } from "../shared/lib/productAnalytics";
 import styles from "./HomepageContent.module.css";
 import {
   getInitialHomepageContentMode,
@@ -53,6 +54,26 @@ export function HomepageContent() {
     const nextMode = mode === "dark" ? "light" : "dark";
     setMode(nextMode);
     persistHomepageContentMode(window.localStorage, nextMode);
+  };
+
+  const handleCtaClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    trackProductEvent({ name: "seo_cta_click", source: "homepage_cta" });
+
+    const timerAction = document.getElementById("forge-timer-primary-action");
+    if (!(timerAction instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    event.preventDefault();
+    const prefersReducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    timerAction.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "center",
+    });
+    timerAction.focus({ preventScroll: true });
   };
 
   const modeLabel = mode
@@ -170,7 +191,11 @@ export function HomepageContent() {
               <h2 id="homepage-cta-title">Ready for your next focus session?</h2>
               <p>Choose a task, set the timer, and make the work visible.</p>
             </div>
-            <a className={styles.ctaLink} href="#root">
+            <a
+              className={styles.ctaLink}
+              href="#forge-timer-primary-action"
+              onClick={handleCtaClick}
+            >
               Start focusing
             </a>
           </section>
