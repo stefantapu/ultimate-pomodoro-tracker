@@ -30,6 +30,10 @@ vi.mock("./ThemePickerButton", () => ({
   ThemePickerButton: () => <button type="button">Open theme picker</button>,
 }));
 
+vi.mock("./RegisteredUsersCount", () => ({
+  RegisteredUsersCount: () => <span>Users: 10</span>,
+}));
+
 afterEach(() => {
   useSkinStore.setState({
     activeSkinId: "warm",
@@ -150,6 +154,20 @@ describe("DashboardLayout", () => {
     expect(container.querySelector(".dashboard-section--primary")).toBeNull();
     expect(container.querySelector(".dashboard-section--secondary")).toBeNull();
     expect(container.querySelector(".dashboard-section--bottom")).toBeNull();
+  });
+
+  it("places the registered users count below the analytics row", () => {
+    const { container } = renderWithProviders(
+      <DashboardLayout user={null} LockedOverlayComponent={() => null} />,
+    );
+
+    const bottomRow = container.querySelector(".dashboard-bottom-row");
+    const usersCount = screen.getByText(/^Users:/);
+
+    expect(bottomRow?.parentElement).toContainElement(usersCount);
+    expect(
+      bottomRow?.compareDocumentPosition(usersCount) ?? 0,
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it("renders ambient particles from skin capability, not just skin id", () => {

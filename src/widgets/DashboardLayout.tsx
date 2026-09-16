@@ -20,6 +20,7 @@ import { TimerBlock } from "./TimerBlock";
 import { HeatmapCard } from "./HeatmapCard";
 import { createPreviewHeatmapData } from "./previewHeatmapData";
 import { ProfileButton } from "./ProfileButton";
+import { RegisteredUsersCount } from "./RegisteredUsersCount";
 
 const LazyAuthenticatedAnalyticsPanels = lazy(() =>
   import("./StatsDashboard").then((module) => ({
@@ -171,29 +172,34 @@ export const DashboardLayout = memo(function DashboardLayout({
               styles["dashboard-section--bottom"],
             )}
           >
-            <div className={joinClassNames(styles["dashboard-bottom-row"], "dashboard-bottom-row")}>
-              {user ? (
-                <>
-                  <Suspense
-                    fallback={
-                      <>
-                        <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
-                          <PlaceholderHeatmapCard message="Loading heat map..." />
-                        </div>
-                        <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
-                          <PlaceholderStatsCard message="..." />
-                        </div>
-                      </>
-                    }
-                  >
-                    <LazyAuthenticatedAnalyticsPanels />
-                  </Suspense>
-                </>
-              ) : (
-                <GuestAnalyticsPanels
-                  LockedOverlayComponent={LockedOverlayComponent}
-                />
-              )}
+            <div className={styles["dashboard-bottom-stack"]}>
+              <div className={joinClassNames(styles["dashboard-bottom-row"], "dashboard-bottom-row")}>
+                {user ? (
+                  <>
+                    <Suspense
+                      fallback={
+                        <>
+                          <div className="dashboard-lock-wrap dashboard-lock-wrap--heatmap">
+                            <PlaceholderHeatmapCard message="Loading heat map..." />
+                          </div>
+                          <div className="dashboard-lock-wrap dashboard-lock-wrap--stats">
+                            <PlaceholderStatsCard message="..." />
+                          </div>
+                        </>
+                      }
+                    >
+                      <LazyAuthenticatedAnalyticsPanels />
+                    </Suspense>
+                  </>
+                ) : (
+                  <GuestAnalyticsPanels
+                    LockedOverlayComponent={LockedOverlayComponent}
+                  />
+                )}
+              </div>
+              <div className={styles["registered-users-count"]}>
+                <RegisteredUsersCount />
+              </div>
             </div>
           </section>
         </main>
