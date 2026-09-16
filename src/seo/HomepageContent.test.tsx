@@ -37,6 +37,22 @@ describe("HomepageContent", () => {
     ).toBeInTheDocument();
   });
 
+  it("describes only the available themed Pomodoro interfaces", () => {
+    render(<HomepageContent />);
+
+    expect(
+      screen.getByText(/themed Pomodoro timer/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Viking Pomodoro timer")).toBeInTheDocument();
+    expect(
+      screen.getByText("Snowy Norse atmosphere, themed visuals and ambient audio."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Warm")).toBeInTheDocument();
+    expect(
+      screen.getByText("Cozy illustrated environment for focused work."),
+    ).toBeInTheDocument();
+  });
+
   it("changes and persists only the content section color mode", async () => {
     vi.stubGlobal(
       "matchMedia",

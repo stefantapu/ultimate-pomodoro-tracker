@@ -30,6 +30,18 @@ const faqItems = [
   },
 ] as const;
 
+const availableThemes = [
+  {
+    name: "Viking Pomodoro timer",
+    description:
+      "Snowy Norse atmosphere, themed visuals and ambient audio.",
+  },
+  {
+    name: "Warm",
+    description: "Cozy illustrated environment for focused work.",
+  },
+] as const;
+
 export function HomepageContent() {
   const [mode, setMode] = useState<HomepageContentMode | null>(null);
 
@@ -159,10 +171,18 @@ export function HomepageContent() {
             <section>
               <h2>Make focus feel like your space</h2>
               <p>
-                Choose a visual theme, adjust timer settings, and use ambient
-                audio to create a focus environment that feels distinct without
-                changing the Pomodoro rhythm underneath it.
+                Choose a themed Pomodoro timer with its own visual atmosphere
+                and ambient audio, while keeping the same focus-and-break
+                rhythm underneath.
               </p>
+              <ul className={styles.themeList} aria-label="Available themes">
+                {availableThemes.map((theme) => (
+                  <li key={theme.name}>
+                    <h3>{theme.name}</h3>
+                    <p>{theme.description}</p>
+                  </li>
+                ))}
+              </ul>
             </section>
             <section>
               <h2>Use it instantly, save progress when ready</h2>
