@@ -4,6 +4,13 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    modules: {
+      generateScopedName(name, filename) {
+        return `${path.basename(filename, ".module.css")}_${name}`;
+      },
+    },
+  },
   build: {
     minify: "esbuild",
     cssMinify: true,

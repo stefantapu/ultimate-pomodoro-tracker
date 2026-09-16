@@ -1,9 +1,11 @@
 import { StrictMode } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import "./index.css";
 import App from "./app/App.tsx";
 import { AuthProvider } from "./app/providers/AuthProvider.tsx";
+import { HomepageContent } from "./seo/HomepageContent.tsx";
+import { shouldRenderHomepageContent } from "./seo/homepageRoute.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,3 +15,23 @@ createRoot(document.getElementById("root")!).render(
     </AuthProvider>
   </StrictMode>,
 );
+
+const homepageContentRoot = document.getElementById("homepage-content-root");
+
+if (homepageContentRoot) {
+  if (shouldRenderHomepageContent(window.location.pathname)) {
+    const homepageContent = (
+      <StrictMode>
+        <HomepageContent />
+      </StrictMode>
+    );
+
+    if (homepageContentRoot.hasChildNodes()) {
+      hydrateRoot(homepageContentRoot, homepageContent);
+    } else {
+      createRoot(homepageContentRoot).render(homepageContent);
+    }
+  } else {
+    homepageContentRoot.remove();
+  }
+}

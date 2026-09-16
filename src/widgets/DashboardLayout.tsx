@@ -137,25 +137,6 @@ export const DashboardLayout = memo(function DashboardLayout({
           <ThemePickerButton />
         </div>
 
-        <section className="visually-hidden" aria-labelledby="dashboard-seo-title">
-          <div>
-            <h1 id="dashboard-seo-title">Forge Timer</h1>
-            <p>
-              A free gamified Pomodoro timer for focused work, study sessions,
-              breaks, streaks, and progress tracking.
-            </p>
-          </div>
-          <div aria-label="What you can do">
-            <h2>What you can do</h2>
-            <ul>
-              <li>Run focus and break timers.</li>
-              <li>Edit focus and break durations.</li>
-              <li>Track analytics, streaks, and progress when signed in.</li>
-              <li>Sync timer settings through your account.</li>
-            </ul>
-          </div>
-        </section>
-
         <main className={styles["dashboard-main"]}>
           <section
             className={joinClassNames(
