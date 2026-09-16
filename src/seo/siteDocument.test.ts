@@ -30,6 +30,10 @@ describe("site document metadata", () => {
       .toBe(title);
     expect(document.querySelector('meta[name="twitter:title"]')?.getAttribute("content"))
       .toBe(title);
+    expect(document.querySelector('meta[property="og:image"]')?.getAttribute("content"))
+      .toBe("https://forgetimer.dev/images/forge-timer-og-v2.png");
+    expect(document.querySelector('meta[name="twitter:image"]')?.getAttribute("content"))
+      .toBe("https://forgetimer.dev/images/forge-timer-og-v2.png");
     expect(document.querySelector('script[type="application/ld+json"]')).toBeNull();
     expect(html).not.toContain("<!--homepage-content-->");
   });

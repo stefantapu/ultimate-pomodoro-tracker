@@ -7,7 +7,7 @@ import {
 const metadataStartMarker = "<!--site-metadata:start-->";
 const metadataEndMarker = "<!--site-metadata:end-->";
 const homepageContentMarker = "<!--homepage-content-->";
-const socialImageUrl = "https://forgetimer.dev/images/forge-timer-og.png";
+const socialImageUrl = "https://forgetimer.dev/images/forge-timer-og-v2.png";
 
 function escapeAttribute(value: string) {
   return value
