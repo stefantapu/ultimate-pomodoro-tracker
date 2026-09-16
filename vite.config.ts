@@ -1,9 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { renderSiteDocument } from "./src/seo/siteDocument.ts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    {
+      name: "forge-site-metadata",
+      transformIndexHtml(html) {
+        return renderSiteDocument(html, "homepage");
+      },
+    },
+    react(),
+  ],
   css: {
     modules: {
       generateScopedName(name, filename) {
