@@ -79,7 +79,6 @@ describe("DashboardLayout", () => {
       expect(screen.getByText("Authenticated analytics")).toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Notes panel")).not.toBeInTheDocument();
     expect(screen.queryByText("Dragon card")).not.toBeInTheDocument();
   });
 
@@ -170,19 +169,16 @@ describe("DashboardLayout", () => {
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  it("renders ambient particles from skin capability, not just skin id", () => {
+  it("renders ambient particles from skin effects, not just skin id", () => {
     const warmSkin = getSkinById("warm");
     useSkinStore.setState({
       activeSkinId: "warm",
       activeSkin: {
         ...warmSkin,
-        capabilities: {
-          ...warmSkin.capabilities,
-          effects: {
-            ...warmSkin.capabilities.effects,
-            ambient: null,
-            foreground: null,
-          },
+        effects: {
+          ...warmSkin.effects,
+          ambient: null,
+          foreground: null,
         },
       },
     });
@@ -203,13 +199,10 @@ describe("DashboardLayout", () => {
       activeSkinId: "neumorphism",
       activeSkin: {
         ...neumorphismSkin,
-        capabilities: {
-          ...neumorphismSkin.capabilities,
-          effects: {
-            ...neumorphismSkin.capabilities.effects,
-            ambient: getSkinById("warm").capabilities.effects.ambient,
-            foreground: null,
-          },
+        effects: {
+          ...neumorphismSkin.effects,
+          ambient: getSkinById("warm").effects.ambient,
+          foreground: null,
         },
       },
     });

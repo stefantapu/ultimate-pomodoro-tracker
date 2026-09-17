@@ -127,8 +127,8 @@ export const DashboardLayout = memo(function DashboardLayout({
       className={`dashboard-shell dashboard-shell--${activeSkin.id}`}
       style={skinCssVariables}
     >
-      {activeSkin.capabilities.effects.ambient && !isOverlayOpen ? (
-        <BackgroundParticles effect={activeSkin.capabilities.effects.ambient} />
+      {activeSkin.effects.ambient && !isOverlayOpen ? (
+        <BackgroundParticles effect={activeSkin.effects.ambient} />
       ) : null}
       <div className={styles["dashboard-content"]}>
         <div className={joinClassNames(styles["dashboard-toolbar"], "dashboard-toolbar")}>
@@ -185,9 +185,9 @@ export const DashboardLayout = memo(function DashboardLayout({
           </section>
         </main>
       </div>
-      {activeSkin.capabilities.effects.foreground && !isOverlayOpen ? (
+      {activeSkin.effects.foreground && !isOverlayOpen ? (
         <BackgroundParticles
-          effect={activeSkin.capabilities.effects.foreground}
+          effect={activeSkin.effects.foreground}
           layer="foreground"
         />
       ) : null}

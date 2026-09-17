@@ -15,33 +15,20 @@ export type SkinCursorAsset = {
 
 export const SKIN_IMAGE_ASSET_KEYS = [
   "pageBackground",
-  "notesPanel",
-  "heatmapPanel",
-  "statsPanel",
-  "dragonPanel",
-  "topControlsPanel",
-  "modeTabButton",
-  "focusModeButton",
-  "breakModeButton",
-  "timerPanel",
+  "timerPanelDesktop",
   "timerPanelMobile",
-  "startButton",
-  "resetButton",
-  "autoFocusButton",
-  "autoBreakButton",
-  "soundButton",
-  "settingsButton",
-  "settingsIcon",
-  "historyIcon",
-  "exitButton",
-  "exitIcon",
-  "toolbarButton",
-  "toolbarHistoryIcon",
-  "toolbarThemeIcon",
-  "toolbarSettingsIcon",
-  "toolbarAuthIcon",
+  "profileFrame",
   "avatarIdle",
   "avatarFocused",
+  "toolbarButtonFrame",
+  "toolbarSettingsIcon",
+  "toolbarThemeIcon",
+  "modeControlFrame",
+  "focusModeIcon",
+  "breakModeIcon",
+  "primaryActionFrame",
+  "heatmapPanel",
+  "statsPanel",
 ] as const;
 
 export type SkinImageAssetKey = (typeof SKIN_IMAGE_ASSET_KEYS)[number];
@@ -66,18 +53,14 @@ export const SKIN_AUDIO_ASSET_KEYS = [
 export type SkinAudioAssetKey = (typeof SKIN_AUDIO_ASSET_KEYS)[number];
 
 export const SKIN_ASPECT_RATIO_FALLBACK_KEYS = [
-  "timerPanel",
+  "timerPanelDesktop",
   "timerPanelMobile",
-  "startButton",
-  "focusModeButton",
-  "breakModeButton",
-  "toolbarButton",
-  "autoFocusButton",
-  "notesPanel",
+  "profileFrame",
+  "toolbarButtonFrame",
+  "modeControlFrame",
+  "primaryActionFrame",
   "heatmapPanel",
   "statsPanel",
-  "topControlsPanel",
-  "modeTabButton",
 ] as const;
 
 export type SkinAspectRatioFallbackKey =
@@ -164,23 +147,9 @@ export type SkinAmbientEffect = {
   driftRangeVw: readonly [number, number];
 };
 
-export type SkinCapabilities = {
-  effects: {
-    ambient: SkinAmbientEffect | null;
-    foreground: SkinAmbientEffect | null;
-  };
-  audio: {
-    alarm: boolean;
-    primaryTimerControl: boolean;
-    modeControl: boolean;
-    toolbarClick: boolean;
-    focusAmbience: boolean;
-  };
-  visual: {
-    timerPanelArt: boolean;
-    toolbarIconArt: boolean;
-    customCursors: boolean;
-  };
+export type SkinEffects = {
+  ambient: SkinAmbientEffect | null;
+  foreground: SkinAmbientEffect | null;
 };
 
 export type SkinCursorFallbackKeyword =
@@ -207,18 +176,14 @@ export const SKIN_FALLBACK_CONTRACT: SkinFallbackContract = {
     cursorDisabled: "not-allowed",
   },
   aspectRatioDefaults: {
-    timerPanel: 2.68,
+    timerPanelDesktop: 769 / 319,
     timerPanelMobile: 1,
-    startButton: 3,
-    focusModeButton: 3.53,
-    breakModeButton: 3.53,
-    toolbarButton: 1,
-    autoFocusButton: 1,
-    notesPanel: 0.76,
-    heatmapPanel: 2.39,
-    statsPanel: 0.8967,
-    topControlsPanel: 6.5,
-    modeTabButton: 3.53,
+    profileFrame: 3.52,
+    toolbarButtonFrame: 1,
+    modeControlFrame: 1,
+    primaryActionFrame: 2.875,
+    heatmapPanel: 400 / 167,
+    statsPanel: 180 / 167,
   },
 };
 
@@ -226,7 +191,7 @@ export type SkinProfile = {
   id: SkinId;
   label: string;
   description: string;
-  capabilities: SkinCapabilities;
+  effects: SkinEffects;
   assets: SkinAssets;
   audio: SkinAudio;
   focusAmbienceFadeInMs: number;

@@ -42,49 +42,32 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
   "--dashboard-button-letter-spacing",
   "--dashboard-button-text-transform",
   "--skin-page-background-image",
-  "--skin-notes-panel-image",
-  "--skin-heatmap-panel-image",
-  "--skin-stats-panel-image",
-  "--skin-dragon-panel-image",
-  "--skin-top-controls-panel-image",
-  "--skin-mode-tab-button-image",
-  "--skin-focus-mode-button-image",
-  "--skin-break-mode-button-image",
-  "--skin-timer-panel-image",
-  "--skin-timer-panel-image-mobile",
-  "--skin-start-button-image",
-  "--skin-reset-button-image",
-  "--skin-auto-focus-button-image",
-  "--skin-auto-break-button-image",
-  "--skin-sound-button-image",
-  "--skin-settings-button-image",
-  "--skin-settings-icon-image",
-  "--skin-history-icon-image",
-  "--skin-exit-button-image",
-  "--skin-exit-icon-image",
-  "--skin-toolbar-button-image",
-  "--skin-toolbar-history-icon-image",
-  "--skin-toolbar-theme-icon-image",
-  "--skin-toolbar-settings-icon-image",
-  "--skin-toolbar-auth-icon-image",
+  "--skin-timer-panel-desktop-image",
+  "--skin-timer-panel-mobile-image",
+  "--skin-profile-frame-image",
   "--skin-avatar-idle-image",
   "--skin-avatar-focused-image",
+  "--skin-toolbar-button-frame-image",
+  "--skin-toolbar-settings-icon-image",
+  "--skin-toolbar-theme-icon-image",
+  "--skin-mode-control-frame-image",
+  "--skin-focus-mode-icon-image",
+  "--skin-break-mode-icon-image",
+  "--skin-primary-action-frame-image",
+  "--skin-heatmap-panel-image",
+  "--skin-stats-panel-image",
   "--skin-cursor-default",
   "--skin-cursor-pointer",
   "--skin-cursor-text",
   "--skin-cursor-disabled",
-  "--skin-timer-panel-aspect-ratio",
+  "--skin-timer-panel-desktop-aspect-ratio",
   "--skin-timer-panel-mobile-aspect-ratio",
-  "--skin-action-button-aspect-ratio",
-  "--skin-focus-mode-button-aspect-ratio",
-  "--skin-break-mode-button-aspect-ratio",
-  "--skin-toolbar-button-aspect-ratio",
-  "--skin-square-button-aspect-ratio",
-  "--skin-notes-panel-aspect-ratio",
+  "--skin-profile-frame-aspect-ratio",
+  "--skin-toolbar-button-frame-aspect-ratio",
+  "--skin-mode-control-frame-aspect-ratio",
+  "--skin-primary-action-frame-aspect-ratio",
   "--skin-heatmap-panel-aspect-ratio",
   "--skin-stats-panel-aspect-ratio",
-  "--skin-top-controls-panel-aspect-ratio",
-  "--skin-mode-tab-button-aspect-ratio",
   "--skin-timer-panel-max-width",
   "--skin-timer-panel-min-height",
   "--skin-timer-panel-overlay-opacity",
@@ -97,33 +80,20 @@ const EXPECTED_CSS_VARIABLE_KEYS = [
 
 const IMAGE_VARIABLE_KEYS = [
   "--skin-page-background-image",
-  "--skin-notes-panel-image",
-  "--skin-heatmap-panel-image",
-  "--skin-stats-panel-image",
-  "--skin-dragon-panel-image",
-  "--skin-top-controls-panel-image",
-  "--skin-mode-tab-button-image",
-  "--skin-focus-mode-button-image",
-  "--skin-break-mode-button-image",
-  "--skin-timer-panel-image",
-  "--skin-timer-panel-image-mobile",
-  "--skin-start-button-image",
-  "--skin-reset-button-image",
-  "--skin-auto-focus-button-image",
-  "--skin-auto-break-button-image",
-  "--skin-sound-button-image",
-  "--skin-settings-button-image",
-  "--skin-settings-icon-image",
-  "--skin-history-icon-image",
-  "--skin-exit-button-image",
-  "--skin-exit-icon-image",
-  "--skin-toolbar-button-image",
-  "--skin-toolbar-history-icon-image",
-  "--skin-toolbar-theme-icon-image",
-  "--skin-toolbar-settings-icon-image",
-  "--skin-toolbar-auth-icon-image",
+  "--skin-timer-panel-desktop-image",
+  "--skin-timer-panel-mobile-image",
+  "--skin-profile-frame-image",
   "--skin-avatar-idle-image",
   "--skin-avatar-focused-image",
+  "--skin-toolbar-button-frame-image",
+  "--skin-toolbar-settings-icon-image",
+  "--skin-toolbar-theme-icon-image",
+  "--skin-mode-control-frame-image",
+  "--skin-focus-mode-icon-image",
+  "--skin-break-mode-icon-image",
+  "--skin-primary-action-frame-image",
+  "--skin-heatmap-panel-image",
+  "--skin-stats-panel-image",
 ] as const;
 
 const CURSOR_VARIABLE_KEYS = [
@@ -201,41 +171,29 @@ describe("mapSkinToCssVariables contract", () => {
       SKIN_FALLBACK_CONTRACT.cursorCssFallbackKeywords.cursorDisabled,
     );
 
-    expect(neumorphismVars["--skin-timer-panel-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.timerPanel),
+    expect(neumorphismVars["--skin-timer-panel-desktop-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.timerPanelDesktop),
     );
     expect(neumorphismVars["--skin-timer-panel-mobile-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.timerPanelMobile),
     );
-    expect(neumorphismVars["--skin-action-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.startButton),
+    expect(neumorphismVars["--skin-profile-frame-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.profileFrame),
     );
-    expect(neumorphismVars["--skin-focus-mode-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.focusModeButton),
+    expect(neumorphismVars["--skin-toolbar-button-frame-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.toolbarButtonFrame),
     );
-    expect(neumorphismVars["--skin-break-mode-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.breakModeButton),
+    expect(neumorphismVars["--skin-mode-control-frame-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.modeControlFrame),
     );
-    expect(neumorphismVars["--skin-toolbar-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.toolbarButton),
-    );
-    expect(neumorphismVars["--skin-square-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.autoFocusButton),
-    );
-    expect(neumorphismVars["--skin-notes-panel-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.notesPanel),
+    expect(neumorphismVars["--skin-primary-action-frame-aspect-ratio"]).toBe(
+      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.primaryActionFrame),
     );
     expect(neumorphismVars["--skin-heatmap-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.heatmapPanel),
     );
     expect(neumorphismVars["--skin-stats-panel-aspect-ratio"]).toBe(
       String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.statsPanel),
-    );
-    expect(neumorphismVars["--skin-top-controls-panel-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.topControlsPanel),
-    );
-    expect(neumorphismVars["--skin-mode-tab-button-aspect-ratio"]).toBe(
-      String(SKIN_FALLBACK_CONTRACT.aspectRatioDefaults.modeTabButton),
     );
   });
 });

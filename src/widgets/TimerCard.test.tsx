@@ -47,7 +47,7 @@ describe("TimerCard", () => {
         ...warmSkin,
         assets: {
           ...warmSkin.assets,
-          timerPanel: {
+          timerPanelDesktop: {
             src: "/assets/test/timer-panel.webp",
             width: 1047,
             height: 390,
