@@ -96,13 +96,6 @@ const IMAGE_VARIABLE_KEYS = [
   "--skin-stats-panel-image",
 ] as const;
 
-const CURSOR_VARIABLE_KEYS = [
-  "--skin-cursor-default",
-  "--skin-cursor-pointer",
-  "--skin-cursor-text",
-  "--skin-cursor-disabled",
-] as const;
-
 describe("mapSkinToCssVariables contract", () => {
   it("keeps emitted CSS variable keys stable", () => {
     const warmVars = mapSkinToCssVariables(getSkinById("warm"));
@@ -137,9 +130,35 @@ describe("mapSkinToCssVariables contract", () => {
       expect(warmVars[key]).not.toBe("none");
     }
 
-    for (const key of CURSOR_VARIABLE_KEYS) {
-      expect(warmVars[key]).toContain("url(");
-    }
+    expect(warmVars["--skin-cursor-default"]).toBe(
+      'url("/assets/red_lava_theme/cursors/diablo/DII.cur"), auto',
+    );
+    expect(warmVars["--skin-cursor-pointer"]).toBe(
+      'url("/assets/red_lava_theme/cursors/diablo/DII-Link.cur"), pointer',
+    );
+    expect(warmVars["--skin-cursor-text"]).toBe(
+      'url("/assets/red_lava_theme/cursors/diablo/DII-Beam.cur"), text',
+    );
+    expect(warmVars["--skin-cursor-disabled"]).toBe(
+      'url("/assets/red_lava_theme/cursors/diablo/DII-No.cur"), not-allowed',
+    );
+  });
+
+  it("maps Viking cursors without overriding their embedded hotspots", () => {
+    const vikingVars = mapSkinToCssVariables(getSkinById("viking"));
+
+    expect(vikingVars["--skin-cursor-default"]).toBe(
+      'url("/assets/Viking Theme/Cursor/d4-normal-select.cur"), auto',
+    );
+    expect(vikingVars["--skin-cursor-pointer"]).toBe(
+      'url("/assets/Viking Theme/Cursor/d4-link-select.cur"), pointer',
+    );
+    expect(vikingVars["--skin-cursor-text"]).toBe(
+      'url("/assets/Viking Theme/Cursor/d4-text-select.cur"), text',
+    );
+    expect(vikingVars["--skin-cursor-disabled"]).toBe(
+      'url("/assets/Viking Theme/Cursor/d4-unavailable.cur"), not-allowed',
+    );
   });
 
   it("maps neumorphism skin with its page background and fallback optional assets", () => {

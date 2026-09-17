@@ -158,23 +158,15 @@ const warmSkin = createSkinProfile({
     ),
     cursorDefault: {
       src: "/assets/red_lava_theme/cursors/diablo/DII.cur",
-      hotspotX: 0,
-      hotspotY: 5,
     },
     cursorPointer: {
       src: "/assets/red_lava_theme/cursors/diablo/DII-Link.cur",
-      hotspotX: 0,
-      hotspotY: 5,
     },
     cursorText: {
       src: "/assets/red_lava_theme/cursors/diablo/DII-Beam.cur",
-      hotspotX: 0,
-      hotspotY: 9,
     },
     cursorDisabled: {
       src: "/assets/red_lava_theme/cursors/diablo/DII-No.cur",
-      hotspotX: 0,
-      hotspotY: 10,
     },
   },
   audio: {
@@ -386,23 +378,15 @@ const vikingSkin = createSkinProfile({
     }),
     cursorDefault: {
       src: "/assets/Viking Theme/Cursor/d4-normal-select.cur",
-      hotspotX: 0,
-      hotspotY: 0,
     },
     cursorPointer: {
       src: "/assets/Viking Theme/Cursor/d4-link-select.cur",
-      hotspotX: 0,
-      hotspotY: 0,
     },
     cursorText: {
       src: "/assets/Viking Theme/Cursor/d4-text-select.cur",
-      hotspotX: 0,
-      hotspotY: 0,
     },
     cursorDisabled: {
       src: "/assets/Viking Theme/Cursor/d4-unavailable.cur",
-      hotspotX: 0,
-      hotspotY: 0,
     },
   },
   audio: {
