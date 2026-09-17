@@ -42,34 +42,20 @@ describe("skin catalog contract", () => {
         expect(key in skin.audio).toBe(true);
       }
 
-      if (skin.capabilities.effects.ambient) {
-        expect(["embers", "snow"]).toContain(
-          skin.capabilities.effects.ambient.kind,
-        );
+      if (skin.effects.ambient) {
+        expect(["embers", "snow"]).toContain(skin.effects.ambient.kind);
       }
-      if (skin.capabilities.effects.foreground) {
-        expect(["embers", "snow"]).toContain(
-          skin.capabilities.effects.foreground.kind,
-        );
+      if (skin.effects.foreground) {
+        expect(["embers", "snow"]).toContain(skin.effects.foreground.kind);
       }
-      expect(typeof skin.capabilities.audio.alarm).toBe("boolean");
-      expect(typeof skin.capabilities.audio.primaryTimerControl).toBe(
-        "boolean",
-      );
-      expect(typeof skin.capabilities.audio.modeControl).toBe("boolean");
-      expect(typeof skin.capabilities.audio.toolbarClick).toBe("boolean");
-      expect(typeof skin.capabilities.audio.focusAmbience).toBe("boolean");
-      expect(typeof skin.capabilities.visual.timerPanelArt).toBe("boolean");
-      expect(typeof skin.capabilities.visual.toolbarIconArt).toBe("boolean");
-      expect(typeof skin.capabilities.visual.customCursors).toBe("boolean");
       expect(skin.focusAmbienceOutputGain).toBeGreaterThan(0);
     }
   });
 
   it("keeps ambient particle counts within the dashboard performance budget", () => {
     for (const skin of listSkins()) {
-      const ambientCount = skin.capabilities.effects.ambient?.count ?? 0;
-      const foregroundCount = skin.capabilities.effects.foreground?.count ?? 0;
+      const ambientCount = skin.effects.ambient?.count ?? 0;
+      const foregroundCount = skin.effects.foreground?.count ?? 0;
 
       expect(ambientCount + foregroundCount).toBeLessThanOrEqual(60);
     }
@@ -79,13 +65,11 @@ describe("skin catalog contract", () => {
     const warm = getSkinById("warm");
     const neumorphism = getSkinById("neumorphism");
     const viking = getSkinById("viking");
-    const legacyNeumorphism = getSkinById("soft-form");
     const fallback = getSkinById("unknown-skin-id");
 
     expect(warm.id).toBe("warm");
     expect(neumorphism.id).toBe("neumorphism");
     expect(viking.id).toBe("viking");
-    expect(legacyNeumorphism.id).toBe("neumorphism");
     expect(fallback.id).toBe(DEFAULT_SKIN_ID);
   });
 

@@ -633,7 +633,7 @@
 }
 
 .dashboard-shell--warm .toolbar-icon-button--theme {
-  background-image: var(--skin-settings-button-image);
+  background-image: var(--skin-toolbar-button-frame-image);
 }
 
 .dashboard-shell--warm

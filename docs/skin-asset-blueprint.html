@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forge Timer — нейтральный макет ассетов</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #20242a;
+        --muted: #6d747d;
+        --line: #aeb5bd;
+        --line-strong: #5c646d;
+        --paper: #f4f5f6;
+        --surface: #ffffff;
+        --slot: #e2e5e8;
+        --safe: rgba(51, 104, 147, 0.11);
+        --safe-line: rgba(51, 104, 147, 0.6);
+        --gap: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .page {
+        width: min(1480px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 80px;
+      }
+
+      .intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 24px;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+        font-size: clamp(28px, 4vw, 48px);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+      }
+
+      h2 {
+        margin-bottom: 8px;
+        font-size: 24px;
+        letter-spacing: -0.02em;
+      }
+
+      h3 {
+        margin-bottom: 4px;
+        font-size: 16px;
+      }
+
+      p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--line-strong);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .control,
+      .download {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+        padding: 9px 12px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .control:hover,
+      .download:hover {
+        border-color: var(--line-strong);
+      }
+
+      .section {
+        margin-top: 44px;
+      }
+
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: end;
+        margin-bottom: 14px;
+      }
+
+      .section-note {
+        max-width: 690px;
+        font-size: 14px;
+      }
+
+      .stage-wrap {
+        overflow: auto;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #dfe2e5;
+      }
+
+      .desktop-stage {
+        position: relative;
+        width: 100%;
+        min-width: 720px;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        border: 2px solid var(--line-strong);
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)),
+          repeating-linear-gradient(
+            45deg,
+            #e5e7e9 0,
+            #e5e7e9 12px,
+            #dfe2e5 12px,
+            #dfe2e5 24px
+          );
+      }
+
+      .desktop-stage::before {
+        content: "BACKGROUND 1920 × 1080 · 16:9";
+        position: absolute;
+        left: 18px;
+        bottom: 16px;
+        color: #6f767e;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+
+      .app-column {
+        position: absolute;
+        top: 3.2%;
+        left: 50%;
+        width: 31.875%;
+        min-width: 360px;
+        transform: translateX(-50%);
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: 1fr repeat(2, 7.4%);
+        gap: 1.7%;
+        margin-bottom: 2.6%;
+      }
+
+      .toolbar > div {
+        display: grid;
+        min-height: 34px;
+        place-items: center;
+        border: 1px dashed var(--line-strong);
+        background: rgba(255, 255, 255, 0.82);
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .toolbar .profile {
+        justify-items: start;
+        padding-left: 10px;
+      }
+
+      .composition-slot {
+        position: relative;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line-strong);
+        background: rgba(255, 255, 255, 0.82);
+        color: var(--muted);
+        font-size: clamp(9px, 0.7vw, 12px);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-align: center;
+      }
+
+      .timer-panel {
+        aspect-ratio: 769 / 319;
+      }
+
+      .timeline {
+        height: 30px;
+        margin-top: 2.6%;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+        gap: 2%;
+        margin-top: 2.6%;
+      }
+
+      .action-row > div {
+        aspect-ratio: 1;
+      }
+
+      .action-row .wide {
+        aspect-ratio: 3 / 1;
+      }
+
+      .analytics-row {
+        display: grid;
+        grid-template-columns: 2.39fr 0.8967fr;
+        gap: 2.6%;
+        margin-top: 2.6%;
+        align-items: stretch;
+      }
+
+      .analytics-row .heatmap {
+        aspect-ratio: 920 / 384;
+      }
+
+      .analytics-row .stats {
+        aspect-ratio: 191 / 213;
+      }
+
+      .ruler {
+        position: absolute;
+        color: #68717a;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .ruler--width {
+        top: -18px;
+        left: 0;
+        width: 100%;
+        border-top: 1px solid var(--line-strong);
+        text-align: center;
+      }
+
+      .ruler--width::before,
+      .ruler--width::after {
+        content: "";
+        position: absolute;
+        top: -4px;
+        width: 1px;
+        height: 8px;
+        background: var(--line-strong);
+      }
+
+      .ruler--width::before {
+        left: 0;
+      }
+
+      .ruler--width::after {
+        right: 0;
+      }
+
+      .asset-groups {
+        display: grid;
+        gap: 34px;
+      }
+
+      .asset-group {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.55);
+      }
+
+      .asset-group__heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: baseline;
+        margin-bottom: 16px;
+      }
+
+      .asset-group__heading p {
+        font-size: 13px;
+      }
+
+      .asset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--gap);
+        align-items: start;
+      }
+
+      .asset-card {
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid #c8cdd2;
+        border-radius: 9px;
+        background: var(--surface);
+      }
+
+      .asset-card__frame-wrap {
+        display: grid;
+        place-items: center;
+        min-height: 196px;
+        padding: 12px;
+        overflow: hidden;
+        border: 1px solid #d7dade;
+        background:
+          linear-gradient(45deg, #eceeef 25%, transparent 25%),
+          linear-gradient(-45deg, #eceeef 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #eceeef 75%),
+          linear-gradient(-45deg, transparent 75%, #eceeef 75%);
+        background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        background-size: 16px 16px;
+      }
+
+      .asset-frame {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: min(100%, var(--preview-width, 520px));
+        aspect-ratio: var(--asset-ratio);
+        overflow: hidden;
+        outline: 2px solid var(--line-strong);
+        background: rgba(215, 219, 223, 0.9);
+      }
+
+      .asset-frame::before,
+      .asset-frame::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .asset-frame::before {
+        inset: 8%;
+        border: 1px dashed var(--safe-line);
+        background: var(--safe);
+      }
+
+      .asset-frame::after {
+        inset: 0;
+        background:
+          linear-gradient(
+            to bottom right,
+            transparent calc(50% - 0.5px),
+            rgba(92, 100, 109, 0.28) 50%,
+            transparent calc(50% + 0.5px)
+          ),
+          linear-gradient(
+            to top right,
+            transparent calc(50% - 0.5px),
+            rgba(92, 100, 109, 0.28) 50%,
+            transparent calc(50% + 0.5px)
+          );
+      }
+
+      body.hide-safe .asset-frame::before {
+        display: none;
+      }
+
+      body.hide-cross .asset-frame::after {
+        display: none;
+      }
+
+      .asset-frame__label {
+        position: relative;
+        z-index: 1;
+        max-width: 84%;
+        padding: 5px 7px;
+        background: rgba(255, 255, 255, 0.76);
+        color: #525b64;
+        font-size: clamp(8px, 1vw, 11px);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .asset-card__meta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: end;
+        margin-top: 12px;
+      }
+
+      .asset-card__key {
+        overflow: hidden;
+        color: var(--ink);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .asset-card__size {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .download {
+        padding: 7px 9px;
+        font-size: 12px;
+      }
+
+      .rules {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .rule {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+      }
+
+      .rule strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+
+      .rule p {
+        font-size: 13px;
+      }
+
+      @media (max-width: 780px) {
+        .page {
+          width: min(100% - 20px, 1480px);
+          padding-top: 24px;
+        }
+
+        .intro,
+        .section-heading,
+        .asset-group__heading {
+          grid-template-columns: 1fr;
+          align-items: start;
+        }
+
+        .intro {
+          display: grid;
+        }
+
+        .controls {
+          justify-content: flex-start;
+        }
+
+        .rules {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .page {
+          width: 100%;
+          padding: 0;
+        }
+
+        .controls,
+        .download {
+          display: none;
+        }
+
+        .asset-card,
+        .asset-group,
+        .stage-wrap {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="intro">
+        <div>
+          <div class="eyebrow">Forge Timer · current runtime blueprint</div>
+          <h1>Нейтральный макет актуального интерфейса</h1>
+          <p>
+            Только элементы, которые действительно видны на текущей главной
+            странице. Размеры основаны на runtime-разметке default-скина Viking,
+            а не на полном списке старых файлов; пунктиром показана безопасная
+            зона для важных деталей.
+          </p>
+        </div>
+        <div class="controls" aria-label="Настройки макета">
+          <button class="control" id="toggle-safe" type="button">
+            Скрыть safe zone
+          </button>
+          <button class="control" id="toggle-cross" type="button">
+            Скрыть диагонали
+          </button>
+          <button class="control" id="print-board" type="button">
+            Печать / PDF
+          </button>
+        </div>
+      </header>
+
+      <section class="section" aria-labelledby="composition-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">01 · composition reference</div>
+            <h2 id="composition-title">Композиция desktop 1920 × 1080</h2>
+          </div>
+          <p class="section-note">
+            Этот экран нужен только для оценки масштаба и расположения. Для
+            чистой нарезки генерируй элементы из рамок ниже по одному.
+          </p>
+        </div>
+
+        <div class="stage-wrap">
+          <div class="desktop-stage">
+            <div class="app-column">
+              <span class="ruler ruler--width">CONTENT 612 px</span>
+              <div class="toolbar">
+                <div class="profile">PROFILE</div>
+                <div>SET</div>
+                <div>SKIN</div>
+              </div>
+              <div class="composition-slot timer-panel">
+                TIMER PANEL · 769 × 319
+              </div>
+              <div class="composition-slot timeline">24H TIMELINE · UI ONLY</div>
+              <div class="action-row">
+                <div class="composition-slot">FOCUS</div>
+                <div class="composition-slot wide">START / PAUSE</div>
+                <div class="composition-slot">BREAK</div>
+              </div>
+              <div class="analytics-row">
+                <div class="composition-slot heatmap">HEATMAP PANEL</div>
+                <div class="composition-slot stats">STATS PANEL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="assets-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">02 · isolated generation frames</div>
+            <h2 id="assets-title">Рамки отдельных ассетов</h2>
+          </div>
+          <p class="section-note">
+            Это визуальные слоты, а не старые имена файлов. Некоторые из них
+            сейчас используют один и тот же legacy-ассет, но для новой темы их
+            следует генерировать отдельно. Фон страницы остаётся непрозрачным.
+          </p>
+        </div>
+
+        <div class="asset-groups" id="asset-groups"></div>
+      </section>
+
+      <section class="section" aria-labelledby="rules-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">03 · production rules</div>
+            <h2 id="rules-title">Правила, чтобы нарезка не сломалась</h2>
+          </div>
+        </div>
+        <div class="rules">
+          <div class="rule">
+            <strong>Один элемент — один запрос</strong>
+            <p>
+              Общий экран используй как style reference, но панели и кнопки
+              генерируй в отдельных точных рамках.
+            </p>
+          </div>
+          <div class="rule">
+            <strong>Без текста внутри графики</strong>
+            <p>
+              Focus, Break, Start и цифры таймера остаются HTML-текстом. Так они
+              будут резкими, локализуемыми и доступными.
+            </p>
+          </div>
+          <div class="rule">
+            <strong>8% safe zone</strong>
+            <p>
+              Орнамент может доходить до края, но смысловые детали держи внутри
+              пунктира. Это защищает их при адаптивном масштабировании.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const groups = [
+        {
+          title: "Фон и таймер",
+          note: "Реальные пропорции текущего default-скина Viking",
+          assets: [
+            ["pageBackground", 2730, 1536],
+            ["timerPanelDesktop", 769, 319],
+            ["timerPanelMobile", 676, 676],
+          ],
+        },
+        {
+          title: "Верхняя панель",
+          note: "На главной сейчас видны Profile, Settings и Theme",
+          assets: [
+            ["profileFrame", 352, 100],
+            ["avatarIdle", 512, 512],
+            ["avatarFocused", 512, 512],
+            ["toolbarButtonFrame", 200, 200],
+            ["toolbarSettingsIcon", 512, 512],
+            ["toolbarThemeIcon", 512, 512],
+          ],
+        },
+        {
+          title: "Управление таймером",
+          note: "Focus и Break — квадратные кнопки вокруг Start / Pause",
+          assets: [
+            ["modeControlFrame", 232, 232],
+            ["focusModeIcon", 512, 512],
+            ["breakModeIcon", 512, 512],
+            ["primaryActionFrame", 460, 160],
+          ],
+        },
+        {
+          title: "Аналитика",
+          note: "Фактические размеры карточек: 400 × 167 и 180 × 167 CSS px",
+          assets: [
+            ["heatmapPanel", 800, 334],
+            ["statsPanel", 360, 334],
+          ],
+        },
+      ];
+
+      const assetGroups = document.querySelector("#asset-groups");
+
+      function escapeXml(value) {
+        return value.replace(/[<>&'\"]/g, (character) => {
+          const entities = {
+            "<": "&lt;",
+            ">": "&gt;",
+            "&": "&amp;",
+            "'": "&apos;",
+            '\"': "&quot;",
+          };
+          return entities[character];
+        });
+      }
+
+      function makeGuideSvg(key, width, height) {
+        const safeX = Math.round(width * 0.08);
+        const safeY = Math.round(height * 0.08);
+        const safeWidth = width - safeX * 2;
+        const safeHeight = height - safeY * 2;
+        const fontSize = Math.max(18, Math.round(Math.min(width, height) * 0.06));
+        const detailSize = Math.max(14, Math.round(fontSize * 0.48));
+
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect width="${width}" height="${height}" fill="#e2e5e8"/>
+  <path d="M0 0L${width} ${height}M${width} 0L0 ${height}" stroke="#aeb5bd" stroke-width="2"/>
+  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" fill="none" stroke="#20242a" stroke-width="2"/>
+  <rect x="${safeX}" y="${safeY}" width="${safeWidth}" height="${safeHeight}" fill="#dbe6ee" fill-opacity="0.7" stroke="#336893" stroke-width="2" stroke-dasharray="12 10"/>
+  <text x="50%" y="48%" text-anchor="middle" dominant-baseline="middle" fill="#3f4851" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="700">${escapeXml(key)}</text>
+  <text x="50%" y="58%" text-anchor="middle" dominant-baseline="middle" fill="#6d747d" font-family="Arial, sans-serif" font-size="${detailSize}">${width} × ${height} · ${(width / height).toFixed(3)}:1</text>
+</svg>`;
+      }
+
+      function downloadGuide(key, width, height) {
+        const svg = makeGuideSvg(key, width, height);
+        const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `${key}_${width}x${height}_guide.svg`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      groups.forEach((group) => {
+        const section = document.createElement("section");
+        section.className = "asset-group";
+
+        const heading = document.createElement("div");
+        heading.className = "asset-group__heading";
+        heading.innerHTML = `<h3>${group.title}</h3><p>${group.note}</p>`;
+        section.appendChild(heading);
+
+        const grid = document.createElement("div");
+        grid.className = "asset-grid";
+
+        group.assets.forEach(([key, width, height]) => {
+          const ratio = width / height;
+          const card = document.createElement("article");
+          card.className = "asset-card";
+          card.innerHTML = `
+            <div class="asset-card__frame-wrap">
+              <div class="asset-frame" style="--asset-ratio: ${width} / ${height}; --preview-width: ${Math.min(width, 520)}px">
+                <span class="asset-frame__label">${key}</span>
+              </div>
+            </div>
+            <div class="asset-card__meta">
+              <div>
+                <div class="asset-card__key">${key}</div>
+                <div class="asset-card__size">${width} × ${height} px · ${ratio.toFixed(3)}:1</div>
+              </div>
+              <button class="download" type="button">SVG-шаблон</button>
+            </div>`;
+
+          card.querySelector(".download").addEventListener("click", () => {
+            downloadGuide(key, width, height);
+          });
+
+          grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        assetGroups.appendChild(section);
+      });
+
+      document.querySelector("#toggle-safe").addEventListener("click", (event) => {
+        document.body.classList.toggle("hide-safe");
+        event.currentTarget.textContent = document.body.classList.contains("hide-safe")
+          ? "Показать safe zone"
+          : "Скрыть safe zone";
+      });
+
+      document.querySelector("#toggle-cross").addEventListener("click", (event) => {
+        document.body.classList.toggle("hide-cross");
+        event.currentTarget.textContent = document.body.classList.contains("hide-cross")
+          ? "Показать диагонали"
+          : "Скрыть диагонали";
+      });
+
+      document.querySelector("#print-board").addEventListener("click", () => {
+        window.print();
+      });
+    </script>
+  </body>
+</html>

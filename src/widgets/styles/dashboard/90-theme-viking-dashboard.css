@@ -61,7 +61,7 @@
   width: 100%;
   height: auto;
   min-height: 0;
-  aspect-ratio: var(--skin-timer-panel-aspect-ratio);
+  aspect-ratio: var(--skin-timer-panel-desktop-aspect-ratio);
   z-index: 1;
 }
 
@@ -144,11 +144,11 @@
 }
 
 .dashboard-shell--viking .top-controls__button--focus {
-  background-image: var(--skin-stats-panel-image);
+  background-image: var(--skin-mode-control-frame-image);
 }
 
 .dashboard-shell--viking .top-controls__button--break {
-  background-image: var(--skin-stats-panel-image);
+  background-image: var(--skin-mode-control-frame-image);
 }
 
 .dashboard-shell--viking .top-controls .themed-button--tab:hover,
@@ -188,7 +188,7 @@
 
 .dashboard-shell--viking .top-controls--action-row .themed-button--tab {
   background-color: transparent;
-  background-image: var(--skin-stats-panel-image);
+  background-image: var(--skin-mode-control-frame-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -211,13 +211,13 @@
 .dashboard-shell--viking
   .top-controls--action-row
   .top-controls__button--focus::before {
-  background-image: url("/assets/Viking Theme/focus_icon_viking.webp");
+  background-image: var(--skin-focus-mode-icon-image);
 }
 
 .dashboard-shell--viking
   .top-controls--action-row
   .top-controls__button--break::before {
-  background-image: url("/assets/Viking Theme/break_viking.webp");
+  background-image: var(--skin-break-mode-icon-image);
 }
 
 .dashboard-shell--viking .top-controls--action-row .themed-button--tab:hover,
@@ -229,7 +229,7 @@
   .themed-button--tab.is-active {
   color: transparent;
   background-color: transparent;
-  background-image: var(--skin-stats-panel-image);
+  background-image: var(--skin-mode-control-frame-image);
   filter: none;
 }
 
@@ -301,7 +301,7 @@
 }
 
 .dashboard-shell--viking .action-buttons .themed-button--action {
-  aspect-ratio: var(--skin-action-button-aspect-ratio);
+  aspect-ratio: var(--skin-primary-action-frame-aspect-ratio);
   width: clamp(9.3rem, 14vw, 11.1rem);
   min-height: 0;
   z-index: 1;
@@ -325,7 +325,7 @@
 }
 
 .dashboard-shell--viking .action-buttons__button--start {
-  background-image: var(--skin-start-button-image);
+  background-image: var(--skin-primary-action-frame-image);
 }
 
 .dashboard-shell--viking .toolbar-icon-button {
@@ -338,7 +338,7 @@
   border: none;
   border-radius: 0;
   background-color: transparent;
-  background-image: var(--skin-toolbar-button-image);
+  background-image: var(--skin-toolbar-button-frame-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -354,7 +354,7 @@
   border: none;
   border-radius: 0;
   background-color: transparent;
-  background-image: var(--skin-focus-mode-button-image);
+  background-image: var(--skin-profile-frame-image);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -362,14 +362,10 @@
   color: transparent;
 }
 
-.dashboard-shell--viking .toolbar-icon-button--kofi {
-  margin-right: auto;
-}
 
-.dashboard-shell--viking .toolbar-icon-button--kofi,
 .dashboard-shell--viking .toolbar-icon-button--settings,
 .dashboard-shell--viking .toolbar-icon-button--theme {
-  background-image: var(--skin-stats-panel-image);
+  background-image: var(--skin-toolbar-button-frame-image);
 }
 
 .dashboard-shell--viking .toolbar-icon-button:focus-visible,
@@ -433,17 +429,7 @@
   transition: filter 150ms ease;
 }
 
-.dashboard-shell--viking
-  .toolbar-icon-button--kofi
-  .toolbar-icon-button__icon::before {
-  background-image: url("/images/ko-fi_icon.webp");
-}
 
-.dashboard-shell--viking
-  .toolbar-icon-button--history
-  .toolbar-icon-button__icon::before {
-  background-image: var(--skin-toolbar-history-icon-image);
-}
 
 .dashboard-shell--viking
   .toolbar-icon-button--theme
@@ -457,11 +443,6 @@
   background-image: var(--skin-toolbar-settings-icon-image);
 }
 
-.dashboard-shell--viking
-  .toolbar-icon-button--exit
-  .toolbar-icon-button__icon::before {
-  background-image: var(--skin-toolbar-auth-icon-image);
-}
 
 .dashboard-shell--viking
   .toolbar-icon-button:hover
@@ -473,81 +454,15 @@
     drop-shadow(0 0 0.55rem rgba(134, 150, 167, 0.68));
 }
 
-.dashboard-shell--viking .notes-panel {
-  width: 283px;
-  min-width: 283px;
-  max-width: 283px;
-  margin-inline: auto;
-  height: 372px;
-  min-height: 372px;
-  max-height: 372px;
-  overflow: hidden;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-}
 
-.dashboard-shell--viking .notes-panel .panel-shell__body {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  min-height: 372px;
-  aspect-ratio: auto;
-}
 
-.dashboard-shell--viking .notes-panel .panel-shell__body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--skin-notes-panel-image);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  pointer-events: none;
-  z-index: 0;
-}
 
-.dashboard-shell--viking .notes-panel__notepad,
-.dashboard-shell--viking .notes-panel__status {
-  position: relative;
-  z-index: 1;
-}
 
-.dashboard-shell--viking .notes-panel__notepad {
-  --notes-scrollbar-track: rgba(49, 49, 52, 0.16);
-  --notes-scrollbar-thumb: rgba(88, 92, 101, 0.56);
-  --notes-scrollbar-thumb-hover: rgba(88, 92, 101, 0.78);
-  position: absolute;
-  inset: 3.75rem 2.5rem 3.15rem 2.35rem;
-  width: auto;
-  height: auto;
-  min-height: 0;
-  border: none;
-  background: transparent;
-  color: #f4fbff;
-  box-shadow: none;
-  outline: none;
-  padding: 0.15rem 0.4rem 0.15rem 0.25rem;
-  z-index: 1;
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-  font-style: normal;
-  letter-spacing: 0;
-  text-transform: none;
-  text-shadow: 0 1px 1px rgba(5, 7, 9, 0.62);
-}
 
-.dashboard-shell--viking .notes-panel__notepad::placeholder {
-  color: rgba(232, 240, 247, 0.68);
-}
 
-.dashboard-shell--viking .notes-panel__notepad:focus {
-  outline-color: rgba(201, 216, 229, 0.9);
-}
 
 .dashboard-shell--viking .heatmap-card,
-.dashboard-shell--viking .stats-card,
-.dashboard-shell--viking .dragon-card {
+.dashboard-shell--viking .stats-card {
   border: none;
   background: transparent;
 }
@@ -562,16 +477,9 @@
   max-width: 100%;
 }
 
-.dashboard-shell--viking .dashboard-lock-wrap--notes,
-.dashboard-shell--viking .dashboard-lock-wrap--dragon {
-  width: fit-content;
-  max-width: 100%;
-  margin-inline: auto;
-}
 
 .dashboard-shell--viking .heatmap-card .panel-shell__body,
-.dashboard-shell--viking .stats-card .panel-shell__body,
-.dashboard-shell--viking .dragon-card .panel-shell__body {
+.dashboard-shell--viking .stats-card .panel-shell__body {
   position: relative;
   overflow: hidden;
   height: 100%;
@@ -586,8 +494,7 @@
 }
 
 .dashboard-shell--viking .heatmap-card .panel-shell__body::before,
-.dashboard-shell--viking .stats-card .panel-shell__body::before,
-.dashboard-shell--viking .dragon-card .panel-shell__body::before {
+.dashboard-shell--viking .stats-card .panel-shell__body::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -607,9 +514,6 @@
   background-image: var(--skin-stats-panel-image);
 }
 
-.dashboard-shell--viking .dragon-card .panel-shell__body::before {
-  background-image: var(--skin-dragon-panel-image);
-}
 
 .dashboard-shell--viking .heatmap-card__content {
   position: relative;
@@ -757,59 +661,12 @@
     0 0 0.5rem rgba(232, 246, 255, 0.58);
 }
 
-.dashboard-shell--viking .dragon-card {
-  margin-inline: auto;
-}
 
-.dashboard-shell--viking .dragon-card .panel-shell__body {
-  height: 167px;
-  max-height: 167px;
-  min-height: 167px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
-.dashboard-shell--viking .dragon-card .panel-shell__body > * {
-  position: relative;
-  z-index: 1;
-}
 
-.dashboard-shell--viking .dragon-card .dragon-card__display {
-  min-height: 4.2rem;
-  margin: 0;
-  text-align: center;
-  background: rgba(28, 12, 9, 0);
-  color: #f4fbff;
-  font-size: 1.7rem;
-}
 
-.dashboard-shell--viking .dragon-card .dragon-card__level-row {
-  width: min(100%, 90%);
-  margin-top: 0;
-  align-items: center;
-  color: #c9d0d8;
-  font-size: 0.9rem;
-}
 
-.dashboard-shell--viking .dragon-card .dragon-card__progress {
-  width: min(100%, 90%);
-  margin-top: 0;
-  border: 1px solid rgba(201, 216, 229, 0.45);
-  background: rgba(20, 23, 27, 0.68);
-  border-radius: 0;
-  box-shadow:
-    inset 0 0 0 1px rgba(232, 240, 247, 0.06),
-    0 0 10px rgba(201, 216, 229, 0.1);
-}
 
-.dashboard-shell--viking .dragon-card .dragon-card__progress-fill {
-  background: linear-gradient(90deg, #8696a7, #d7e7f5);
-  box-shadow:
-    0 0 8px rgba(232, 246, 255, 0.24),
-    0 0 14px rgba(160, 174, 190, 0.16);
-}
 
 .app-loading-state--viking {
   min-height: 100svh;
@@ -854,8 +711,7 @@
 .auth-block--viking,
 .settings-modal__overlay--viking,
 .history-dashboard__overlay--viking,
-.theme-picker-modal__overlay--viking,
-.logout-confirmation__overlay--viking {
+.theme-picker-modal__overlay--viking {
   background:
     linear-gradient(180deg, rgba(18, 22, 27, 0.78), rgba(8, 10, 12, 0.9)),
     radial-gradient(
@@ -872,8 +728,7 @@
 .auth-block--viking .auth-block__panel,
 .settings-modal__overlay--viking .settings-modal,
 .history-dashboard__overlay--viking .history-dashboard,
-.theme-picker-modal__overlay--viking .theme-picker-modal,
-.logout-confirmation__overlay--viking .logout-confirmation {
+.theme-picker-modal__overlay--viking .theme-picker-modal {
   border: 1px solid rgba(201, 216, 229, 0.36);
   border-radius: 0.18rem;
   background:
@@ -897,8 +752,7 @@
 .auth-block--viking .auth-block__panel::before,
 .settings-modal__overlay--viking .settings-modal::before,
 .history-dashboard__overlay--viking .history-dashboard::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal::before,
-.logout-confirmation__overlay--viking .logout-confirmation::before {
+.theme-picker-modal__overlay--viking .theme-picker-modal::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -917,9 +771,7 @@
 .settings-modal__overlay--viking .settings-modal__section + .settings-modal__section,
 .settings-modal__overlay--viking .settings-modal__footer,
 .history-dashboard__overlay--viking .history-dashboard__header,
-.theme-picker-modal__overlay--viking .theme-picker-modal__header,
-.logout-confirmation__overlay--viking .logout-confirmation__header,
-.logout-confirmation__overlay--viking .logout-confirmation__actions {
+.theme-picker-modal__overlay--viking .theme-picker-modal__header {
   border-color: rgba(201, 216, 229, 0.2);
 }
 
@@ -934,8 +786,7 @@
 .settings-modal__overlay--viking .settings-modal__header h2,
 .history-dashboard__overlay--viking .history-dashboard__header h2,
 .history-dashboard__overlay--viking .history-dashboard__panel h3,
-.theme-picker-modal__overlay--viking .theme-picker-modal__header h2,
-.logout-confirmation__overlay--viking .logout-confirmation__header h2 {
+.theme-picker-modal__overlay--viking .theme-picker-modal__header h2 {
   color: #f4fbff;
   font-family: "VikingTimer", var(--dashboard-button-font-family);
   font-style: normal;
@@ -966,8 +817,7 @@
 .theme-picker-modal__overlay--viking .theme-picker-modal__intro,
 .theme-picker-modal__overlay--viking .theme-picker-modal__option-state,
 .theme-picker-modal__overlay--viking
-  .theme-picker-modal__option-description,
-.logout-confirmation__overlay--viking .logout-confirmation__body p {
+  .theme-picker-modal__option-description {
   color: #c9d8e7;
 }
 
@@ -1152,9 +1002,7 @@
 .history-dashboard__overlay--viking .history-dashboard__close,
 .history-dashboard__overlay--viking .history-dashboard__week-actions button,
 .history-dashboard__overlay--viking .history-dashboard__logout,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close,
-.logout-confirmation__overlay--viking .logout-confirmation__button,
-.logout-confirmation__overlay--viking .logout-confirmation__close {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close {
   border: 1px solid rgba(201, 216, 229, 0.32);
   border-radius: 0.12rem;
   background:
@@ -1169,8 +1017,7 @@
 .auth-block--viking .auth-block__button,
 .settings-modal__overlay--viking .settings-modal__button,
 .history-dashboard__overlay--viking .history-dashboard__week-actions button,
-.history-dashboard__overlay--viking .history-dashboard__logout,
-.logout-confirmation__overlay--viking .logout-confirmation__button {
+.history-dashboard__overlay--viking .history-dashboard__logout {
   font-family: "VikingTimer", var(--dashboard-button-font-family);
   font-style: normal;
   letter-spacing: 0.04em;
@@ -1179,8 +1026,7 @@
 .auth-block--viking .auth-block__close,
 .settings-modal__overlay--viking .settings-modal__close,
 .history-dashboard__overlay--viking .history-dashboard__close,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close,
-.logout-confirmation__overlay--viking .logout-confirmation__close {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close {
   position: relative;
   display: inline-grid;
   place-items: center;
@@ -1194,9 +1040,7 @@
 .history-dashboard__overlay--viking .history-dashboard__close::before,
 .history-dashboard__overlay--viking .history-dashboard__close::after,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::after,
-.logout-confirmation__overlay--viking .logout-confirmation__close::before,
-.logout-confirmation__overlay--viking .logout-confirmation__close::after {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::after {
   content: "";
   position: absolute;
   width: 0.76rem;
@@ -1208,16 +1052,14 @@
 .auth-block--viking .auth-block__close::before,
 .settings-modal__overlay--viking .settings-modal__close::before,
 .history-dashboard__overlay--viking .history-dashboard__close::before,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::before,
-.logout-confirmation__overlay--viking .logout-confirmation__close::before {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::before {
   transform: rotate(45deg);
 }
 
 .auth-block--viking .auth-block__close::after,
 .settings-modal__overlay--viking .settings-modal__close::after,
 .history-dashboard__overlay--viking .history-dashboard__close::after,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close::after,
-.logout-confirmation__overlay--viking .logout-confirmation__close::after {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close::after {
   transform: rotate(-45deg);
 }
 
@@ -1242,13 +1084,7 @@
 .history-dashboard__overlay--viking .history-dashboard__logout:not(:disabled):hover,
 .history-dashboard__overlay--viking .history-dashboard__logout:not(:disabled):focus-visible,
 .theme-picker-modal__overlay--viking .theme-picker-modal__close:hover,
-.theme-picker-modal__overlay--viking .theme-picker-modal__close:focus-visible,
-.logout-confirmation__overlay--viking
-  .logout-confirmation__button:not(:disabled):hover,
-.logout-confirmation__overlay--viking
-  .logout-confirmation__button:not(:disabled):focus-visible,
-.logout-confirmation__overlay--viking .logout-confirmation__close:hover,
-.logout-confirmation__overlay--viking .logout-confirmation__close:focus-visible {
+.theme-picker-modal__overlay--viking .theme-picker-modal__close:focus-visible {
   color: #ffffff;
   border-color: rgba(232, 246, 255, 0.58);
   filter: brightness(1.08);
@@ -1322,9 +1158,7 @@
   color: #ffd6c5;
 }
 
-.dashboard-shell--viking .heatmap-card__status,
-.dashboard-shell--viking .notes-panel__status,
-.dashboard-shell--viking .dragon-card__level-value {
+.dashboard-shell--viking .heatmap-card__status {
   color: #f4fbff;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   font-style: normal;

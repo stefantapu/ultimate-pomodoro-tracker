@@ -12,3 +12,5 @@ This project is a gamified Pomodoro tracker. Use these terms when naming modules
 - **Authenticated resource**: Supabase-backed data that belongs to the signed-in user and must hide stale data when users change.
 - **Skin profile**: a normalized theme description containing colors, typography, layout, assets, audio, cursors, and effects.
 - **Skin definition**: the author-facing, possibly partial input used to build a skin profile.
+- **Skin visual slot**: a semantically named image role in the rendered interface; each slot represents one UI purpose and shape, even when existing skins temporarily share the same source image.
+- **Runtime asset**: an image, font, cursor, or audio file loaded by the shipped application. Design sources, installers, alternates, and unreachable files are not runtime assets and do not belong under `public/assets`.

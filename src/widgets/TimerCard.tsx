@@ -100,7 +100,9 @@ export const TimerCard = memo(function TimerCard({
   timeLeft,
   targetTimestamp,
 }: TimerCardProps) {
-  const timerPanel = useSkinStore((state) => state.activeSkin.assets.timerPanel);
+  const timerPanel = useSkinStore(
+    (state) => state.activeSkin.assets.timerPanelDesktop,
+  );
   const timerPanelMobile = useSkinStore(
     (state) => state.activeSkin.assets.timerPanelMobile,
   );

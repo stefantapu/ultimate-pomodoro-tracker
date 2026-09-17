@@ -86,11 +86,11 @@ const vikingForegroundEffect: SkinAmbientEffect = {
   driftRangeVw: [-7, 9],
 };
 
-const redLavaModeButton = buildImageAsset(
+const warmProfileFrame = buildImageAsset(
   "/assets/red_lava_theme/top_control_panel/brek_and_focus_button_background_w335_h95.webp",
   { width: 335, height: 95 },
 );
-const redLavaSettingsButton = buildImageAsset(
+const warmSquareFrame = buildImageAsset(
   "/assets/red_lava_theme/exit_icon/exit_button_w150_h150.webp",
   { width: 150, height: 150 },
 );
@@ -98,49 +98,55 @@ const redLavaSettingsIcon = buildImageAsset(
   "/assets/red_lava_theme/settings_button/settings_icon_100x100.webp",
   { width: 100, height: 100 },
 );
-const redLavaHistoryIcon = buildImageAsset(
-  "/assets/red_lava_theme/history_icon.webp",
-  { width: 100, height: 100 },
-);
 const redLavaThemeIcon = buildImageAsset(
   "/assets/red_lava_theme/change_theme_icon.webp",
   { width: 80, height: 81 },
 );
-const redLavaExitIcon = buildImageAsset(
-  "/assets/red_lava_theme/exit_icon/exit_icon_15x15.webp",
-  { width: 15, height: 15 },
-);
-
 const warmSkin = createSkinProfile({
   id: "warm",
   label: "Warm",
   description: "Primary warm palette with themed timer controls.",
-  capabilities: {
-    effects: {
-      ambient: warmAmbientEffect,
-      foreground: warmForegroundEffect,
-    },
-    audio: {
-      alarm: true,
-      primaryTimerControl: true,
-      modeControl: true,
-      toolbarClick: true,
-      focusAmbience: true,
-    },
-    visual: {
-      timerPanelArt: true,
-      toolbarIconArt: true,
-      customCursors: true,
-    },
+  effects: {
+    ambient: warmAmbientEffect,
+    foreground: warmForegroundEffect,
   },
   assets: {
     pageBackground: buildImageAsset("/assets/red_lava_theme/background.webp", {
       width: 1920,
       height: 1080,
     }),
-    notesPanel: buildImageAsset(
-      "/assets/red_lava_theme/notes_panel/notes_panel_w545_h717.webp",
-      { width: 545, height: 717 },
+    timerPanelDesktop: buildImageAsset(
+      "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
+      { width: 1047, height: 390 },
+    ),
+    timerPanelMobile: buildImageAsset(
+      "/assets/red_lava_theme/timer_panel/timer_panel_square_mobile.webp",
+      { width: 1, height: 1 },
+    ),
+    profileFrame: warmProfileFrame,
+    avatarIdle: buildImageAsset("/assets/red_lava_theme/avatar-idle.webp", {
+      width: 512,
+      height: 512,
+    }),
+    avatarFocused: buildImageAsset(
+      "/assets/red_lava_theme/avatar-focused.webp",
+      { width: 512, height: 512 },
+    ),
+    toolbarButtonFrame: warmSquareFrame,
+    toolbarSettingsIcon: redLavaSettingsIcon,
+    toolbarThemeIcon: redLavaThemeIcon,
+    modeControlFrame: warmSquareFrame,
+    focusModeIcon: buildImageAsset(
+      "/assets/red_lava_theme/focus_icon_warm.webp",
+      { width: 55, height: 55 },
+    ),
+    breakModeIcon: buildImageAsset(
+      "/assets/red_lava_theme/pause_icon_warm.webp",
+      { width: 73, height: 58 },
+    ),
+    primaryActionFrame: buildImageAsset(
+      "/assets/red_lava_theme/start_button_w321_h107.webp",
+      { width: 321, height: 107 },
     ),
     heatmapPanel: buildImageAsset(
       "/assets/red_lava_theme/heatmap_panel/heatmap_panel_w920_h384.webp",
@@ -149,63 +155,6 @@ const warmSkin = createSkinProfile({
     statsPanel: buildImageAsset(
       "/assets/red_lava_theme/stats_panel/stats_panel_w334_h489.webp",
       { width: 191, height: 213 },
-    ),
-    dragonPanel: buildImageAsset(
-      "/assets/red_lava_theme/dragon_panel/dragon_panel.webp",
-      { width: 545, height: 351 },
-    ),
-    topControlsPanel: buildImageAsset(
-      "/assets/red_lava_theme/top_control_panel/top_panel_w1303_h200.webp",
-      { width: 1303, height: 200 },
-    ),
-    modeTabButton: redLavaModeButton,
-    focusModeButton: redLavaModeButton,
-    breakModeButton: redLavaModeButton,
-    timerPanel: buildImageAsset(
-      "/assets/red_lava_theme/timer_panel_w1047_h390.webp",
-      { width: 1047, height: 390 },
-    ),
-    timerPanelMobile: buildImageAsset(
-      "/assets/red_lava_theme/timer_panel/timer_panel_square_mobile.webp",
-      { width: 1, height: 1 },
-    ),
-    startButton: buildImageAsset(
-      "/assets/red_lava_theme/start_button_w321_h107.webp",
-      { width: 321, height: 107 },
-    ),
-    resetButton: buildImageAsset(
-      "/assets/red_lava_theme/reset_button_w321_h107.webp",
-      { width: 321, height: 107 },
-    ),
-    autoFocusButton: buildImageAsset(
-      "/assets/red_lava_theme/auto_focus_w150_h150.webp",
-      { width: 150, height: 150 },
-    ),
-    autoBreakButton: buildImageAsset(
-      "/assets/red_lava_theme/auto_break_w150_h150.webp",
-      { width: 150, height: 150 },
-    ),
-    soundButton: buildImageAsset(
-      "/assets/red_lava_theme/audio_button_w150_h150.webp",
-      { width: 150, height: 150 },
-    ),
-    settingsButton: redLavaSettingsButton,
-    settingsIcon: redLavaSettingsIcon,
-    historyIcon: redLavaHistoryIcon,
-    exitButton: redLavaSettingsButton,
-    exitIcon: redLavaExitIcon,
-    toolbarButton: redLavaSettingsButton,
-    toolbarHistoryIcon: redLavaHistoryIcon,
-    toolbarThemeIcon: redLavaThemeIcon,
-    toolbarSettingsIcon: redLavaSettingsIcon,
-    toolbarAuthIcon: redLavaExitIcon,
-    avatarIdle: buildImageAsset("/assets/red_lava_theme/avatar-idle.webp", {
-      width: 512,
-      height: 512,
-    }),
-    avatarFocused: buildImageAsset(
-      "/assets/red_lava_theme/avatar-focused.webp",
-      { width: 512, height: 512 },
     ),
     cursorDefault: {
       src: "/assets/red_lava_theme/cursors/diablo/DII.cur",
@@ -298,23 +247,9 @@ const neumorphismSkin = createSkinProfile({
   label: "Neumorphism",
   description:
     "Ultra-light monochrome neumorphic skin with soft depth and calm contrast.",
-  capabilities: {
-    effects: {
-      ambient: null,
-      foreground: null,
-    },
-    audio: {
-      alarm: false,
-      primaryTimerControl: false,
-      modeControl: false,
-      toolbarClick: false,
-      focusAmbience: false,
-    },
-    visual: {
-      timerPanelArt: false,
-      toolbarIconArt: false,
-      customCursors: false,
-    },
+  effects: {
+    ambient: null,
+    foreground: null,
   },
   assets: {
     pageBackground: buildImageAsset(
@@ -384,56 +319,16 @@ const vikingSkin = createSkinProfile({
   id: "viking",
   label: "Viking",
   description: "Frosted Norse theme with carved wood panels and winter ambience.",
-  capabilities: {
-    effects: {
-      ambient: vikingAmbientEffect,
-      foreground: vikingForegroundEffect,
-    },
-    audio: {
-      alarm: true,
-      primaryTimerControl: true,
-      modeControl: true,
-      toolbarClick: true,
-      focusAmbience: true,
-    },
-    visual: {
-      timerPanelArt: true,
-      toolbarIconArt: true,
-      customCursors: true,
-    },
+  effects: {
+    ambient: vikingAmbientEffect,
+    foreground: vikingForegroundEffect,
   },
   assets: {
     pageBackground: buildImageAsset(
       "/assets/Viking Theme/Viking Background.webp",
       { width: 2730, height: 1536 },
     ),
-    notesPanel: buildImageAsset("/assets/Viking Theme/Notes panel.webp", {
-      width: 342,
-      height: 460,
-    }),
-    heatmapPanel: buildImageAsset("/assets/Viking Theme/heatmap panel.webp", {
-      width: 493,
-      height: 215,
-    }),
-    statsPanel: buildImageAsset("/assets/Viking Theme/Stats panel.webp", {
-      width: 223,
-      height: 213,
-    }),
-    dragonPanel: buildImageAsset("/assets/Viking Theme/Dragon panel.webp", {
-      width: 334,
-      height: 209,
-    }),
-    topControlsPanel: null,
-    modeTabButton: null,
-    focusModeButton: buildImageAsset("/assets/Viking Theme/Focus button.webp", {
-      width: 233,
-      height: 76,
-    }),
-    breakModeButton: buildImageAsset("/assets/Viking Theme/Break button.webp", {
-      width: 234,
-      height: 76,
-    }),
-    timerPanel: buildImageAsset("/assets/Viking Theme/Timer panel.webp", {
+    timerPanelDesktop: buildImageAsset("/assets/Viking Theme/Timer panel.webp", {
       width: 769,
       height: 319,
     }),
@@ -441,42 +336,10 @@ const vikingSkin = createSkinProfile({
       "/assets/Viking Theme/Timer panel square.webp",
       { width: 676, height: 676 },
     ),
-    startButton: buildImageAsset("/assets/Viking Theme/Start button.webp", {
-      width: 230,
-      height: 80,
+    profileFrame: buildImageAsset("/assets/Viking Theme/Focus button.webp", {
+      width: 233,
+      height: 76,
     }),
-    resetButton: buildImageAsset("/assets/Viking Theme/Reset Button.webp", {
-      width: 227,
-      height: 79,
-    }),
-    autoFocusButton: null,
-    autoBreakButton: null,
-    soundButton: null,
-    settingsButton: null,
-    settingsIcon: null,
-    historyIcon: null,
-    exitButton: null,
-    exitIcon: null,
-    toolbarButton: buildImageAsset(
-      "/assets/Viking Theme/Background of top buttons.webp",
-      { width: 74, height: 70 },
-    ),
-    toolbarHistoryIcon: buildImageAsset(
-      "/assets/Viking Theme/Statistics icon.webp",
-      { width: 75, height: 81 },
-    ),
-    toolbarThemeIcon: buildImageAsset("/assets/Viking Theme/Theme icon.webp", {
-      width: 77,
-      height: 79,
-    }),
-    toolbarSettingsIcon: buildImageAsset(
-      "/assets/Viking Theme/Settings icon.webp",
-      { width: 71, height: 73 },
-    ),
-    toolbarAuthIcon: buildImageAsset(
-      "/assets/Viking Theme/Login Logout icon.webp",
-      { width: 74, height: 86 },
-    ),
     avatarIdle: buildImageAsset("/assets/Viking Theme/avatar-idle.webp", {
       width: 512,
       height: 512,
@@ -484,6 +347,42 @@ const vikingSkin = createSkinProfile({
     avatarFocused: buildImageAsset("/assets/Viking Theme/avatar-focused.webp", {
       width: 512,
       height: 512,
+    }),
+    toolbarButtonFrame: buildImageAsset(
+      "/assets/Viking Theme/Stats panel.webp",
+      { width: 223, height: 213 },
+    ),
+    toolbarSettingsIcon: buildImageAsset(
+      "/assets/Viking Theme/Settings icon.webp",
+      { width: 71, height: 73 },
+    ),
+    toolbarThemeIcon: buildImageAsset("/assets/Viking Theme/Theme icon.webp", {
+      width: 77,
+      height: 79,
+    }),
+    modeControlFrame: buildImageAsset(
+      "/assets/Viking Theme/Stats panel.webp",
+      { width: 223, height: 213 },
+    ),
+    focusModeIcon: buildImageAsset(
+      "/assets/Viking Theme/focus_icon_viking.webp",
+      { width: 81, height: 68 },
+    ),
+    breakModeIcon: buildImageAsset("/assets/Viking Theme/break_viking.webp", {
+      width: 95,
+      height: 108,
+    }),
+    primaryActionFrame: buildImageAsset(
+      "/assets/Viking Theme/Start button.webp",
+      { width: 230, height: 80 },
+    ),
+    heatmapPanel: buildImageAsset("/assets/Viking Theme/heatmap panel.webp", {
+      width: 493,
+      height: 215,
+    }),
+    statsPanel: buildImageAsset("/assets/Viking Theme/Stats panel.webp", {
+      width: 223,
+      height: 213,
     }),
     cursorDefault: {
       src: "/assets/Viking Theme/Cursor/d4-normal-select.cur",
@@ -597,8 +496,6 @@ const skinById = new Map<SkinId, SkinProfile>([
   ["viking", skinCatalog.viking],
 ]);
 
-const legacySkinIds = new Map<string, SkinId>([["soft-form", "neumorphism"]]);
-
 export const DEFAULT_SKIN_ID: SkinId = "viking";
 
 export function listSkins(): readonly SkinProfile[] {
@@ -610,12 +507,6 @@ export function listPrimarySkins(): readonly SkinProfile[] {
 }
 
 export function getSkinById(skinId: string): SkinProfile {
-  const legacySkinId = legacySkinIds.get(skinId);
-
-  if (legacySkinId) {
-    return skinById.get(legacySkinId)!;
-  }
-
   if (skinById.has(skinId as SkinId)) {
     return skinById.get(skinId as SkinId)!;
   }
