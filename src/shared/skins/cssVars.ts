@@ -81,7 +81,7 @@ function toCursorVariable(
     return fallback;
   }
 
-  return `url("${asset.src}") ${asset.hotspotX} ${asset.hotspotY}, ${fallback}`;
+  return `url("${asset.src}"), ${fallback}`;
 }
 
 function mapImageAssetVariables(

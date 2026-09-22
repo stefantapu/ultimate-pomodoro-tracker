@@ -9,8 +9,6 @@ export type SkinImageAsset = {
 
 export type SkinCursorAsset = {
   src: string;
-  hotspotX: number;
-  hotspotY: number;
 };
 
 export const SKIN_IMAGE_ASSET_KEYS = [
