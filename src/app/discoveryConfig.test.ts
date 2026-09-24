@@ -38,7 +38,7 @@ describe("search discovery configuration", () => {
     }
   });
 
-  it("lists only the canonical homepage in the sitemap", () => {
+  it("lists canonical user-facing pages in the sitemap", () => {
     const sitemap = readFileSync(projectPath("public", "sitemap.xml"), "utf8");
     const sitemapDocument = new DOMParser().parseFromString(
       sitemap,
@@ -50,7 +50,11 @@ describe("search discovery configuration", () => {
       [...sitemapDocument.querySelectorAll("url > loc")].map(
         (location) => location.textContent,
       ),
-    ).toEqual(["https://forgetimer.dev/"]);
+    ).toEqual([
+      "https://forgetimer.dev/",
+      "https://forgetimer.dev/privacy",
+      "https://forgetimer.dev/terms",
+    ]);
     expect(sitemap).not.toContain("/llms.txt");
     expect(sitemap).not.toContain("/ai/forge-timer.md");
 
