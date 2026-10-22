@@ -87,6 +87,8 @@ Open the local Vite URL shown in the terminal.
 ## Available Scripts
 
 - `npm run dev` starts the development server
+- `npm test` runs the automated test suite
+- `npm run test:coverage` runs tests with coverage reporting
 - `npm run build` runs TypeScript build checks and creates a production bundle
 - `npm run lint` runs ESLint
 - `npm run preview` serves the production build locally
@@ -156,7 +158,7 @@ For a more detailed code map, see [`PROJECT_STRUCTURE.md`](./PROJECT_STRUCTURE.m
 
 - The project currently uses `npm` and ships a `package-lock.json`
 - Environment files such as `.env.local` are gitignored
-- There is no dedicated automated test suite configured yet, so `npm run build` and `npm run lint` are the main validation steps
+- Run `npm test`, `npm run lint`, and `npm run build` to validate changes
 
 ## Future README Improvements
 
