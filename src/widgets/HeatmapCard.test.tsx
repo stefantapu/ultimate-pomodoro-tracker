@@ -58,6 +58,18 @@ describe("HeatmapCard", () => {
     });
   });
 
+  it("uses a light scheme with increasing ink intensity on library parchment", () => {
+    useSkinStore.getState().setActiveSkinId("library");
+    renderWithProviders(
+      <HeatmapCard loading={false} heatmapData={[{ date: "2026-04-24", value: 3600 }]} />,
+    );
+    expect(lastActivityCalendarProps?.colorScheme).toBe("light");
+    expect(lastActivityCalendarProps?.theme).toEqual({
+      light: ["#f4e4c4", "#d7b77d", "#b88a4a", "#8a5b2c", "#593617"],
+      dark: ["#f4e4c4", "#d7b77d", "#b88a4a", "#8a5b2c", "#593617"],
+    });
+  });
+
   it("uses viking palette with dark tooltip scheme and renders preview label", () => {
     useSkinStore.getState().setActiveSkinId("viking");
 

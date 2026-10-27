@@ -101,11 +101,13 @@ describe("mapSkinToCssVariables contract", () => {
     const warmVars = mapSkinToCssVariables(getSkinById("warm"));
     const neumorphismVars = mapSkinToCssVariables(getSkinById("neumorphism"));
     const vikingVars = mapSkinToCssVariables(getSkinById("viking"));
+    const libraryVars = mapSkinToCssVariables(getSkinById("library"));
     const expected = [...EXPECTED_CSS_VARIABLE_KEYS].sort();
 
     expect(Object.keys(warmVars).sort()).toEqual(expected);
     expect(Object.keys(neumorphismVars).sort()).toEqual(expected);
     expect(Object.keys(vikingVars).sort()).toEqual(expected);
+    expect(Object.keys(libraryVars).sort()).toEqual(expected);
     expect(
       new Set([
         warmVars["--dashboard-timeline-focus"],
