@@ -34,6 +34,19 @@ describe("ThemePickerModal", () => {
     expect(localStorage.getItem("pomodoro-active-skin")).toBe("viking");
   });
 
+  it("applies library and persists the selection", () => {
+    render(<ThemePickerModal />);
+
+    fireEvent.click(screen.getByRole("radio", { name: /library/i }));
+
+    expect(useSkinStore.getState().activeSkinId).toBe("library");
+    expect(localStorage.getItem("pomodoro-active-skin")).toBe("library");
+    expect(screen.getByRole("radio", { name: /library/i })).toHaveAttribute(
+      "aria-checked", "true",
+    );
+    expect(useSkinStore.getState().activeSkin.id).toBe("library");
+  });
+
   it("marks the active theme in the picker", () => {
     render(<ThemePickerModal />);
 

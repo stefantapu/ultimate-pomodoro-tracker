@@ -1,4 +1,4 @@
-export type SkinId = "warm" | "neumorphism" | "viking";
+export type SkinId = "warm" | "neumorphism" | "viking" | "library";
 
 export type SkinImageAsset = {
   src: string;
@@ -130,7 +130,7 @@ export type SkinLayout = {
 export type SkinAudio = Record<SkinAudioAssetKey, string | null>;
 
 export type SkinAmbientEffect = {
-  kind: "embers" | "snow";
+  kind: "embers" | "snow" | "dust";
   count: number;
   seed: number;
   colors: readonly string[];

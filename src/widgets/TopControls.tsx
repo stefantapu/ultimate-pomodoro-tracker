@@ -96,6 +96,7 @@ export const TopControls = memo(function TopControls({
       <ThemedButton
         variant="tab"
         active={mode === "focus"}
+        aria-pressed={mode === "focus"}
         className={getTabClassName("focus")}
         onClick={() => onSelectMode("focus")}
         onPointerDown={(event) => handleStoneImpact(event, "focus")}
@@ -106,6 +107,7 @@ export const TopControls = memo(function TopControls({
       <ThemedButton
         variant="tab"
         active={mode === "break"}
+        aria-pressed={mode === "break"}
         className={getTabClassName("break")}
         onClick={() => onSelectMode("break")}
         onPointerDown={(event) => handleStoneImpact(event, "break")}

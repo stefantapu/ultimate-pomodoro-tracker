@@ -1,0 +1,7 @@
+/* Profile content floats directly over the scene in every skin. */
+.dashboard-shell .dashboard-toolbar .profile-entry {
+  border: 0;
+  border-image: none;
+  background: transparent;
+  box-shadow: none;
+}

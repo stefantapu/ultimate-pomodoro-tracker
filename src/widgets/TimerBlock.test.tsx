@@ -177,6 +177,20 @@ describe("TimerBlock", () => {
     expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
   });
 
+  it("keeps library mode controls beside Start and switches timer durations", () => {
+    useSkinStore.getState().setActiveSkinId("library");
+    renderWithProviders(<TimerBlock />);
+
+    const actionRow = screen.getByRole("button", { name: "Start" }).closest(".top-controls--action-row");
+    expect(actionRow).not.toBeNull();
+    expect(actionRow).toContainElement(screen.getByRole("button", { name: "Focus" }));
+    expect(actionRow).toContainElement(screen.getByRole("button", { name: "Break" }));
+    fireEvent.click(screen.getByRole("button", { name: "Break" }));
+    expect(screen.getByText("05:00")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Focus" }));
+    expect(screen.getByText("25:00")).toBeInTheDocument();
+  });
+
   it("tracks only user-initiated focus starts", () => {
     renderWithProviders(<TimerBlock />);
 
@@ -661,6 +675,18 @@ describe("TimerBlock", () => {
       outputGain: 1,
       cacheKey: "settings-focus-ambience-preview",
     });
+  });
+
+  it("uses library bell and sampled grand piano controls", () => {
+    useSkinStore.getState().setActiveSkinId("library");
+    renderWithProviders(<TimerBlock />);
+    expect(useAlarmMock).toHaveBeenCalledWith("/assets/Library/audio/desk-bell.wav", 1);
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Library/audio/grand-piano-c4.wav", 0.25, { cacheKey: "primary-timer-control" },
+    );
+    expect(useAlarmMock).toHaveBeenCalledWith(
+      "/assets/Library/audio/grand-piano-a3.wav", 0.25, { cacheKey: "mode-control" },
+    );
   });
 
   it("uses boosted warm ambience for playback and previews", () => {

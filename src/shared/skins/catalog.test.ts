@@ -17,7 +17,7 @@ describe("skin catalog contract", () => {
     const skins = listSkins();
     const ids = skins.map((skin) => skin.id);
 
-    expect(ids).toEqual(["warm", "neumorphism", "viking"]);
+    expect(ids).toEqual(["warm", "neumorphism", "viking", "library"]);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
@@ -25,6 +25,7 @@ describe("skin catalog contract", () => {
     expect(listPrimarySkins().map((skin) => skin.id)).toEqual([
       "warm",
       "viking",
+      "library",
     ]);
   });
 
@@ -43,10 +44,10 @@ describe("skin catalog contract", () => {
       }
 
       if (skin.effects.ambient) {
-        expect(["embers", "snow"]).toContain(skin.effects.ambient.kind);
+        expect(["embers", "snow", "dust"]).toContain(skin.effects.ambient.kind);
       }
       if (skin.effects.foreground) {
-        expect(["embers", "snow"]).toContain(skin.effects.foreground.kind);
+        expect(["embers", "snow", "dust"]).toContain(skin.effects.foreground.kind);
       }
       expect(skin.focusAmbienceOutputGain).toBeGreaterThan(0);
     }
@@ -82,6 +83,7 @@ describe("skin catalog contract", () => {
     expect(isSkinId("warm")).toBe(true);
     expect(isSkinId("neumorphism")).toBe(true);
     expect(isSkinId("viking")).toBe(true);
+    expect(isSkinId("library")).toBe(true);
     expect(isSkinId("unknown")).toBe(false);
   });
 

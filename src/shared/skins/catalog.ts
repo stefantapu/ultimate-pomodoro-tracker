@@ -1,5 +1,6 @@
 import { buildImageAsset } from "./assetUtils";
 import { createSkinProfile } from "./compileSkinProfile";
+import { librarySkin } from "./library";
 import type { SkinAmbientEffect, SkinId, SkinProfile } from "./types";
 
 const warmAmbientEffect: SkinAmbientEffect = {
@@ -461,23 +462,27 @@ const skinCatalog = {
   warm: warmSkin,
   neumorphism: neumorphismSkin,
   viking: vikingSkin,
+  library: librarySkin,
 } satisfies Record<SkinId, SkinProfile>;
 
 const skins: readonly SkinProfile[] = [
   skinCatalog.warm,
   skinCatalog.neumorphism,
   skinCatalog.viking,
+  skinCatalog.library,
 ];
 
 const primarySkins: readonly SkinProfile[] = [
   skinCatalog.warm,
   skinCatalog.viking,
+  skinCatalog.library,
 ];
 
 const skinById = new Map<SkinId, SkinProfile>([
   ["warm", skinCatalog.warm],
   ["neumorphism", skinCatalog.neumorphism],
   ["viking", skinCatalog.viking],
+  ["library", skinCatalog.library],
 ]);
 
 export const DEFAULT_SKIN_ID: SkinId = "viking";

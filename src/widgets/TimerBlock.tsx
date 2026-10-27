@@ -199,7 +199,9 @@ export function TimerBlock() {
     focusAmbienceVolumeLabel,
   } = settingsDerivation;
   const shouldPlaceModeControlsWithActions =
-    activeSkin.id === "warm" || activeSkin.id === "viking";
+    activeSkin.id === "warm" ||
+    activeSkin.id === "viking" ||
+    activeSkin.id === "library";
 
   const shouldPlayFocusAmbience =
     isFocusAmbienceAvailable &&

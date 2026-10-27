@@ -1,0 +1,18 @@
+grand-piano-c4.wav and grand-piano-a3.wav
+
+Adapted from Salamander Grand Piano V2, recorded by Alexander Holm.
+Instrument: Yamaha C5 grand piano.
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+https://creativecommons.org/licenses/by/3.0/
+
+Source collection and author/license notice:
+https://github.com/Tonejs/audio/tree/master/salamander
+Original recordings:
+https://raw.githubusercontent.com/Tonejs/audio/master/salamander/C4.mp3
+https://raw.githubusercontent.com/Tonejs/audio/master/salamander/A3.mp3
+
+Modifications for Forge Timer: shortened to UI cues, softened high frequencies,
+lowered volume, added attack/release fades, exported as stereo 44.1 kHz PCM WAV.
+Prepared with scripts/prepare-library-piano.mjs.
+
+The author does not endorse Forge Timer.

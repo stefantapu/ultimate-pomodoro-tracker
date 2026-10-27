@@ -21,11 +21,20 @@ describe("TopControls", () => {
     expect(focusButton).toHaveClass("themed-button");
     expect(focusButton).toHaveClass("themed-button--tab");
     expect(focusButton).toHaveClass("is-active");
+    expect(focusButton).toHaveAttribute("aria-pressed", "true");
     expect(breakButton).toHaveClass("themed-button");
     expect(breakButton).toHaveClass("themed-button--tab");
+    expect(breakButton).toHaveAttribute("aria-pressed", "false");
 
     fireEvent.click(breakButton);
     expect(onSelectMode).toHaveBeenCalledWith("break");
+  });
+
+  it("updates the exposed active mode after switching", () => {
+    const { rerender } = render(<TopControls mode="focus" onSelectMode={() => {}} />);
+    rerender(<TopControls mode="break" onSelectMode={() => {}} />);
+    expect(screen.getByRole("button", { name: "Focus" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "Break" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("applies and clears stone-impact class on left pointer down", () => {
